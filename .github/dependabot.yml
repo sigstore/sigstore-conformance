@@ -5,3 +5,6 @@ updates:
     directory: "/conformance/stable/sigstore-python"
     schedule:
       interval: daily
+    labels:
+      - "dependencies"
+      - "matrix:stable"
