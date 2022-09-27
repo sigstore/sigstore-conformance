@@ -5,4 +5,4 @@ RUN git clone https://github.com/sigstore/sigstore-python.git && \
     cd sigstore-python && \
     pip install -e .
 
-ENTRYPOINT ["sigstore"]
+ENTRYPOINT [ "sigstore" ]
