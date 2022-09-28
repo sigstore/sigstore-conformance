@@ -172,6 +172,7 @@ def _main() -> None:
     file_path = pathlib.Path(__file__).parent.resolve()
     os.chdir(file_path)
 
+    # Figure out what client/release pairings we need to test
     client_releases = _build_matrix(args.client, args.release)
 
     if args.subcommand == "build":
