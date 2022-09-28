@@ -11,6 +11,9 @@ on:
 permissions:
   # Needed to access the workflow's OIDC identity.
   id-token: write
+
+  # If we set anything under `permissions`, we need to explicitly set this so
+  # the `checkout` actions can see this repo.
   contents: read
 
 jobs:
