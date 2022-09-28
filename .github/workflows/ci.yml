@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: '0 12 * * *'
 
+permissions:
+  # Needed to access the workflow's OIDC identity.
+  id-token: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
