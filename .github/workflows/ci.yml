@@ -29,8 +29,8 @@ jobs:
       - name: build
         run: |
           source env/bin/activate
-          ./sigstore-conformance --client sigstore-python --release stable build
+          ./sigstore-conformance build
       - name: test
         run: |
           source env/bin/activate
-          ./sigstore-conformance --client sigstore-python --release stable test
+          ./sigstore-conformance test
