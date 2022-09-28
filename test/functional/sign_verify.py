@@ -3,7 +3,12 @@ import os
 import docker
 
 
-def basic(client: docker.DockerClient, tag: str) -> None:
+def sign_verify(client: docker.DockerClient, tag: str) -> None:
+    """
+    A basic test that signs and verifies this repository's README with a given
+    sigstore client.
+    """
+
     # TODO(alex): Refactor this all into a helper API
     volumes_mapping = {
         os.getcwd(): {
