@@ -6,6 +6,7 @@ import logging
 import os
 import pathlib
 from dataclasses import dataclass
+from test import ClientReleaseContainer
 from test.functional import sign_verify
 from typing import List, Type
 
@@ -125,13 +126,12 @@ def _build(client_releases: List[ClientRelease]) -> None:
 
 
 def _test(client_releases: List[ClientRelease]) -> None:
-    docker_client = docker.from_env()
-
     for client in client_releases:
+        container = ClientReleaseContainer(client.tag)
         logger.info(f"Running tests: {client.tag}")
 
         for test in FUNCTIONAL_TESTS:
-            test(docker_client, client.tag)
+            test(container)
 
 
 def _build_matrix(
