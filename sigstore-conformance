@@ -1,20 +1,42 @@
 #!/usr/bin/env python3
 
 import argparse
+import enum
 import logging
 import os
 import pathlib
+from dataclasses import dataclass
 from test.functional import basic
+from typing import List, Type
 
 import docker
 
-# TODO(alex): Make these enums
-SIGSTORE_CLIENTS = ["sigstore-python", "cosign"]
 
-RELEASE_TYPES = [
-    "stable",
-    "nightly",
-]
+class SigstoreClientChoice(str, enum.Enum):
+    """
+    The Sigstore client to test.
+    """
+
+    All = "all"
+    SigstorePython = "sigstore-python"
+    Cosign = "cosign"
+
+    def __str__(self) -> str:
+        return self.value
+
+
+class ReleaseTypeChoice(str, enum.Enum):
+    """
+    The release type for a given client.
+    """
+
+    All = "all"
+    Stable = "stable"
+    Nightly = "nightly"
+
+    def __str__(self) -> str:
+        return self.value
+
 
 FUNCTIONAL_TESTS = [basic]
 
@@ -24,10 +46,17 @@ logging.basicConfig(
 )
 
 
+def _enum_help(msg: str, e: Type[enum.Enum]) -> str:
+    """
+    Render a `--help`-style string for the given enumeration.
+    """
+    return f"{msg} (choices: {', '.join(str(v) for v in e)})"
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sigstore-conformance",
-        description="",
+        description="Conformance testing for Sigstore clients",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
@@ -43,33 +72,96 @@ def _parser() -> argparse.ArgumentParser:
         "test", formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    # TODO(alex): These shouldn't be required
     parser.add_argument(
-        "--client", "-c", type=str, choices=SIGSTORE_CLIENTS, required=True
+        "--client",
+        "-c",
+        type=SigstoreClientChoice,
+        choices=SigstoreClientChoice,
+        default=SigstoreClientChoice.All,
+        metavar="CLIENT",
+        help=_enum_help(
+            "the sigstore client to test (tests all clients by default)",
+            SigstoreClientChoice,
+        ),
     )
     parser.add_argument(
-        "--release", "-r", type=str, choices=RELEASE_TYPES, required=True
+        "--release",
+        "-r",
+        type=ReleaseTypeChoice,
+        choices=ReleaseTypeChoice,
+        default=ReleaseTypeChoice.All,
+        metavar="RELEASE",
+        help=_enum_help(
+            "the release type to test (tests all release types by default)",
+            ReleaseTypeChoice,
+        ),
     )
 
     return parser
 
 
-def _build(path: pathlib.Path, tag: str) -> None:
-    client = docker.from_env()
+@dataclass(frozen=True)
+class ClientRelease:
+    client: str
+    release: str
 
-    logger.info(f"Building Docker image: {tag}")
+    @property
+    def tag(self) -> str:
+        return f"{self.client}_{self.release}"
 
-    # TODO(alex): Cache images
-    client.images.build(path=path, tag=tag)
+    @property
+    def dockerfile_path(self) -> str:
+        return str(pathlib.Path.cwd() / "conformance" / self.release / self.client)
 
 
-def _test(path: pathlib.Path, tag: str) -> None:
-    client = docker.from_env()
+def _build(client_releases: List[ClientRelease]) -> None:
+    docker_client = docker.from_env()
 
-    logger.info(f"Running test for: {tag}")
+    for client in client_releases:
+        logger.info(f"Building image: {client.tag}")
 
-    for test in FUNCTIONAL_TESTS:
-        test(client, tag)
+        # TODO(alex): Cache images
+        docker_client.images.build(path=client.dockerfile_path, tag=client.tag)
+
+
+def _test(client_releases: List[ClientRelease]) -> None:
+    docker_client = docker.from_env()
+
+    for client in client_releases:
+        logger.info(f"Running tests: {client.tag}")
+
+        for test in FUNCTIONAL_TESTS:
+            test(docker_client, client.tag)
+
+
+def _build_matrix(
+    client: SigstoreClientChoice, release: ReleaseTypeChoice
+) -> List[ClientRelease]:
+    clients = []
+    if client == SigstoreClientChoice.All:
+        for v in SigstoreClientChoice:
+            if v == SigstoreClientChoice.All:
+                continue
+            clients.append(str(v))
+    else:
+        clients.append(str(client))
+
+    releases = []
+    if release == ReleaseTypeChoice.All:
+        for v in ReleaseTypeChoice:
+            if v == ReleaseTypeChoice.All:
+                continue
+            releases.append(str(v))
+    else:
+        releases.append(str(release))
+
+    client_releases = []
+    for c in clients:
+        for r in releases:
+            client_releases.append(ClientRelease(c, r))
+
+    logger.debug(f"Generated client releases: {client_releases}")
+    return client_releases
 
 
 def _main() -> None:
@@ -80,13 +172,12 @@ def _main() -> None:
     file_path = pathlib.Path(__file__).parent.resolve()
     os.chdir(file_path)
 
-    image_path = os.path.join(file_path, "conformance", args.release, args.client)
-    tag = f"{args.client}_{args.release}"
+    client_releases = _build_matrix(args.client, args.release)
 
     if args.subcommand == "build":
-        _build(image_path, tag)
+        _build(client_releases)
     elif args.subcommand == "test":
-        _test(image_path, tag)
+        _test(client_releases)
     else:
         parser.error(f"Unknown subcommand: {args.subcommand}")
 
