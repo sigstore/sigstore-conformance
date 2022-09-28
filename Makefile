@@ -4,10 +4,10 @@ ALL_PY_SRCS := sigstore-conformance $(shell find test -name '*.py')
 all:
 	@echo "Run my targets individually!"
 
-env/pyvenv.cfg: dev-requirements.txt
+env/pyvenv.cfg: requirements.txt dev-requirements.txt
 	python3 -m venv env
 	./env/bin/python -m pip install --upgrade pip
-	./env/bin/python -m pip install --requirement dev-requirements.txt
+	./env/bin/python -m pip install --requirement requirements.txt --requirement dev-requirements.txt
 
 .PHONY: dev
 dev: env/pyvenv.cfg
