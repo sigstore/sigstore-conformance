@@ -32,5 +32,6 @@ def test_sign_verify(
 
 
 @conformance_matrix
-def test_matrix_works(impl_a, impl_b):
+def test_matrix_works(impls):
+    impl_a, impl_b = impls
     assert True, f"{impl_a}, {impl_b}"
