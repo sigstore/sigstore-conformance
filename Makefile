@@ -1,4 +1,4 @@
-ALL_PY_SRCS := sigstore-conformance $(shell find test -name '*.py')
+ALL_PY_SRCS := $(shell find test -name '*.py')
 
 .PHONY: all
 all:

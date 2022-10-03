@@ -1,13 +1,21 @@
 import os
 
+import pytest
+
 from ..container import ClientReleaseContainer
+from ..matrix import ReleaseChannelChoice, SigstoreClientChoice
 
 
-def sign_verify(container: ClientReleaseContainer) -> None:
+@pytest.mark.parametrize("client", [v for v in SigstoreClientChoice])
+@pytest.mark.parametrize("channel", [v for v in ReleaseChannelChoice])
+def test_sign_verify(
+    client: SigstoreClientChoice, channel: ReleaseChannelChoice
+) -> None:
     """
     A basic test that signs and verifies this repository's README with a given
     sigstore client.
     """
+    container = ClientReleaseContainer(f"{client}_{channel}")
 
     # Sign and verify the README
     if container.tag.startswith("cosign"):

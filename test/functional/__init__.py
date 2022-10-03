@@ -1,3 +1,3 @@
-from .sign_verify import sign_verify
+from .test_sign_verify import test_sign_verify
 
-__all__ = ["sign_verify"]
+__all__ = ["test_sign_verify"]
