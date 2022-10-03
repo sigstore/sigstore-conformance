@@ -1,5 +1,3 @@
-import itertools
-
 import pytest
 
 from .matrix import ReleaseChannelChoice, SigstoreClientChoice
@@ -16,8 +14,3 @@ def _each_impl():
 
 def conformance(func):
     return _clients(_channels(func))
-
-
-def conformance_matrix(func):
-    impls = itertools.combinations(_each_impl(), 2)
-    return pytest.mark.parametrize("impls", impls)(func)
