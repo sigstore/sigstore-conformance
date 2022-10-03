@@ -26,9 +26,9 @@ class SigstoreClientChoice(str, enum.Enum):
         return self.value
 
 
-class ReleaseTypeChoice(str, enum.Enum):
+class ReleaseChannelChoice(str, enum.Enum):
     """
-    The release type for a given client.
+    The release channel for a given client.
     """
 
     All = "all"
@@ -88,13 +88,13 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--release",
         "-r",
-        type=ReleaseTypeChoice,
-        choices=ReleaseTypeChoice,
-        default=ReleaseTypeChoice.All,
+        type=ReleaseChannelChoice,
+        choices=ReleaseChannelChoice,
+        default=ReleaseChannelChoice.All,
         metavar="RELEASE",
         help=_enum_help(
-            "the release type to test (tests all release types by default)",
-            ReleaseTypeChoice,
+            "the release channel to test (tests all release channels by default)",
+            ReleaseChannelChoice,
         ),
     )
 
@@ -135,7 +135,7 @@ def _test(client_releases: List[ClientRelease]) -> None:
 
 
 def _build_matrix(
-    client: SigstoreClientChoice, release: ReleaseTypeChoice
+    client: SigstoreClientChoice, release: ReleaseChannelChoice
 ) -> List[ClientRelease]:
     clients = []
     if client == SigstoreClientChoice.All:
@@ -147,9 +147,9 @@ def _build_matrix(
         clients.append(str(client))
 
     releases = []
-    if release == ReleaseTypeChoice.All:
-        for v in ReleaseTypeChoice:
-            if v == ReleaseTypeChoice.All:
+    if release == ReleaseChannelChoice.All:
+        for v in ReleaseChannelChoice:
+            if v == ReleaseChannelChoice.All:
                 continue
             releases.append(str(v))
     else:
