@@ -2,7 +2,7 @@ import os
 
 from ..container import ClientReleaseContainer
 from ..matrix import ReleaseChannelChoice, SigstoreClientChoice
-from ..utils import conformance
+from ..utils import conformance, conformance_matrix
 
 
 @conformance
@@ -29,3 +29,8 @@ def test_sign_verify(
     # setup/cleanup a fresh directory.
     os.remove("README.md.crt")
     os.remove("README.md.sig")
+
+
+@conformance_matrix
+def test_matrix_works(impl_a, impl_b):
+    assert True, f"{impl_a}, {impl_b}"
