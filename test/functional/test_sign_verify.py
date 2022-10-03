@@ -1,13 +1,11 @@
 import os
 
-import pytest
-
 from ..container import ClientReleaseContainer
 from ..matrix import ReleaseChannelChoice, SigstoreClientChoice
+from ..utils import conformance
 
 
-@pytest.mark.parametrize("client", [v for v in SigstoreClientChoice])
-@pytest.mark.parametrize("channel", [v for v in ReleaseChannelChoice])
+@conformance
 def test_sign_verify(
     client: SigstoreClientChoice, channel: ReleaseChannelChoice
 ) -> None:
