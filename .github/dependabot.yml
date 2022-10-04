@@ -9,6 +9,18 @@ updates:
       - "dependencies"
       - "matrix:stable"
 
+  - package-ecosystem: docker
+    directory: "/conformance/stable/cosign"
+    schedule:
+      interval: daily
+    registries:
+      - gcr-sigstore
+    allow:
+      - dependency-name: cosign
+    labels:
+      - "dependencies"
+      - "matrix:stable"
+
   - package-ecosystem: gitsubmodule
     directory: "/conformance/nightly/cosign"
     schedule:
@@ -24,3 +36,8 @@ updates:
     labels:
       - "dependencies"
       - "matrix:nightly"
+
+registries:
+  gcr-sigstore:
+    type: docker-registry
+    url: https://gcr.io/projectsigstore
