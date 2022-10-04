@@ -30,28 +30,28 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./conformance/sigstore-python/stable/Dockerfile
+          file: ./conformance/stable/sigstore-python/Dockerfile
           push: false
           tags: sigstore-python_stable
       - name: build sigstore-python_nightly
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./conformance/sigstore-python/nightly/Dockerfile
+          file: ./conformance/nightly/sigstore-python/Dockerfile
           push: false
           tags: sigstore-python_nightly
       - name: build cosign_stable
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./conformance/cosign/stable/Dockerfile
+          file: ./conformance/stable/cosign/Dockerfile
           push: false
           tags: cosign_stable
       - name: build cosign_nightly
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./conformance/cosign/nightly/Dockerfile
+          file: ./conformance/nightly/cosign/Dockerfile
           push: false
           tags: cosign_nightly
       - name: test
