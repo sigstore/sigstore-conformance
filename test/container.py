@@ -2,14 +2,22 @@ import os
 
 import docker
 
+from .matrix import ReleaseChannelChoice, SigstoreClientChoice
+
+_VOLUME = "/mnt/volume"
+
 
 class ClientReleaseContainer:
-    def __init__(self, tag: str) -> None:
+    def __init__(
+        self, client: SigstoreClientChoice, channel: ReleaseChannelChoice
+    ) -> None:
+        self.client = client
+        self.channel = channel
         self.docker_client = docker.from_env()
-        self.tag = tag
+        self.tag = f"{self.client}_{self.channel}"
         self.volumes = {
             os.getcwd(): {
-                "bind": "/mnt/volume",
+                "bind": _VOLUME,
                 "mode": "rw",
             }
         }
@@ -20,6 +28,8 @@ class ClientReleaseContainer:
             ),
             "ACTIONS_ID_TOKEN_REQUEST_URL": os.getenv("ACTIONS_ID_TOKEN_REQUEST_URL"),
         }
+        if self.client == SigstoreClientChoice.Cosign:
+            self.environment["COSIGN_EXPERIMENTAL"] = "1"
 
     def run(self, cmd: str) -> None:
         self.docker_client.containers.run(
@@ -27,5 +37,5 @@ class ClientReleaseContainer:
             cmd,
             volumes=self.volumes,
             environment=self.environment,
-            working_dir="/mnt/volume",
+            working_dir=_VOLUME,
         )
