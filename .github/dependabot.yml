@@ -8,3 +8,11 @@ updates:
     labels:
       - "dependencies"
       - "matrix:stable"
+
+  - package-ecosystem: gitsubmodule
+    directory: "/conformance/nightly/cosign"
+    schedule:
+      interval: daily
+    labels:
+      - "dependencies"
+      - "matrix:nightly"
