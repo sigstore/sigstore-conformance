@@ -16,3 +16,11 @@ updates:
     labels:
       - "dependencies"
       - "matrix:nightly"
+
+  - package-ecosystem: gitsubmodule
+    directory: "/conformance/nightly/sigstore-python"
+    schedule:
+      interval: daily
+    labels:
+      - "dependencies"
+      - "matrix:nightly"
