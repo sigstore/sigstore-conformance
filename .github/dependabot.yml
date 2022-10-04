@@ -1,6 +1,7 @@
 version: 2
 
 updates:
+  # sigstore-python:stable
   - package-ecosystem: pip
     directory: "/conformance/stable/sigstore-python"
     schedule:
@@ -9,6 +10,7 @@ updates:
       - "dependencies"
       - "matrix:stable"
 
+  # cosign:stable
   - package-ecosystem: docker
     directory: "/conformance/stable/cosign"
     schedule:
@@ -19,16 +21,12 @@ updates:
       - "dependencies"
       - "matrix:stable"
 
+  # sigstore-python:nightly and cosign:nightly
+  # NOTE: Ideally we'd break up each nightly check into a separate rule,
+  # but Dependabot's support for doing so (with submodules as the ecosystem)
+  # is somewhat limited.
   - package-ecosystem: gitsubmodule
-    directory: "/conformance/nightly/cosign"
-    schedule:
-      interval: daily
-    labels:
-      - "dependencies"
-      - "matrix:nightly"
-
-  - package-ecosystem: gitsubmodule
-    directory: "/conformance/nightly/sigstore-python"
+    directory: /
     schedule:
       interval: daily
     labels:
