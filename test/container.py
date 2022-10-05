@@ -39,3 +39,9 @@ class ClientReleaseContainer:
             environment=self.environment,
             working_dir=_VOLUME,
         )
+
+    def sign(self, cmd: str) -> None:
+        self.run(f"{self.client.sign_command} {cmd}")
+
+    def verify(self, cmd: str) -> None:
+        self.run(f"{self.client.verify_command} {cmd}")
