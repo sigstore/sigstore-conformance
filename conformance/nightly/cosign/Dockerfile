@@ -3,7 +3,9 @@
 FROM golang:1.19
 LABEL maintainer "Alex Cameron <alex.cameron@trailofbits.com>"
 
-RUN cd cosign && \
+COPY cosign /tmp/cosign
+
+RUN cd /tmp/cosign && \
     go install ./cmd/cosign/
 
 ENTRYPOINT $(go env GOPATH)/bin/cosign
