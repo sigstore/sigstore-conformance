@@ -6,6 +6,6 @@ LABEL maintainer "Alex Cameron <alex.cameron@trailofbits.com>"
 COPY cosign /tmp/cosign
 
 RUN cd /tmp/cosign && \
-    go install ./cmd/cosign/
+    go install -buildvcs=false ./cmd/cosign/
 
 ENTRYPOINT $(go env GOPATH)/bin/cosign
