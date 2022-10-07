@@ -10,7 +10,7 @@ def test_sign_verify(client: ClientReleaseContainer) -> None:
     """
     # Sign and verify the README
     client.sign("README.md")
-    client.verify("README.md")
+    client.verify("--certificate README.md.crt --signature README.md.sig README.md")
 
     # TODO(alex): Probably need some setup/teardown phase for each test where we
     # setup/cleanup a fresh directory.
