@@ -28,39 +28,39 @@ jobs:
           python-version: "3.10"
       - name: deps
         run: make dev
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
       - name: build sigstore-python:stable
         uses: docker/build-push-action@v2
         with:
           context: ./conformance/stable/sigstore-python
-          push: true
-          pull: true
+          # push: true
+          # pull: true
           tags: ghcr.io/sigstore-conformance/sigstore-python:stable
       - name: build sigstore-python:nightly
         uses: docker/build-push-action@v2
         with:
           context: ./conformance/nightly/sigstore-python
-          push: true
-          pull: true
+          # push: true
+          # pull: true
           tags: ghcr.io/sigstore-conformance/sigstore-python:nightly
       - name: build cosign:stable
         uses: docker/build-push-action@v2
         with:
           context: ./conformance/stable/cosign
-          push: true
-          pull: true
+          # push: true
+          # pull: true
           tags: ghcr.io/sigstore-conformance/cosign:stable
       - name: build cosign:nightly
         uses: docker/build-push-action@v2
         with:
           context: ./conformance/nightly/cosign
-          push: true
-          pull: true
+          # push: true
+          # pull: true
           tags: ghcr.io/sigstore-conformance/cosign:nightly
       - name: test
         run: |
