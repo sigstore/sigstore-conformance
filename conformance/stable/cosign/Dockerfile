@@ -6,4 +6,6 @@ LABEL maintainer "Alex Cameron <alex.cameron@trailofbits.com>"
 FROM cgr.dev/chainguard/static:latest
 COPY --from=cosign-bin /ko-app/cosign /usr/local/bin/cosign
 
+USER root
+
 ENTRYPOINT [ "cosign" ]
