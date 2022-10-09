@@ -1,4 +1,9 @@
 from .container import Container
-from .matrix import ReleaseChannelChoice, SigstoreClientChoice
+from .matrix import ReleaseChannelChoice, SigstoreClient, SigstoreClientChoice
 
-__all__ = ["Container", "SigstoreClientChoice", "ReleaseChannelChoice"]
+__all__ = [
+    "Container",
+    "ReleaseChannelChoice",
+    "SigstoreClient",
+    "SigstoreClientChoice",
+]
