@@ -14,7 +14,7 @@ class Container:
         self.client = client
         self.channel = channel
         self.docker_client = docker.from_env()
-        self.tag = f"{self.client}:{self.channel}"
+        self.tag = f"ghcr.io/trailofbits/sigstore-conformance/{self.client}:{self.channel}"
         self.environment = {
             "GITHUB_ACTIONS": os.getenv("GITHUB_ACTIONS"),
             "ACTIONS_ID_TOKEN_REQUEST_TOKEN": os.getenv(
