@@ -40,28 +40,28 @@ jobs:
           context: ./conformance/stable/sigstore-python
           # push: true
           # pull: true
-          tags: ghcr.io/sigstore-conformance/sigstore-python:stable
+          tags: ghcr.io/trailofbits/sigstore-python:stable
       - name: build sigstore-python:nightly
         uses: docker/build-push-action@v2
         with:
           context: ./conformance/nightly/sigstore-python
           # push: true
           # pull: true
-          tags: ghcr.io/sigstore-conformance/sigstore-python:nightly
+          tags: ghcr.io/trailofbits/sigstore-python:nightly
       - name: build cosign:stable
         uses: docker/build-push-action@v2
         with:
           context: ./conformance/stable/cosign
           # push: true
           # pull: true
-          tags: ghcr.io/sigstore-conformance/cosign:stable
+          tags: ghcr.io/trailofbits/cosign:stable
       - name: build cosign:nightly
         uses: docker/build-push-action@v2
         with:
           context: ./conformance/nightly/cosign
           # push: true
           # pull: true
-          tags: ghcr.io/sigstore-conformance/cosign:nightly
+          tags: ghcr.io/trailofbits/cosign:nightly
       - name: test
         run: |
           source env/bin/activate
