@@ -1,9 +1,27 @@
 import enum
+import os
+from abc import ABC, abstractmethod
+from builtins import ValueError
+from collections.abc import Container
+
+
+class SigstoreClient(ABC):
+    @abstractmethod
+    def sign(
+        self, artifact: os.PathLike, certificate: os.PathLike, signature: os.PathLike
+    ) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def verify(
+        self, artifact: os.PathLike, certificate: os.PathLike, signature: os.PathLike
+    ) -> None:
+        raise NotImplementedError
 
 
 class SigstoreClientChoice(str, enum.Enum):
     """
-    The Sigstore client to test.
+    The Sigstore client to test
     """
 
     SigstorePython = "sigstore-python"
@@ -12,28 +30,18 @@ class SigstoreClientChoice(str, enum.Enum):
     def __str__(self) -> str:
         return self.value
 
-    @property
-    def sign_command(self) -> str:
-        if self == self.SigstorePython:
-            return "sign"
-        elif self == self.Cosign:
-            return "sign-blob"
-        else:
-            raise ValueError
-
-    @property
-    def verify_command(self) -> str:
-        if self == self.SigstorePython:
-            return "verify"
-        elif self == self.Cosign:
-            return "verify-blob"
+    def to_client(self, container: Container) -> SigstoreClient:
+        if self == SigstoreClientChoice.SigstorePython:
+            return SigstorePythonClient(container)
+        elif self == SigstoreClientChoice.Cosign:
+            return CosignClient(container)
         else:
             raise ValueError
 
 
 class ReleaseChannelChoice(str, enum.Enum):
     """
-    The release channel for a given client.
+    The release channel for a given client
     """
 
     Stable = "stable"
@@ -41,3 +49,42 @@ class ReleaseChannelChoice(str, enum.Enum):
 
     def __str__(self) -> str:
         return self.value
+
+
+class SigstorePythonClient(SigstoreClient):
+    def __init__(self, container: Container) -> None:
+        self.container = container
+
+    def sign(
+        self, artifact: os.PathLike, certificate: os.PathLike, signature: os.PathLike
+    ) -> None:
+        self.container.run(
+            f"sign --certificate {certificate} --signature {signature} {artifact}"
+        )
+
+    def verify(
+        self, artifact: os.PathLike, certificate: os.PathLike, signature: os.PathLike
+    ) -> None:
+        self.container.run(
+            f"verify --certificate {certificate} --signature {signature} {artifact}"
+        )
+
+
+class CosignClient(SigstoreClient):
+    def __init__(self, container: Container) -> None:
+        self.container = container
+
+    def sign(
+        self, artifact: os.PathLike, certificate: os.PathLike, signature: os.PathLike
+    ) -> None:
+        self.container.run(
+            f"sign-blob --output-certificate {certificate} --output-signature {signature} "
+            f"{artifact}"
+        )
+
+    def verify(
+        self, artifact: os.PathLike, certificate: os.PathLike, signature: os.PathLike
+    ) -> None:
+        self.container.run(
+            f"verify-blob --cert {certificate} --signature {signature} {artifact}"
+        )
