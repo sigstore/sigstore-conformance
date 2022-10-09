@@ -4,7 +4,7 @@ import docker
 
 from .matrix import ReleaseChannelChoice, SigstoreClientChoice
 
-_VOLUME = "/mnt/volume"
+_WORKSPACE_VOLUME = "/mnt/volume"
 
 
 class ClientReleaseContainer:
@@ -15,12 +15,6 @@ class ClientReleaseContainer:
         self.channel = channel
         self.docker_client = docker.from_env()
         self.tag = f"{self.client}_{self.channel}"
-        self.volumes = {
-            os.getcwd(): {
-                "bind": _VOLUME,
-                "mode": "rw",
-            }
-        }
         self.environment = {
             "GITHUB_ACTIONS": os.getenv("GITHUB_ACTIONS"),
             "ACTIONS_ID_TOKEN_REQUEST_TOKEN": os.getenv(
@@ -35,9 +29,14 @@ class ClientReleaseContainer:
         self.docker_client.containers.run(
             self.tag,
             cmd,
-            volumes=self.volumes,
+            volumes={
+                os.getcwd(): {
+                    "bind": _WORKSPACE_VOLUME,
+                    "mode": "rw",
+                }
+            },
             environment=self.environment,
-            working_dir=_VOLUME,
+            working_dir=_WORKSPACE_VOLUME,
         )
 
     def sign(self, cmd: str) -> None:

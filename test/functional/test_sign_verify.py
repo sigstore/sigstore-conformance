@@ -1,18 +1,13 @@
-import os
-
 from ..container import ClientReleaseContainer
 
 
-def test_sign_verify(client: ClientReleaseContainer) -> None:
+def test_sign_verify(client: ClientReleaseContainer, workspace: str) -> None:
     """
     A basic test that signs and verifies this repository's README with a given
     sigstore client.
     """
     # Sign and verify the README
-    client.sign("--output-certificate README.md.crt --output-signature README.md.sig README.md")
-    client.verify("--cert README.md.crt --signature README.md.sig README.md")
-
-    # TODO(alex): Probably need some setup/teardown phase for each test where we
-    # setup/cleanup a fresh directory.
-    os.remove("README.md.crt")
-    os.remove("README.md.sig")
+    client.sign(
+        "--output-certificate artifact.txt.crt --output-signature artifact.txt.sig artifact.txt"
+    )
+    client.verify("--cert artifact.txt.crt --signature artifact.txt.sig artifact.txt")
