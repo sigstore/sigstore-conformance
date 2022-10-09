@@ -13,6 +13,9 @@ _ALL_IMPLS = list(itertools.product(SigstoreClientChoice, ReleaseChannelChoice))
 
 
 def pytest_generate_tests(metafunc):
+    """
+    Parametrize tests with each permutation of sigstore client and release channel.
+    """
     if "client" in metafunc.fixturenames:
         metafunc.parametrize(
             ["client"],
@@ -22,6 +25,9 @@ def pytest_generate_tests(metafunc):
 
 @pytest.fixture(autouse=True)
 def workspace():
+    """
+    Create a temporary workspace directory to perform the test in.
+    """
     workspace = tempfile.TemporaryDirectory()
 
     # Move entire contents of artifacts directory into workspace
