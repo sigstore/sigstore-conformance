@@ -7,7 +7,7 @@ from .matrix import ReleaseChannelChoice, SigstoreClientChoice
 _WORKSPACE_VOLUME = "/mnt/volume"
 
 
-class ClientReleaseContainer:
+class Container:
     def __init__(
         self, client: SigstoreClientChoice, channel: ReleaseChannelChoice
     ) -> None:
@@ -37,7 +37,6 @@ class ClientReleaseContainer:
             },
             environment=self.environment,
             working_dir=_WORKSPACE_VOLUME,
-            privileged=True,
         )
 
     def sign(self, cmd: str) -> None:

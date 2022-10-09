@@ -1,7 +1,9 @@
-from ..container import ClientReleaseContainer
+from pathlib import Path
+
+from ..container import Container
 
 
-def test_sign_verify(client: ClientReleaseContainer, workspace: str) -> None:
+def test_sign_verify(client: Container, workspace: Path) -> None:
     """
     A basic test that signs and verifies this repository's README with a given
     sigstore client.

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from .container import ClientReleaseContainer
+from .container import Container
 from .matrix import ReleaseChannelChoice, SigstoreClientChoice
 
 _ALL_IMPLS = list(itertools.product(SigstoreClientChoice, ReleaseChannelChoice))
@@ -15,7 +15,7 @@ _ALL_IMPLS = list(itertools.product(SigstoreClientChoice, ReleaseChannelChoice))
 def pytest_generate_tests(metafunc):
     if "client" in metafunc.fixturenames:
         metafunc.parametrize(
-            ["client"], map(lambda perm: (ClientReleaseContainer(*perm),), _ALL_IMPLS)
+            ["client"], map(lambda perm: (Container(*perm),), _ALL_IMPLS)
         )
 
 
@@ -30,5 +30,5 @@ def workspace():
     # Now change the current working directory to our workspace
     os.chdir(workspace.name)
 
-    yield workspace.name
+    yield Path(workspace.name)
     workspace.cleanup()
