@@ -14,7 +14,7 @@ class ClientReleaseContainer:
         self.client = client
         self.channel = channel
         self.docker_client = docker.from_env()
-        self.tag = f"{self.client}_{self.channel}"
+        self.tag = f"{self.client}:{self.channel}"
         self.environment = {
             "GITHUB_ACTIONS": os.getenv("GITHUB_ACTIONS"),
             "ACTIONS_ID_TOKEN_REQUEST_TOKEN": os.getenv(
