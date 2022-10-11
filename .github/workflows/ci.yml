@@ -17,7 +17,30 @@ permissions:
   contents: read
 
 jobs:
+  build-containers:
+    strategy:
+      matrix:
+        client: ["sigstore-python", "cosign"]
+        release-channel: ["stable", "nightly"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.GITHUB_TOKEN } }
+      - name: Build ${{ matrix.client }}:${{ matrix.release-channel }}
+        uses: docker/build-push-action@v2
+        with:
+          context: ./conformance/${{ matrix.release-channel }}/${{ matrix.client }}
+          # push: true
+          # pull: true
+          tags: ghcr.io/trailofbits/sigstore-conformance/${{ matrix.client }}:${{ matrix.release-channel }}
   test:
+    needs: build-containers
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -28,40 +51,6 @@ jobs:
           python-version: "3.10"
       - name: deps
         run: make dev
-      # - name: Login to GitHub Container Registry
-      #   uses: docker/login-action@v1
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.repository_owner }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
-      - name: build sigstore-python:stable
-        uses: docker/build-push-action@v2
-        with:
-          context: ./conformance/stable/sigstore-python
-          # push: true
-          # pull: true
-          tags: ghcr.io/trailofbits/sigstore-conformance/sigstore-python:stable
-      - name: build sigstore-python:nightly
-        uses: docker/build-push-action@v2
-        with:
-          context: ./conformance/nightly/sigstore-python
-          # push: true
-          # pull: true
-          tags: ghcr.io/trailofbits/sigstore-conformance/sigstore-python:nightly
-      - name: build cosign:stable
-        uses: docker/build-push-action@v2
-        with:
-          context: ./conformance/stable/cosign
-          # push: true
-          # pull: true
-          tags: ghcr.io/trailofbits/sigstore-conformance/cosign:stable
-      - name: build cosign:nightly
-        uses: docker/build-push-action@v2
-        with:
-          context: ./conformance/nightly/cosign
-          # push: true
-          # pull: true
-          tags: ghcr.io/trailofbits/sigstore-conformance/cosign:nightly
       - name: test
         run: |
           source env/bin/activate
