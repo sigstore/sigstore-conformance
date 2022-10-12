@@ -15,7 +15,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--entrypoint",
         action="store",
-        help="the entrypoint for the Sigstore client under test",
+        help="the command to invoke the Sigstore client under test",
         required=True,
         type=str,
     )

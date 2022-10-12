@@ -4,7 +4,7 @@ description: "Conformance testing for Sigstore clients"
 
 inputs:
   entrypoint:
-    description: "the entrypoint for the Sigstore client"
+    description: "the command to invoke the Sigstore client"
     required: true
     default: ""
   internal-be-careful-debug:

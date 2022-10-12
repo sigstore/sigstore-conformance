@@ -15,7 +15,7 @@ class SigstoreClient:
         """
         Create a new `SigstoreClient`.
 
-        `entrypoint` is the entrypoint for the Sigstore client.
+        `entrypoint` is the command to invoke the Sigstore client.
         """
         self.entrypoint = entrypoint
 
