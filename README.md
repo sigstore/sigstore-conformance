@@ -15,6 +15,8 @@ Simply add `trailofbits/sigstore-conformance` to one of your workflows.
 ```yaml
 jobs:
   conformance:
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
