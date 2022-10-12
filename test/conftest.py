@@ -3,7 +3,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
-import pytest
+import pytest  # type: ignore
 
 from .client import SigstoreClient
 
