@@ -7,6 +7,10 @@ inputs:
     description: "the entrypoint for the Sigstore client"
     required: true
     default: ""
+  internal-be-careful-debug:
+    description: "run with debug logs (default false)"
+    required: false
+    default: false
 
 runs:
   using: "composite"
