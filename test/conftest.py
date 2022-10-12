@@ -9,10 +9,22 @@ from .client import SigstoreClient
 
 
 def pytest_addoption(parser):
-    parser.addoption("--entrypoint", action="store", default="default name")
+    """
+    Add the `--entrypoint` flag to the `pytest` CLI.
+    """
+    parser.addoption(
+        "--entrypoint",
+        action="store",
+        help="the entrypoint for the Sigstore client under test",
+        required=True,
+        type=str,
+    )
 
 
 def pytest_generate_tests(metafunc):
+    """
+    Parametrize each test with the client under test.
+    """
     entrypoint = metafunc.config.option.entrypoint
     if "client" in metafunc.fixturenames and entrypoint is not None:
         metafunc.parametrize("client", [SigstoreClient(entrypoint)])

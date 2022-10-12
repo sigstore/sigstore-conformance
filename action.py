@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-# action.py: run sigstore-conformance
+# action.py: run the sigstore-conformance test suite
 #
-# most state is passed in as environment variables; the only argument
-# is a whitespace-separated list of inputs
+# all state is passed in as environment variables
 
 import os
 import string
