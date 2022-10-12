@@ -1,0 +1,23 @@
+name: Self-test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install sigstore
+      - name: Conformance test sigstore-python
+        uses: ./
+        id: sigstore-conformance
+        with:
+          entrypoint: sigstore
