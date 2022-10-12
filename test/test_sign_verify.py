@@ -9,5 +9,9 @@ def test_sign_verify(client: SigstoreClient, workspace: Path) -> None:
     client.
     """
     # Sign and verify the artifact.
-    client.sign("artifact.txt", "artifact.txt.crt", "artifact.txt.sig")
-    client.verify("artifact.txt", "artifact.txt.crt", "artifact.txt.sig")
+    client.sign(
+        Path("artifact.txt"), Path("artifact.txt.crt"), Path("artifact.txt.sig")
+    )
+    client.verify(
+        Path("artifact.txt"), Path("artifact.txt.crt"), Path("artifact.txt.sig")
+    )
