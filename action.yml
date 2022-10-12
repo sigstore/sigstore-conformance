@@ -1,0 +1,27 @@
+name: "sigstore-conformance"
+author: "Alex Cameron <alex.cameron@trailofbits.com>"
+description: "Conformance testing for Sigstore clients"
+
+inputs:
+  entrypoint:
+    description: "the entrypoint for the Sigstore client"
+    required: true
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up sigstore-conformance
+      run: |
+        # NOTE: Sourced, not executed as a script.
+        source "${{ github.action_path }}/setup/setup.bash"
+      shell: bash
+
+    - name: Run sigstore-conformance
+      id: sigstore-conformance
+      run: |
+        ${{ github.action_path }}/action.py
+      env:
+        GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT: "${{ inputs.entrypoint }}"
+        GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG: "${{ inputs.internal-be-careful-debug }}"
+      shell: bash
