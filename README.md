@@ -27,19 +27,22 @@ jobs:
           entrypoint: sigstore
 ```
 
-The only required configuration is the `entrypoint` parameter which provides a command to invoke
-the client. `sigstore-conformance` expects that the client exposes a CLI that conforms to the
-protocol outlined [here](docs/cli_protocol.md).
+The only required configuration is the `entrypoint` parameter which provides a
+command to invoke the client. `sigstore-conformance` expects that the client
+exposes a CLI that conforms to the protocol outlined [here](docs/cli_protocol.md).
 
 In the example above, the workflow is installing [sigstore-python](https://github.com/sigstore/sigstore-python)
-and providing `sigstore` as the `entrypoint` since this is the command used to invoke the client.
+and providing `sigstore` as the `entrypoint` since this is the command used to
+invoke the client.
 
-Your workflow must have permission to request the OIDC token to authenticate with. This can be done
-by having a top-level `permission` setting for your workflow.
+The relevant job must have permission to request the OIDC token to authenticate
+with. This can be done by adding a `permission` setting within the job that
+invokes the `trailofbits/sigstore-conformance` action.
 
 ```yaml
-permissions:
-  id-token: write
+conformance:
+  permissions:
+    id-token: write
 ```
 
 More information about permission settings can be found [here](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#adding-permissions-settings).
