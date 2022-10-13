@@ -25,7 +25,8 @@ has a provided syntax, high-level description of what the subcommand is expected
 to do and descriptions of each argument.
 
 To simplify argument parsing, all arguments are required and will **always** be
-supplied by the conformance suite.
+supplied by the conformance suite in the order that they are specified in the
+templates below.
 
 ### Sign
 
