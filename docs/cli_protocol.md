@@ -69,7 +69,7 @@ should:
 8. Verify that the signing certificate was valid at the time of signing.
 
 ```console
-ENTRYPOINT verify --signature SIGNATURE_FILE --certificate CERTIFICATE_FILE --certificate-email CERTIFICATE_EMAIL --certificate-oidc-issuer CERTIFICATE_OIDC_ISSUER FILE
+${ENTRYPOINT} verify --signature SIGNATURE_FILE --certificate CERTIFICATE_FILE --certificate-email CERTIFICATE_EMAIL --certificate-oidc-issuer CERTIFICATE_OIDC_ISSUER FILE
 ```
 
 | Argument | Description |
