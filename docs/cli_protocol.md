@@ -40,7 +40,7 @@ This subcommand is used to sign an artifact. The client should:
 5. Write the signature to the disk.
 6. Write the signing certificate to the disk.
 
-```
+```console
 ENTRYPOINT sign --signature SIGNATURE_FILE --certificate CERTIFICATE_FILE FILE
 ```
 
