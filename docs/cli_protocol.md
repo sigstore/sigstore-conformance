@@ -41,7 +41,7 @@ This subcommand is used to sign an artifact. The client should:
 6. Write the signing certificate to the disk.
 
 ```console
-ENTRYPOINT sign --signature SIGNATURE_FILE --certificate CERTIFICATE_FILE FILE
+${ENTRYPOINT} sign --signature SIGNATURE_FILE --certificate CERTIFICATE_FILE FILE
 ```
 
 | Argument | Description |
