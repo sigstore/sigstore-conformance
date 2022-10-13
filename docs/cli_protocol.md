@@ -2,8 +2,9 @@ Conformance CLI Protocol
 ========================
 
 While all Sigstore clients share some core functionality, each of them have
-their own unique features and idiosyncracies that make them incompatible with
-one another. `sigstore-conformance` aims to test this common feature set.
+their own unique features and idiosyncracies that make their command lines
+incompatible with one another. `sigstore-conformance` aims to test this common
+feature set.
 
 As an example of incompatibilities between clients, [cosign's](https://github.com/sigstore/cosign)
 `sign` subcommand is designed to sign Docker containers rather than arbitrary
