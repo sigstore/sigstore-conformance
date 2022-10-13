@@ -41,13 +41,13 @@ This subcommand is used to sign an artifact. The client should:
 6. Write the signing certificate to the disk.
 
 ```console
-${ENTRYPOINT} sign --signature SIGNATURE_FILE --certificate CERTIFICATE_FILE FILE
+${ENTRYPOINT} sign --signature FILE --certificate FILE FILE
 ```
 
-| Argument | Description |
+| Option | Description |
 | --- | --- |
-| `--signature` | The path to write the signature to |
-| `--certificate` | The path to write the signing certificate to |
+| `--signature FILE` | The path to write the signature to |
+| `--certificate FILE` | The path to write the signing certificate to |
 | `FILE` | The artifact to sign |
 
 ### Verify
@@ -69,13 +69,13 @@ should:
 8. Verify that the signing certificate was valid at the time of signing.
 
 ```console
-${ENTRYPOINT} verify --signature SIGNATURE_FILE --certificate CERTIFICATE_FILE --certificate-email CERTIFICATE_EMAIL --certificate-oidc-issuer CERTIFICATE_OIDC_ISSUER FILE
+${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-email EMAIL --certificate-oidc-issuer URL FILE
 ```
 
-| Argument | Description |
+| Option | Description |
 | --- | --- |
-| `--signature` | The path to the signature to verify |
-| `--certificate` | The path to the signing certificate to verify |
-| `--certificate-email` | The expected email in the signing certificate's SAN extension |
-| `--certificate-oidc-issuer` | The expected OIDC issuer for the signing certificate |
+| `--signature FILE` | The path to the signature to verify |
+| `--certificate FILE` | The path to the signing certificate to verify |
+| `--certificate-email EMAIL` | The expected email in the signing certificate's SAN extension |
+| `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
 | `FILE` | The path to the artifact to verify |
