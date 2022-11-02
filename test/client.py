@@ -1,15 +1,6 @@
 import os
 import subprocess
 
-CERTIFICATE_EMAIL = (
-    os.environ["GITHUB_SERVER_URL"]
-    + "/"
-    + os.environ["GITHUB_REPOSITORY"]
-    + "/"
-    + os.environ["GITHUB_WORKFLOW"]
-    + "@"
-    + os.environ["GITHUB_REF"]
-)
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
 
 
@@ -66,17 +57,15 @@ class SigstoreClient:
         `signature` is the path to the signature to verify.
         `certificate` is the path to the signing certificate to verify with.
         """
-        # The email and OIDC issuer cannot be specified by the test since remain
-        # constant within the same workflow run.
+        # The OIDC issuer cannot be specified by the test since remain is always the same on GitHub
+        # Actions workflows.
         self.run(
             "verify",
             "--signature",
             signature,
             "--certificate",
             certificate,
-            # TODO(alex): Make these flags conform with the protocol spec.
-            "--cert-email",
-            CERTIFICATE_EMAIL,
+            # TODO(alex): Make this flag conform with the protocol spec.
             "--cert-oidc-issuer",
             CERTIFICATE_OIDC_ISSUER,
             artifact,
