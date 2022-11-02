@@ -1,6 +1,13 @@
 import os
 import subprocess
 
+CERTIFICATE_EMAIL = (
+    os.environ["GITHUB_SERVER_URL"]
+    + "/"
+    + os.environ["GITHUB_REPOSITORY"]
+    + "/.github/workflows/conformance.yml@"
+    + os.environ["GITHUB_REF"]
+)
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
 
 
@@ -65,6 +72,8 @@ class SigstoreClient:
             signature,
             "--certificate",
             certificate,
+            "--certificate-email",
+            CERTIFICATE_EMAIL,
             "--certificate-oidc-issuer",
             CERTIFICATE_OIDC_ISSUER,
             artifact,

@@ -50,5 +50,6 @@ ${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-oidc-issu
 | --- | --- |
 | `--signature FILE` | The path to the signature to verify |
 | `--certificate FILE` | The path to the signing certificate to verify |
+| `--certificate-email EMAIL` | The The expected email in the signing certificate's SAN extension |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
 | `FILE` | The path to the artifact to verify |
