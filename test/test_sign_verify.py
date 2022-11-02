@@ -3,7 +3,7 @@ from pathlib import Path
 from .client import SigstoreClient
 
 
-def test_sign_verify(client: SigstoreClient, workspace: Path) -> None:
+def test_sign_verify(client: SigstoreClient) -> None:
     """
     A basic test that signs and verifies an artifact for a given Sigstore
     client.
