@@ -65,8 +65,7 @@ class SigstoreClient:
             signature,
             "--certificate",
             certificate,
-            # TODO(alex): Make this flag conform with the protocol spec.
-            "--cert-oidc-issuer",
+            "--certificate-oidc-issuer",
             CERTIFICATE_OIDC_ISSUER,
             artifact,
         )
