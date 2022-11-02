@@ -4,7 +4,7 @@
 A wrapper to convert `sigstore-conformance` CLI protocol invocations to match `sigstore-python`.
 """
 
-import os
+import subprocess
 import sys
 
 # Trim the script name.
@@ -14,6 +14,6 @@ fixed_args = sys.argv[1:]
 fixed_args = [arg if arg != "--certificate-oidc-issuer" else "--cert-oidc-issuer" for arg in fixed_args]
 
 # Prepend the `sigstore-python` executable name.
-fixed_args = ["sigstore-python"] + fixed_args
+fixed_args = ["sigstore"] + fixed_args
 
-sys.exit(os.waitstatus_to_exitcode(os.system(' '.join(fixed_args))))
+subprocess.run(fixed_args, text=True, check=True)
