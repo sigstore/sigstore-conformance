@@ -3,7 +3,7 @@ sigstore-conformance
 
 <!--- @begin-badges@ --->
 ![CI](https://github.com/trailofbits/sigstore-conformance/workflows/CI/badge.svg)
-![Self-test](https://github.com/trailofbits/sigstore-conformance/workflows/selftest/badge.svg)
+![Self-test](https://github.com/trailofbits/sigstore-conformance/workflows/Self-test/badge.svg)
 <!--- @end-badges@ --->
 
 `sigstore-conformance` is a conformance testing suite for Sigstore clients.
