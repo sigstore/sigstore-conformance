@@ -1,6 +1,17 @@
 import os
 import subprocess
 
+CERTIFICATE_EMAIL = (
+    os.environ["GITHUB_SERVER_URL"]
+    + "/"
+    + os.environ["GITHUB_REPOSITORY"]
+    + "/"
+    + os.environ["GITHUB_WORKFLOW"]
+    + "@"
+    + os.environ["GITHUB_REF"]
+)
+CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
+
 
 class SigstoreClient:
     """
@@ -32,29 +43,41 @@ class SigstoreClient:
         )
 
     def sign(
-        self, artifact: os.PathLike, certificate: os.PathLike, signature: os.PathLike
+        self, artifact: os.PathLike, signature: os.PathLike, certificate: os.PathLike
     ) -> None:
         """
         Sign an artifact with the Sigstore client.
 
         `artifact` is a path to the file to sign.
-        `certificate` is the path to write the signing certificate to.
         `signature` is the path to write the generated signature to.
+        `certificate` is the path to write the signing certificate to.
         """
         self.run(
-            "sign", "--certificate", certificate, "--signature", signature, artifact
+            "sign", "--signature", signature, "--certificate", certificate, artifact
         )
 
     def verify(
-        self, artifact: os.PathLike, certificate: os.PathLike, signature: os.PathLike
+        self, artifact: os.PathLike, signature: os.PathLike, certificate: os.PathLike
     ) -> None:
         """
         Verify an artifact with the Sigstore client.
 
         `artifact` is the path to the file to verify.
-        `certificate` is the path to the signing certificate to verify with.
         `signature` is the path to the signature to verify.
+        `certificate` is the path to the signing certificate to verify with.
         """
+        # The email and OIDC issuer cannot be specified by the test since remain
+        # constant within the same workflow run.
         self.run(
-            "verify", "--certificate", certificate, "--signature", signature, artifact
+            "verify",
+            "--signature",
+            signature,
+            "--certificate",
+            certificate,
+            # TODO(alex): Make these flags conform with the protocol spec.
+            "--cert-email",
+            CERTIFICATE_EMAIL,
+            "--cert-oidc-issuer",
+            CERTIFICATE_OIDC_ISSUER,
+            artifact,
         )
