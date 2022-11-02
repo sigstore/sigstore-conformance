@@ -19,6 +19,10 @@ def test_sign_verify(client: SigstoreClient) -> None:
     # Sign the artifact.
     client.sign(artifact_path, signature_path, certificate_path)
 
+    import os
+    os.system("ls")
+    os.system("ls ${GITHUB_WORKSPACE}")
+
     assert signature_path.exists()
     assert certificate_path.exists()
 
