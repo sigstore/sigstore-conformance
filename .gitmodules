@@ -1,6 +1,0 @@
-[submodule "conformance/nightly/cosign/cosign"]
-	path = conformance/nightly/cosign/cosign
-	url = https://github.com/sigstore/cosign
-[submodule "conformance/nightly/sigstore-python/sigstore-python"]
-	path = conformance/nightly/sigstore-python/sigstore-python
-	url = https://github.com/sigstore/sigstore-python.git
