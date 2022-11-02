@@ -21,13 +21,13 @@ def pytest_addoption(parser):
     )
 
 
-def pytest_generate_tests(metafunc):
+@pytest.fixture
+def client(pytestconfig):
     """
     Parametrize each test with the client under test.
     """
-    entrypoint = metafunc.config.option.entrypoint
-    if "client" in metafunc.fixturenames and entrypoint is not None:
-        metafunc.parametrize("client", [SigstoreClient(entrypoint)])
+    entrypoint = pytestconfig.getoption("--entrypoint")
+    return SigstoreClient(entrypoint)
 
 
 @pytest.fixture(autouse=True)
