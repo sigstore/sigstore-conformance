@@ -57,25 +57,22 @@ should:
 
 1. Verify that the signing certificate was signed by the Fulcio root
    certificate.
-2. Verify that the expected email is found in the signing certificate's SAN
-   extension.
-3. Verify that the expected OIDC issuer is found in the signing certificate's
+2. Verify that the expected OIDC issuer is found in the signing certificate's
    OIDC issuer extension.
-4. Verify that the signature was signed by the signing certificate.
-5. Verify that there is a log entry for the signature on the production Rekor
+3. Verify that the signature was signed by the signing certificate.
+4. Verify that there is a log entry for the signature on the production Rekor
    instance.
-6. Verify the Inclusion Proof in the Rekor log entry.
-7. Verify the Signed Entry Timestamp (SET) of the Rekor log entry.
-8. Verify that the signing certificate was valid at the time of signing.
+5. Verify the Inclusion Proof in the Rekor log entry.
+6. Verify the Signed Entry Timestamp (SET) of the Rekor log entry.
+7. Verify that the signing certificate was valid at the time of signing.
 
 ```console
-${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-email EMAIL --certificate-oidc-issuer URL FILE
+${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-oidc-issuer URL FILE
 ```
 
 | Option | Description |
 | --- | --- |
 | `--signature FILE` | The path to the signature to verify |
 | `--certificate FILE` | The path to the signing certificate to verify |
-| `--certificate-email EMAIL` | The expected email in the signing certificate's SAN extension |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
 | `FILE` | The path to the artifact to verify |
