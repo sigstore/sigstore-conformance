@@ -8,8 +8,8 @@ import subprocess
 import sys
 
 ARG_REPLACEMENTS = {
-    "--cert-email": "--certificate-email",
-    "--cert-oidc-issuer": "--certificate-oidc-issuer",
+    "--certificate-email": "--cert-email",
+    "--certificate-oidc-issuer": "--cert-oidc-issuer",
 }
 
 # Trim the script name.
