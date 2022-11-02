@@ -16,10 +16,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: install sigstore-python
         run: pip install sigstore
-      - name: prepare sigstore-python-conformance wrapper
-        run: echo ${GITHUB_WORKSPACE} >> $GITHUB_PATH
       - name: conformance test sigstore-python
         uses: ./
         id: sigstore-conformance
         with:
-          entrypoint: sigstore-python-conformance
+          entrypoint: ${GITHUB_WORKSPACE}/sigstore-python-conformance
