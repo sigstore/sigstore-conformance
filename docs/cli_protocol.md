@@ -22,23 +22,13 @@ client's native CLI accepts.
 ## Subcommands
 
 This is the set of subcommands that the test CLI must support. Each subcommand
-has a provided syntax, high-level description of what the subcommand is expected
-to do and descriptions of each argument.
+has a provided syntax and list of descriptions for each argument.
 
 To simplify argument parsing, all arguments are required and will **always** be
 supplied by the conformance suite in the order that they are specified in the
 templates below.
 
 ### Sign
-
-This subcommand is used to sign an artifact. The client should:
-
-1. Request an ephemeral signing certificate from the production Fulcio instance.
-2. Verify the Signed Certificate Timestamp (SCT) of the signing certificate.
-3. Sign the artifact with this signing certificate and produce a signature.
-4. Upload this signature to the production Rekor instance.
-5. Write the signature to the disk.
-6. Write the signing certificate to the disk.
 
 ```console
 ${ENTRYPOINT} sign --signature FILE --certificate FILE FILE
@@ -51,20 +41,6 @@ ${ENTRYPOINT} sign --signature FILE --certificate FILE FILE
 | `FILE` | The artifact to sign |
 
 ### Verify
-
-This subcommand is used to verify the signature for an artifact. The client
-should:
-
-1. Verify that the signing certificate was signed by the Fulcio root
-   certificate.
-2. Verify that the expected OIDC issuer is found in the signing certificate's
-   OIDC issuer extension.
-3. Verify that the signature was signed by the signing certificate.
-4. Verify that there is a log entry for the signature on the production Rekor
-   instance.
-5. Verify the Inclusion Proof in the Rekor log entry.
-6. Verify the Signed Entry Timestamp (SET) of the Rekor log entry.
-7. Verify that the signing certificate was valid at the time of signing.
 
 ```console
 ${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-oidc-issuer URL FILE
