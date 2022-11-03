@@ -2,7 +2,8 @@ import os
 import subprocess
 
 CERTIFICATE_EMAIL = (
-    os.environ["GITHUB_SERVER_URL"]
+    "URI:"
+    + os.environ["GITHUB_SERVER_URL"]
     + "/"
     + os.environ["GITHUB_REPOSITORY"]
     + "/.github/workflows/conformance.yml@"
