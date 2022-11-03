@@ -22,8 +22,5 @@ def test_sign_verify(client: SigstoreClient) -> None:
     assert signature_path.exists()
     assert certificate_path.exists()
 
-    with certificate_path.open() as f:
-        print(f.read())
-
     # Verify the artifact signature.
     client.verify(artifact_path, signature_path, certificate_path)
