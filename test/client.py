@@ -64,8 +64,8 @@ class SigstoreClient:
         `signature` is the path to the signature to verify.
         `certificate` is the path to the signing certificate to verify with.
         """
-        # The OIDC issuer cannot be specified by the test since remain is always the same on GitHub
-        # Actions workflows.
+        # The email and OIDC issuer cannot be specified by the test since they remain constant
+        # across the GitHub Actions job.
         self.run(
             "verify",
             "--signature",
