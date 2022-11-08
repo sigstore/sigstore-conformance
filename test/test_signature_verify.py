@@ -16,7 +16,8 @@ def _swap_files(a: Path, b: Path) -> None:
 
 def test_verify_empty(client: SigstoreClient) -> None:
     """
-    Tests that verification fails with empty certificates and signatures.
+    Tests that verification fails with empty artifacts, certificates and
+    signatures.
     """
     artifact_path = Path("a.txt")
     certificate_path = Path("a.txt.crt")
