@@ -12,7 +12,6 @@ def _swap_files(a: Path, b: Path) -> None:
     os.rename(a, tmp_path)
     os.rename(b, a)
     os.rename(tmp_path, b)
-    os.remove(tmp_path)
 
 
 def test_verify_empty(client: SigstoreClient) -> None:
