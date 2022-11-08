@@ -38,8 +38,8 @@ def workspace():
     workspace = tempfile.TemporaryDirectory()
 
     # Move entire contents of artifacts directory into workspace
-    artifacts_dir = Path(__file__).parent.parent / "artifacts"
-    shutil.copytree(artifacts_dir, workspace.name, dirs_exist_ok=True)
+    assets_dir = Path(__file__).parent.parent / "test" / "assets"
+    shutil.copytree(assets_dir, workspace.name, dirs_exist_ok=True)
 
     # Now change the current working directory to our workspace
     os.chdir(workspace.name)
