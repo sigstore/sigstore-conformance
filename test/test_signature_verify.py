@@ -2,7 +2,7 @@ import os
 import subprocess
 from pathlib import Path
 
-import pytest
+import pytest  # type: ignore
 
 from .client import SigstoreClient
 
