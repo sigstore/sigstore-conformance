@@ -20,4 +20,4 @@ jobs:
         uses: ./
         id: sigstore-conformance
         with:
-          entrypoint: sigstore
+          entrypoint: ${{ github.workspace }}/sigstore-python-conformance
