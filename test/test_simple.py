@@ -3,14 +3,14 @@ from pathlib import Path
 from .client import SigstoreClient
 
 
-def test_sign_verify(client: SigstoreClient) -> None:
+def test_simple(client: SigstoreClient) -> None:
     """
-    A basic test that signs and verifies an artifact for a given Sigstore
+    A simple test that signs and verifies an artifact for a given Sigstore
     client.
     """
-    artifact_path = Path("artifact.txt")
-    signature_path = Path("artifact.txt.sig")
-    certificate_path = Path("artifact.txt.crt")
+    artifact_path = Path("a.txt")
+    signature_path = Path("a.txt.sig")
+    certificate_path = Path("a.txt.crt")
 
     assert artifact_path.exists()
     assert not signature_path.exists()
