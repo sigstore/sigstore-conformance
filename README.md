@@ -10,7 +10,8 @@ sigstore-conformance
 
 ## Usage
 
-Simply add `trailofbits/sigstore-conformance` to one of your workflows.
+Simply create a new workflow file at `.github/workflows/conformance.yml` and add
+the `trailofbits/sigstore-conformance` action to it.
 
 ```yaml
 jobs:
@@ -34,6 +35,10 @@ exposes a CLI that conforms to the protocol outlined [here](docs/cli_protocol.md
 In the example above, the workflow is installing [sigstore-python](https://github.com/sigstore/sigstore-python)
 and providing `sigstore` as the `entrypoint` since this is the command used to
 invoke the client.
+
+The workflow that uses this action **must** be at
+`.github/workflows/conformance.yml`. This is a current limitation of the test
+suite and is required to reliably verify signing certificates.
 
 The relevant job must have permission to request the OIDC token to authenticate
 with. This can be done by adding a `permission` setting within the job that

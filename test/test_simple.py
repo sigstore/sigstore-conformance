@@ -9,18 +9,18 @@ def test_simple(client: SigstoreClient) -> None:
     client.
     """
     artifact_path = Path("a.txt")
-    certificate_path = Path("a.txt.crt")
     signature_path = Path("a.txt.sig")
+    certificate_path = Path("a.txt.crt")
 
     assert artifact_path.exists()
-    assert not certificate_path.exists()
     assert not signature_path.exists()
+    assert not certificate_path.exists()
 
     # Sign the artifact.
-    client.sign(artifact_path, certificate_path, signature_path)
+    client.sign(artifact_path, signature_path, certificate_path)
 
-    assert certificate_path.exists()
     assert signature_path.exists()
+    assert certificate_path.exists()
 
     # Verify the artifact signature.
-    client.verify(artifact_path, certificate_path, signature_path)
+    client.verify(artifact_path, signature_path, certificate_path)

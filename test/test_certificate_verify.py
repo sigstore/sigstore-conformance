@@ -16,8 +16,8 @@ def test_verify_invalid_certificate_chain(client: SigstoreClient) -> None:
     instance.
     """
     artifact_path = Path("a.txt")
-    certificate_path = Path("a.txt.invalid.crt")
     signature_path = Path("a.txt.invalid.sig")
+    certificate_path = Path("a.txt.invalid.crt")
 
     with pytest.raises(subprocess.CalledProcessError):
-        client.verify(artifact_path, certificate_path, signature_path)
+        client.verify(artifact_path, signature_path, certificate_path)
