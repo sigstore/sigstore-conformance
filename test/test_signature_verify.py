@@ -1,17 +1,9 @@
-import os
 import subprocess
 from pathlib import Path
 
 import pytest  # type: ignore
 
 from .client import SigstoreClient
-
-
-def _swap_files(a: Path, b: Path) -> None:
-    tmp_path = Path("tmp.txt")
-    os.rename(a, tmp_path)
-    os.rename(b, a)
-    os.rename(tmp_path, b)
 
 
 def test_verify_empty(client: SigstoreClient) -> None:
@@ -34,29 +26,20 @@ def test_verify_empty(client: SigstoreClient) -> None:
     assert certificate_path.exists()
 
     # Write a blank temporary file.
-    empty_path = Path("empty.txt")
-    empty_path.open("w").close()
-    _swap_files(artifact_path, empty_path)
+    blank_path = Path("blank.txt")
+    blank_path.touch()
 
     # Verify with an empty artifact.
     with pytest.raises(subprocess.CalledProcessError):
-        client.verify(artifact_path, signature_path, certificate_path)
-
-    _swap_files(empty_path, artifact_path)
-    _swap_files(certificate_path, empty_path)
-
-    # Verify with an empty certificate.
-    with pytest.raises(subprocess.CalledProcessError):
-        client.verify(artifact_path, signature_path, certificate_path)
-
-    _swap_files(empty_path, certificate_path)
-    _swap_files(signature_path, empty_path)
+        client.verify(blank_path, signature_path, certificate_path)
 
     # Verify with an empty signature.
     with pytest.raises(subprocess.CalledProcessError):
-        client.verify(artifact_path, signature_path, certificate_path)
+        client.verify(artifact_path, blank_path, certificate_path)
 
-    _swap_files(empty_path, signature_path)
+    # Verify with an empty certificate.
+    with pytest.raises(subprocess.CalledProcessError):
+        client.verify(artifact_path, signature_path, blank_path)
 
     # Verify with correct inputs.
     client.verify(artifact_path, signature_path, certificate_path)
