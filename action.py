@@ -18,6 +18,7 @@ _RENDER_SUMMARY = os.getenv("GHA_SIGSTORE_CONFORMANCE_SUMMARY", "true") == "true
 _DEBUG = (
     os.getenv("GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG", "false") != "false"
 )
+_ACTION_PATH = Path(os.getenv("GITHUB_ACTION_PATH"))  # type: ignore
 
 
 def _template(name):
@@ -40,7 +41,7 @@ def _log(msg):
 
 
 def _sigstore_conformance(*args):
-    return ["pytest", *args, "test/"]
+    return ["pytest", *args, _ACTION_PATH / "test"]
 
 
 def _fatal_help(msg):
