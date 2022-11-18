@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-CERTIFICATE_EMAIL = (
+CERTIFICATE_IDENTITY = (
     os.environ["GITHUB_SERVER_URL"]
     + "/"
     + os.environ["GITHUB_REPOSITORY"]
@@ -64,7 +64,7 @@ class SigstoreClient:
         `signature` is the path to the signature to verify.
         `certificate` is the path to the signing certificate to verify with.
         """
-        # The email and OIDC issuer cannot be specified by the test since they remain constant
+        # The identity and OIDC issuer cannot be specified by the test since they remain constant
         # across the GitHub Actions job.
         self.run(
             "verify",
@@ -72,8 +72,8 @@ class SigstoreClient:
             signature,
             "--certificate",
             certificate,
-            "--certificate-email",
-            CERTIFICATE_EMAIL,
+            "--certificate-identity",
+            CERTIFICATE_IDENTITY,
             "--certificate-oidc-issuer",
             CERTIFICATE_OIDC_ISSUER,
             artifact,
