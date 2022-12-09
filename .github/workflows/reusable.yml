@@ -2,16 +2,26 @@ name: Reusable sigstore-conformance workflow
 
 on:
   workflow_call:
-    inputs:
-      entrypoint:
-        required: true
-        type: string
+    outputs:
+      oidc-token:
+        description: "An OIDC JWT for the conformance testsuite"
+        value: ${{ jobs.get-token.outputs.oidc-token }}
 
 jobs:
-  conformance:
+  get-token:
     runs-on: ubuntu-latest
+    permissions:
+      # Needed to access the workflow's OIDC identity.
+      id-token: write
+    outputs:
+      oidc-token: ${{ steps.get-token.outputs.oidc-token }}
     steps:
-      - uses: ./
-        id: sigstore-conformance
-        with:
-          entrypoint: ${{ inputs.entrypoint }}
+      - name: get-token
+        id: get-token
+        run: |
+          token=$(curl -H \
+            "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sigstore" | \
+          jq -r .value)
+
+          echo "token=${token}" >> "${GITHUB_OUTPUT}"
