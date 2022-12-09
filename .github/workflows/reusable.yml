@@ -1,0 +1,17 @@
+name: Reusable sigstore-conformance workflow
+
+on:
+  workflow_call:
+    inputs:
+      entrypoint:
+        required: true
+        type: string
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./
+        id: sigstore-conformance
+        with:
+          entrypoint: ${{ inputs.entrypoint }}
