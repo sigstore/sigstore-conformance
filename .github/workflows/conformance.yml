@@ -11,7 +11,7 @@ jobs:
   get-token:
     permissions:
       id-token: write
-    uses: ./.github/workflows/reusable.yml
+    uses: trailofbits/sigstore-conformance/.github/workflows/reusable.yml@ww/reusable
 
   get-token-test:
     runs-on: ubuntu-latest
