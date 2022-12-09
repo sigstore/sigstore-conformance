@@ -20,8 +20,8 @@ jobs:
         id: get-token
         run: |
           token=$(curl -H \
-            "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sigstore" | \
+            "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sigstore" | \
           jq -r .value)
 
           echo "token=${token}" >> "${GITHUB_OUTPUT}"

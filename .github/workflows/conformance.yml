@@ -13,14 +13,22 @@ jobs:
       id-token: write
     uses: ./.github/workflows/reusable.yml
 
+  get-token-test:
+    needs: [get-token]
+    steps:
+      - run: |
+        ${{ needs.get-token.outputs.oidc-token }}
+
   selftest:
     permissions:
       id-token: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: install sigstore-python
         run: pip install sigstore
+
       - name: conformance test sigstore-python
         uses: ./
         id: sigstore-conformance
