@@ -1,5 +1,9 @@
 name: Reusable sigstore-conformance workflow
 
+permissions:
+  # Needed to access the workflow's OIDC identity.
+  id-token: write
+
 on:
   workflow_call:
     outputs:
@@ -10,9 +14,6 @@ on:
 jobs:
   get-token:
     runs-on: ubuntu-latest
-    permissions:
-      # Needed to access the workflow's OIDC identity.
-      id-token: write
     outputs:
       oidc-token: ${{ steps.get-token.outputs.oidc-token }}
     steps:
