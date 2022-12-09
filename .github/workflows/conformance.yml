@@ -11,7 +11,7 @@ jobs:
   get-token:
     permissions:
       id-token: write
-    uses: trailofbits/sigstore-conformance/.github/workflows/reusable.yml@ww/reusable
+    uses: woodruffw/gh-action-gimme-token/.github/workflows/gimme-token.yml@main
 
   get-token-test:
     runs-on: ubuntu-latest
