@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  get-token:
+    uses: ./.github/workflows/reusable.yml
+
   selftest:
     permissions:
       id-token: write
