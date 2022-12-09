@@ -20,6 +20,8 @@ jobs:
       - name: get-token
         id: get-token
         run: |
+          curl -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sigstore"
+
           token=$(curl -H \
             "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sigstore" | \
