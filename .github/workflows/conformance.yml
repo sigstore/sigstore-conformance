@@ -9,6 +9,8 @@ on:
 
 jobs:
   get-token:
+    permissions:
+      id-token: write
     uses: ./.github/workflows/reusable.yml
 
   selftest:
