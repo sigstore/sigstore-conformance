@@ -14,10 +14,10 @@ jobs:
     uses: ./.github/workflows/reusable.yml
 
   get-token-test:
-    needs: [get-token]
+    runs-on: ubuntu-latest
+    needs: get-token
     steps:
-      - run: |
-        ${{ needs.get-token.outputs.oidc-token }}
+      - run: echo ${{ needs.get-token.outputs.oidc-token }}
 
   selftest:
     permissions:
