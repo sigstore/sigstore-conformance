@@ -8,6 +8,29 @@ sigstore-conformance
 
 `sigstore-conformance` is a conformance testing suite for Sigstore clients.
 
+This suite provides a high-level view of client behaviour as a whole and sets
+out to answer questions such as:
+- What files are written to the disk by the client in what situations?
+- Does the client fail when given a signing certificate that isn't signed by
+  the Fulcio root CA during the signing workflow?
+- Does the client fail when given an invalid inclusion proof from Rekor during
+  the verification workflow?
+- Does the client fail when given an invalid signed certificate timestamp as
+  part of the Fulcio response in the signing workflow?
+- etc
+
+Over time, `sigstore-conformance` aims to become an informal specification that
+describes how Sigstore clients are expected to behave.
+
+Some general testing principles for this suite are:
+- *Tests should be "workflow" focused.* This testing suite is not about fuzzing
+  every possible input to the client CLI or achieving code coverage.
+- *Tests should exercise the entire client end-to-end rather than individual
+  subsystems in isolation.* Tests should include all network interactions with
+  Sigstore infrastructure such as Rekor, Fulcio, etc. These tests should run
+  against Sigstore staging and production infrastructure as well as custom built
+  mock services to test atypical scenarios.
+
 ## Usage
 
 Simply create a new workflow file at `.github/workflows/conformance.yml` and add
