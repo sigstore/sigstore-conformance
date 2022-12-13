@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: install
         run: python -m pip install .
-      - uses: trailofbits/sigstore-conformance@v0.0.1
+      - uses: trailofbits/sigstore-conformance@v0.0.2
         with:
           entrypoint: sigstore
 ```
@@ -61,15 +61,18 @@ that must be met.
   gives pull requests access to the ambient OIDC credentials required to run
   `sigstore-conformance`. The workflow trigger section of the configuration
   should look like this:
-```yaml
-on:
-  pull_request_target:
-    types: [labeled]
-```
+
+  ```yaml
+  on:
+    pull_request_target:
+      types: [labeled]
+  ```
+
 - Create a pull request label called "safe to test". To mitigate the risk of
   third-party pull requests misusing these credentials, this action will only
   execute if the pull request has been vetted by a maintainer with write
   privileges and tagged with this label.
+
 - In your GitHub repository settings, set "Fork pull request workflows from
   outside collaborators" to "Require approval for all outside collaborators"
   (the default setting is to require approval for first-time collaborators).
