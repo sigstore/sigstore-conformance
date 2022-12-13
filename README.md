@@ -10,7 +10,6 @@ sigstore-conformance
 
 This suite provides a high-level view of client behaviour as a whole and sets
 out to answer questions such as:
-- What files are written to the disk by the client in what situations?
 - Does the client fail when given a signing certificate that isn't signed by
   the Fulcio root CA during the signing workflow?
 - Does the client fail when given an invalid inclusion proof from Rekor during
@@ -19,8 +18,10 @@ out to answer questions such as:
   part of the Fulcio response in the signing workflow?
 - etc
 
-Over time, `sigstore-conformance` aims to become an informal specification that
-describes how Sigstore clients are expected to behave.
+An official Sigstore client specification is being worked on at the moment as
+part of the [Sigstore Architecture Documentation](https://github.com/sigstore/architecture-docs).
+Once it's complete, `sigstore-conformance` aims to be able to test a client's
+adherence to the specification.
 
 Some general testing principles for this suite are:
 - *Tests should be "workflow" focused.* This testing suite is not about fuzzing
