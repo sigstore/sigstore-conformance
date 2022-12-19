@@ -16,7 +16,10 @@ runs:
   using: "composite"
   steps:
     - name: Check permissions
-      if: github.event_name == 'pull_request_target' && !contains(github.event.pull_request.labels.*.name, 'safe to test')
+      if: |
+        github.event_name == 'pull_request_target'
+        && github.event.pull_request_target.head.repo.fork
+        && !contains(github.event.pull_request.labels.*.name, 'safe to test')
       run: |
         echo "This pull request is not tagged with the 'safe to test' label"
         exit 1
