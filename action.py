@@ -52,7 +52,7 @@ def _fatal_help(msg):
 sigstore_conformance_args = []
 
 if _DEBUG:
-    sigstore_conformance_args.extend(["-s", "-vv"])
+    sigstore_conformance_args.extend(["-s", "-vv", "--showlocals"])
 
 entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
 if entrypoint:
