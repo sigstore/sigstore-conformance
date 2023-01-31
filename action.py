@@ -52,7 +52,7 @@ def _fatal_help(msg):
 sigstore_conformance_args = []
 
 if _DEBUG:
-    sigstore_conformance_args.extend(["-s", "-vv"])
+    sigstore_conformance_args.extend(["-s", "-vv", "--showlocals"])
 
 entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
 if entrypoint:
@@ -63,8 +63,7 @@ _debug(f"running: sigstore-conformance {[str(a) for a in sigstore_conformance_ar
 status = subprocess.run(
     _sigstore_conformance(*sigstore_conformance_args),
     text=True,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.STDOUT,
+    capture_output=True,
 )
 
 _debug(status.stdout)
