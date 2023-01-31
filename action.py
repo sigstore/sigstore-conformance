@@ -63,8 +63,7 @@ _debug(f"running: sigstore-conformance {[str(a) for a in sigstore_conformance_ar
 status = subprocess.run(
     _sigstore_conformance(*sigstore_conformance_args),
     text=True,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.STDOUT,
+    capture_output=True,
 )
 
 _debug(status.stdout)
