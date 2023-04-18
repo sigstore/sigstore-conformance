@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 import os
 import subprocess
+from functools import singledispatchmethod
+from pathlib import Path
 
 CERTIFICATE_IDENTITY = (
     os.environ["GITHUB_SERVER_URL"]
@@ -9,6 +13,66 @@ CERTIFICATE_IDENTITY = (
     + os.environ["GITHUB_REF"]
 )
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
+
+
+class VerificationMaterials:
+    """
+    A wrapper around verification materials. Materials can be either bundles
+    or signatures and certificates.
+    """
+
+    @classmethod
+    def from_input(cls, input: Path) -> VerificationMaterials:
+        """
+        Constructs a new set of materials from the given input path.
+        """
+
+        raise NotImplementedError
+
+    def all_exist(self) -> bool:
+        """
+        Checks if all contained materials exist at specified paths.
+        """
+
+        raise NotImplementedError
+
+
+class BundleMaterials(VerificationMaterials):
+    """
+    Materials for commands that produce or consume bundles.
+    """
+
+    bundle: Path
+
+    @classmethod
+    def from_input(cls, input: Path) -> BundleMaterials:
+        mats = cls()
+        mats.bundle = input.parent / f"{input.name}.sigstore"
+
+        return mats
+
+    def all_exist(self) -> bool:
+        return self.bundle.exists()
+
+
+class SignatureCertificateMaterials(VerificationMaterials):
+    """
+    Materials for commands that produce or consume signatures and certificates.
+    """
+
+    signature: Path
+    certificate: Path
+
+    @classmethod
+    def from_input(cls, input: Path) -> SignatureCertificateMaterials:
+        mats = cls()
+        mats.signature = input.parent / f"{input.name}.sig"
+        mats.certificate = input.parent / f"{input.name}.crt"
+
+        return mats
+
+    def all_exist(self) -> bool:
+        return self.signature.exists() and self.certificate.exists()
 
 
 class SigstoreClient:
@@ -40,38 +104,77 @@ class SigstoreClient:
             check=True,
         )
 
-    def sign(
-        self, artifact: os.PathLike, signature: os.PathLike, certificate: os.PathLike
-    ) -> None:
+    @singledispatchmethod
+    def sign(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
         """
         Sign an artifact with the Sigstore client.
 
         `artifact` is a path to the file to sign.
-        `signature` is the path to write the generated signature to.
-        `certificate` is the path to write the signing certificate to.
+        `materials` contains paths to write the generated materials to.
         """
+
+        raise NotImplementedError(f"Cannot sign with {type(materials)}")
+
+    @sign.register
+    def _(
+        self, materials: SignatureCertificateMaterials, artifact: os.PathLike
+    ) -> None:
         self.run(
-            "sign", "--signature", signature, "--certificate", certificate, artifact
+            "sign",
+            "--signature",
+            materials.signature,
+            "--certificate",
+            materials.certificate,
+            artifact,
         )
 
+    @sign.register
+    def _(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+        self.run("sign-bundle", "--bundle", materials.bundle, artifact)
+
+    @singledispatchmethod
     def verify(
-        self, artifact: os.PathLike, signature: os.PathLike, certificate: os.PathLike
+        self,
+        materials: VerificationMaterials,
+        artifact: os.PathLike,
     ) -> None:
         """
         Verify an artifact with the Sigstore client.
 
         `artifact` is the path to the file to verify.
-        `signature` is the path to the signature to verify.
-        `certificate` is the path to the signing certificate to verify with.
+        `materials` contains paths to the materials to verify with.
         """
+
+        raise NotImplementedError(f"Cannot verify with {type(materials)}")
+
+    @verify.register
+    def _(
+        self,
+        materials: SignatureCertificateMaterials,
+        artifact: os.PathLike,
+    ) -> None:
         # The identity and OIDC issuer cannot be specified by the test since they remain constant
         # across the GitHub Actions job.
+
         self.run(
             "verify",
             "--signature",
-            signature,
+            materials.signature,
             "--certificate",
-            certificate,
+            materials.certificate,
+            "--certificate-identity",
+            CERTIFICATE_IDENTITY,
+            "--certificate-oidc-issuer",
+            CERTIFICATE_OIDC_ISSUER,
+            artifact,
+        )
+
+    @verify.register
+    def _(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+        self.run(
+            "verify-bundle",
+            "--bundle",
+            materials.bundle,
             "--certificate-identity",
             CERTIFICATE_IDENTITY,
             "--certificate-oidc-issuer",

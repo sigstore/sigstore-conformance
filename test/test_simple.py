@@ -1,26 +1,28 @@
 from pathlib import Path
 
-from .client import SigstoreClient
+import pytest  # type: ignore
+
+from .client import (BundleMaterials, SignatureCertificateMaterials,
+                     SigstoreClient, VerificationMaterials)
+
+_input_path = Path("a.txt")
+_materials = [
+    BundleMaterials.from_input(_input_path),
+    SignatureCertificateMaterials.from_input(_input_path),
+]
 
 
-def test_simple(client: SigstoreClient) -> None:
+@pytest.parametrize("materials", _materials)
+def test_simple(client: SigstoreClient, materials: VerificationMaterials) -> None:
     """
     A simple test that signs and verifies an artifact for a given Sigstore
     client.
     """
-    artifact_path = Path("a.txt")
-    signature_path = Path("a.txt.sig")
-    certificate_path = Path("a.txt.crt")
-
-    assert artifact_path.exists()
-    assert not signature_path.exists()
-    assert not certificate_path.exists()
+    assert not materials.all_exist()
 
     # Sign the artifact.
-    client.sign(artifact_path, signature_path, certificate_path)
-
-    assert signature_path.exists()
-    assert certificate_path.exists()
+    client.sign(materials, _input_path)
+    assert materials.all_exist()
 
     # Verify the artifact signature.
-    client.verify(artifact_path, signature_path, certificate_path)
+    client.verify(materials, _input_path)

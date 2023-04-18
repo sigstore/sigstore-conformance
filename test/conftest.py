@@ -2,10 +2,12 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
+from typing import Tuple
 
 import pytest  # type: ignore
 
-from .client import SigstoreClient
+from .client import (BundleMaterials, SignatureCertificateMaterials,
+                     SigstoreClient, VerificationMaterials)
 
 
 def pytest_addoption(parser):
@@ -28,6 +30,27 @@ def client(pytestconfig):
     """
     entrypoint = pytestconfig.getoption("--entrypoint")
     return SigstoreClient(entrypoint)
+
+
+@pytest.fixture
+def construct_materials_for_cls():
+    def _materials(
+        input_name: str, mats_cls: VerificationMaterials
+    ) -> Tuple[Path, VerificationMaterials]:
+        input_path = Path(input_name)
+        output = mats_cls.from_input(input_path)
+
+        return (input_path, output)
+
+    return _materials
+
+
+@pytest.fixture(params=[BundleMaterials, SignatureCertificateMaterials])
+def construct_materials(request, construct_materials_for_cls):
+    def _curry(input_name: str):
+        construct_materials_for_cls(input_name, request.param)
+
+    return _curry
 
 
 @pytest.fixture(autouse=True)

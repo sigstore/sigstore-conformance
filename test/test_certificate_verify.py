@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest  # type: ignore
 
-from .client import SigstoreClient
+from .client import SignatureCertificateMaterials, SigstoreClient
 
 
 def test_verify_invalid_certificate_chain(client: SigstoreClient) -> None:
@@ -18,6 +18,10 @@ def test_verify_invalid_certificate_chain(client: SigstoreClient) -> None:
     artifact_path = Path("a.txt")
     signature_path = Path("a.txt.invalid.sig")
     certificate_path = Path("a.txt.invalid.crt")
+    materials = SignatureCertificateMaterials()
+
+    materials.certificate = certificate_path
+    materials.signature = signature_path
 
     with pytest.raises(subprocess.CalledProcessError):
-        client.verify(artifact_path, signature_path, certificate_path)
+        client.verify(materials, artifact_path)
