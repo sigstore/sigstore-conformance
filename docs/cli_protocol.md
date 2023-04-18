@@ -58,8 +58,7 @@ ${ENTRYPOINT} sign-bundle --bundle FILE FILE
 #### Signature and certificate flow
 
 ```console
-${ENTRYPOINT} verify --signature FILE --certificate FILE
---certificate-identity IDENTITY --certificate-oidc-issuer URL FILE
+${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL FILE
 ```
 
 | Option | Description |
@@ -73,8 +72,7 @@ ${ENTRYPOINT} verify --signature FILE --certificate FILE
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} verify-bundle --bundle FILE --certificate-identity IDENTITY
---certificate-oidc-issuer URL FILE
+${ENTRYPOINT} verify-bundle --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL FILE
 ```
 
 | Option | Description |
