@@ -7,6 +7,11 @@ A wrapper to convert `sigstore-conformance` CLI protocol invocations to match `s
 import subprocess
 import sys
 
+SUBCMD_REPLACEMENTS = {
+    "sign-bundle": "sign",
+    "verify-bundle": "verify",
+}
+
 ARG_REPLACEMENTS = {
     "--certificate-identity": "--cert-identity",
     "--certificate-oidc-issuer": "--cert-oidc-issuer",
@@ -14,6 +19,11 @@ ARG_REPLACEMENTS = {
 
 # Trim the script name.
 fixed_args = sys.argv[1:]
+
+# Substitute incompatible subcommands.
+subcmd = fixed_args[1]
+if subcmd in ARG_REPLACEMENTS:
+    fixed_args[1] = SUBCMD_REPLACEMENTS[subcmd]
 
 # Replace incompatible flags.
 fixed_args = [
