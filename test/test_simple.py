@@ -12,7 +12,7 @@ _materials = [
 ]
 
 
-@pytest.parametrize("materials", _materials)
+@pytest.mark.parametrize("materials", _materials)
 def test_simple(client: SigstoreClient, materials: VerificationMaterials) -> None:
     """
     A simple test that signs and verifies an artifact for a given Sigstore
