@@ -21,9 +21,9 @@ ARG_REPLACEMENTS = {
 fixed_args = sys.argv[1:]
 
 # Substitute incompatible subcommands.
-subcmd = fixed_args[1]
+subcmd = fixed_args[0]
 if subcmd in SUBCMD_REPLACEMENTS:
-    fixed_args[1] = SUBCMD_REPLACEMENTS[subcmd]
+    fixed_args[0] = SUBCMD_REPLACEMENTS[subcmd]
 
 # Replace incompatible flags.
 fixed_args = [
