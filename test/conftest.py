@@ -48,7 +48,7 @@ def construct_materials_for_cls():
 @pytest.fixture(params=[BundleMaterials, SignatureCertificateMaterials])
 def construct_materials(request, construct_materials_for_cls):
     def _curry(input_name: str):
-        construct_materials_for_cls(input_name, request.param)
+        return construct_materials_for_cls(input_name, request.param)
 
     return _curry
 
