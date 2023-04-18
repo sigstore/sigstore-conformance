@@ -29,7 +29,7 @@ class VerificationMaterials:
 
         raise NotImplementedError
 
-    def all_exist(self) -> bool:
+    def exists(self) -> bool:
         """
         Checks if all contained materials exist at specified paths.
         """
@@ -51,7 +51,7 @@ class BundleMaterials(VerificationMaterials):
 
         return mats
 
-    def all_exist(self) -> bool:
+    def exists(self) -> bool:
         return self.bundle.exists()
 
 
@@ -71,7 +71,7 @@ class SignatureCertificateMaterials(VerificationMaterials):
 
         return mats
 
-    def all_exist(self) -> bool:
+    def exists(self) -> bool:
         return self.signature.exists() and self.certificate.exists()
 
 

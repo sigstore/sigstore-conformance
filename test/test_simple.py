@@ -18,11 +18,11 @@ def test_simple(client: SigstoreClient, materials: VerificationMaterials) -> Non
     A simple test that signs and verifies an artifact for a given Sigstore
     client.
     """
-    assert not materials.all_exist()
+    assert not materials.exists()
 
     # Sign the artifact.
     client.sign(materials, _input_path)
-    assert materials.all_exist()
+    assert materials.exists()
 
     # Verify the artifact signature.
     client.verify(materials, _input_path)
