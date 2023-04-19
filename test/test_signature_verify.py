@@ -28,22 +28,6 @@ def test_verify_empty(client: SigstoreClient, construct_materials) -> None:
     with pytest.raises(subprocess.CalledProcessError):
         client.verify(materials, blank_path)
 
-    # Verify with an empty signature.
-    with pytest.raises(subprocess.CalledProcessError):
-        blank_sig = SignatureCertificateMaterials()
-        blank_sig.signature = blank_path
-        blank_sig.certificate = materials.certificate
-
-        client.verify(blank_sig, artifact_path)
-
-    # Verify with an empty certificate.
-    with pytest.raises(subprocess.CalledProcessError):
-        blank_crt = SignatureCertificateMaterials()
-        blank_crt.signature = materials.signature
-        blank_crt.certificate = blank_path
-
-        client.verify(blank_crt, artifact_path)
-
     # Verify with correct inputs.
     client.verify(materials, artifact_path)
 
@@ -76,9 +60,13 @@ def test_verify_mismatch(client: SigstoreClient, construct_materials) -> None:
     client.verify(a_materials, a_artifact_path)
 
 
-def test_verify_mismatch_sigcrt(
+def test_verify_sigcrt(
     client: SigstoreClient, construct_materials_for_cls
 ) -> None:
+    """
+    Test cases for the signature+certificate flow: empty sigs/crts and
+    mismatched sigs/crts.
+    """
     a_artifact_path, a_materials = construct_materials_for_cls(
         "a.txt", SignatureCertificateMaterials
     )
@@ -86,28 +74,46 @@ def test_verify_mismatch_sigcrt(
         "b.txt", SignatureCertificateMaterials
     )
 
-    materials_crt_mismatch, materials_sig_mismatch = (
-        SignatureCertificateMaterials(),
-        SignatureCertificateMaterials(),
-    )
-
-    materials_crt_mismatch.certificate = b_materials.certificate
-    materials_crt_mismatch.signature = a_materials.signature
-
-    materials_sig_mismatch.certificate = a_materials.certificate
-    materials_sig_mismatch.signature = b_materials.signature
-
     # Sign a.txt, b.txt.
     client.sign(a_materials, a_artifact_path)
     client.sign(b_materials, b_artifact_path)
 
+    # Write a blank temporary file.
+    blank_path = Path("blank.txt")
+    blank_path.touch()
+
+    # Verify with an empty signature.
+    with pytest.raises(subprocess.CalledProcessError):
+        blank_sig = SignatureCertificateMaterials()
+        blank_sig.signature = blank_path
+        blank_sig.certificate = a_materials.certificate
+
+        client.verify(blank_sig, a_materials)
+
+    # Verify with an empty certificate.
+    with pytest.raises(subprocess.CalledProcessError):
+        blank_crt = SignatureCertificateMaterials()
+        blank_crt.signature = a_materials.signature
+        blank_crt.certificate = blank_path
+
+        client.verify(blank_crt, a_materials)
+
+
     # Verify with a mismatching certificate.
     with pytest.raises(subprocess.CalledProcessError):
-        client.verify(materials_crt_mismatch, a_artifact_path)
+        crt_mismatch = SignatureCertificateMaterials()
+        crt_mismatch.certificate = b_materials.certificate
+        crt_mismatch.signature = a_materials.signature
+
+        client.verify(crt_mismatch, a_artifact_path)
 
     # Verify with a mismatching signature.
     with pytest.raises(subprocess.CalledProcessError):
-        client.verify(materials_sig_mismatch, a_artifact_path)
+        sig_mismatch = SignatureCertificateMaterials()
+        sig_mismatch.certificate = a_materials.certificate
+        sig_mismatch.signature = b_materials.signature
+
+        client.verify(sig_mismatch, a_artifact_path)
 
     # Verify with correct inputs.
     client.verify(a_materials, a_artifact_path)
