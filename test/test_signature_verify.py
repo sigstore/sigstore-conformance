@@ -60,9 +60,7 @@ def test_verify_mismatch(client: SigstoreClient, construct_materials) -> None:
     client.verify(a_materials, a_artifact_path)
 
 
-def test_verify_sigcrt(
-    client: SigstoreClient, construct_materials_for_cls
-) -> None:
+def test_verify_sigcrt(client: SigstoreClient, construct_materials_for_cls) -> None:
     """
     Test cases for the signature+certificate flow: empty sigs/crts and
     mismatched sigs/crts.
@@ -88,7 +86,7 @@ def test_verify_sigcrt(
         blank_sig.signature = blank_path
         blank_sig.certificate = a_materials.certificate
 
-        client.verify(blank_sig, a_materials)
+        client.verify(blank_sig, a_artifact_path)
 
     # Verify with an empty certificate.
     with pytest.raises(subprocess.CalledProcessError):
@@ -96,8 +94,7 @@ def test_verify_sigcrt(
         blank_crt.signature = a_materials.signature
         blank_crt.certificate = blank_path
 
-        client.verify(blank_crt, a_materials)
-
+        client.verify(blank_crt, a_artifact_path)
 
     # Verify with a mismatching certificate.
     with pytest.raises(subprocess.CalledProcessError):

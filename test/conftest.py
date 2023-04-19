@@ -6,8 +6,12 @@ from typing import Tuple
 
 import pytest  # type: ignore
 
-from .client import (BundleMaterials, SignatureCertificateMaterials,
-                     SigstoreClient, VerificationMaterials)
+from .client import (
+    BundleMaterials,
+    SignatureCertificateMaterials,
+    SigstoreClient,
+    VerificationMaterials,
+)
 
 
 def pytest_addoption(parser):

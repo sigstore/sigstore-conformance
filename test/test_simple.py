@@ -2,8 +2,12 @@ from pathlib import Path
 
 import pytest  # type: ignore
 
-from .client import (BundleMaterials, SignatureCertificateMaterials,
-                     SigstoreClient, VerificationMaterials)
+from .client import (
+    BundleMaterials,
+    SignatureCertificateMaterials,
+    SigstoreClient,
+    VerificationMaterials,
+)
 
 _input_path = Path("a.txt")
 _materials = [
