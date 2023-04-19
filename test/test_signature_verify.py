@@ -30,11 +30,19 @@ def test_verify_empty(client: SigstoreClient, construct_materials) -> None:
 
     # Verify with an empty signature.
     with pytest.raises(subprocess.CalledProcessError):
-        client.verify(materials, artifact_path)
+        blank_sig = SignatureCertificateMaterials()
+        blank_sig.signature = blank_path
+        blank_sig.certificate = materials.certificate
+
+        client.verify(blank_sig, artifact_path)
 
     # Verify with an empty certificate.
     with pytest.raises(subprocess.CalledProcessError):
-        client.verify(materials, artifact_path)
+        blank_crt = SignatureCertificateMaterials()
+        blank_crt.signature = materials.signature
+        blank_crt.certificate = blank_path
+
+        client.verify(blank_crt, artifact_path)
 
     # Verify with correct inputs.
     client.verify(materials, artifact_path)
@@ -88,6 +96,10 @@ def test_verify_mismatch_sigcrt(
 
     materials_sig_mismatch.certificate = a_materials.certificate
     materials_sig_mismatch.signature = b_materials.signature
+
+    # Sign a.txt, b.txt.
+    client.sign(a_materials, a_artifact_path)
+    client.sign(b_materials, b_artifact_path)
 
     # Verify with a mismatching certificate.
     with pytest.raises(subprocess.CalledProcessError):
