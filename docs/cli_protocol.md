@@ -30,6 +30,8 @@ templates below.
 
 ### Sign
 
+#### Signature and certificate flow
+
 ```console
 ${ENTRYPOINT} sign --signature FILE --certificate FILE FILE
 ```
@@ -40,16 +42,42 @@ ${ENTRYPOINT} sign --signature FILE --certificate FILE FILE
 | `--certificate FILE` | The path to write the signing certificate to |
 | `FILE` | The artifact to sign |
 
-### Verify
+#### Bundle flow
 
 ```console
-${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-oidc-issuer URL FILE
+${ENTRYPOINT} sign-bundle --bundle FILE FILE
+```
+
+| Option | Description |
+| --- | --- |
+| `--bundle FILE` | The path to write the bundle to |
+| `FILE` | The artifact to sign |
+
+### Verify
+
+#### Signature and certificate flow
+
+```console
+${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL FILE
 ```
 
 | Option | Description |
 | --- | --- |
 | `--signature FILE` | The path to the signature to verify |
 | `--certificate FILE` | The path to the signing certificate to verify |
+| `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
+| `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
+| `FILE` | The path to the artifact to verify |
+
+#### Bundle flow
+
+```console
+${ENTRYPOINT} verify-bundle --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL FILE
+```
+
+| Option | Description |
+| --- | --- |
+| `--bundle FILE` | The path to the Sigstore bundle to verify |
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
 | `FILE` | The path to the artifact to verify |
