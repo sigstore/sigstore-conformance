@@ -2,8 +2,8 @@ sigstore-conformance
 ====================
 
 <!--- @begin-badges@ --->
-![CI](https://github.com/trailofbits/sigstore-conformance/workflows/CI/badge.svg)
-![Self-test](https://github.com/trailofbits/sigstore-conformance/workflows/Self-test/badge.svg)
+![CI](https://github.com/sigstore/sigstore-conformance/workflows/CI/badge.svg)
+![Self-test](https://github.com/sigstore/sigstore-conformance/workflows/Self-test/badge.svg)
 <!--- @end-badges@ --->
 
 `sigstore-conformance` is a conformance testing suite for Sigstore clients.
@@ -35,7 +35,7 @@ Some general testing principles for this suite are:
 ## Usage
 
 Simply create a new workflow file at `.github/workflows/conformance.yml` and add
-the `trailofbits/sigstore-conformance` action to it.
+the `sigstore/sigstore-conformance` action to it.
 
 ```yaml
 jobs:
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: install
         run: python -m pip install .
-      - uses: trailofbits/sigstore-conformance@v0.0.3
+      - uses: sigstore/sigstore-conformance@v0.0.3
         with:
           entrypoint: sigstore
 ```
