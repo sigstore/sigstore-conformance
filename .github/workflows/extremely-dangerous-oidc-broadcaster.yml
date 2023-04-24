@@ -1,4 +1,11 @@
-name: OIDC
+# !! DANGER !!
+#
+# This workflow retrieves an OIDC identity token from GitHub Actions
+# and INTENTIONALLY leaks it as an artifact. As a result, the leaked
+# token is NOT SECRET AND MUST NOT BE CONSIDERED A VALID IDENTITY
+# FOR SIGNING OR ANY OTHER PURPOSE.
+
+name: Extremely dangerous OIDC broadcaster
 
 # Run every 5 minutes so we always have a valid OIDC token for clients to use.
 on:
@@ -15,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  oidc:
+  extremely-dangerous-oidc-broadcaster:
     permissions:
       # Needed to access the workflow's OIDC identity.
       id-token: write
