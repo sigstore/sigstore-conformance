@@ -1,0 +1,36 @@
+name: OIDC
+
+# Run every 5 minutes so we always have a valid OIDC token for clients to use.
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+# Make sure we cancel any in-progress OIDC generation jobs if they're already queued.
+#
+# When there's heavy traffic in the GitHub queue, we're not going to be able to keep up with
+# generating tokens every 5 minutes and we want to ensure that we don't overlap and queue multiple
+# jobs at once.
+concurrency:
+  group: oidc-beacon
+  cancel-in-progress: true
+
+jobs:
+  oidc:
+    permissions:
+      # Needed to access the workflow's OIDC identity.
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.7"
+      - name: Retrieve OIDC token
+        run: |
+          python -m pip install id &&
+          python -m id sigstore > ./oidc-token.txt
+      - name: Upload OIDC token artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: oidc-token
+          path: ./oidc-token.txt
