@@ -107,11 +107,11 @@ def _get_oidc_token(gh_token: str) -> str:
     )
     resp.raise_for_status()
 
-    artifact_zip = ZipFile(BytesIO(resp.content))
-    artifact_file = artifact_zip.open("oidc-token.txt")
+    with ZipFile(BytesIO(resp.content)) as artifact_zip:
+        artifact_file = artifact_zip.open("oidc-token.txt")
 
-    # NOTE(alex): Strip newline.
-    return artifact_file.read().decode()[:-1]
+        # NOTE(alex): Strip newline.
+        return artifact_file.read().decode()[:-1]
 
 
 def _template(name):
