@@ -111,7 +111,7 @@ def _get_oidc_token(gh_token: str) -> str:
         artifact_file = artifact_zip.open("oidc-token.txt")
 
         # NOTE(alex): Strip newline.
-        return artifact_file.read().decode()[:-1]
+        return artifact_file.read().decode().rstrip()
 
 
 def _template(name):
