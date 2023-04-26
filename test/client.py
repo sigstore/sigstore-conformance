@@ -2,7 +2,7 @@ import os
 import subprocess
 
 CERTIFICATE_IDENTITY = (
-    "https://github.com/sigstore-conformance/extremely-dangerous-oidc-beacon/.github/"
+    "https://github.com/sigstore-conformance/extremely-dangerous-public-oidc-beacon/.github/"
     "workflows/extremely-dangerous-oidc-beacon.yml@refs/heads/main"
 )
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
