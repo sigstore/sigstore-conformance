@@ -2,11 +2,8 @@ import os
 import subprocess
 
 CERTIFICATE_IDENTITY = (
-    os.environ["GITHUB_SERVER_URL"]
-    + "/"
-    + os.environ["GITHUB_REPOSITORY"]
-    + "/.github/workflows/conformance.yml@"
-    + os.environ["GITHUB_REF"]
+    "https://github.com/sigstore-conformance/extremely-dangerous-oidc-broadcaster/.github/"
+    "workflows/oidc.yml@refs/heads/main"
 )
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
 
@@ -20,13 +17,14 @@ class SigstoreClient:
     adheres to the protocol outlined at `docs/cli_protocol.md`.
     """
 
-    def __init__(self, entrypoint: str) -> None:
+    def __init__(self, entrypoint: str, identity_token: str) -> None:
         """
         Create a new `SigstoreClient`.
 
         `entrypoint` is the command to invoke the Sigstore client.
         """
         self.entrypoint = entrypoint
+        self.identity_token = identity_token
 
     def run(self, *args) -> None:
         """
@@ -51,7 +49,14 @@ class SigstoreClient:
         `certificate` is the path to write the signing certificate to.
         """
         self.run(
-            "sign", "--signature", signature, "--certificate", certificate, artifact
+            "sign",
+            "--identity-token",
+            self.identity_token,
+            "--signature",
+            signature,
+            "--certificate",
+            certificate,
+            artifact,
         )
 
     def verify(
