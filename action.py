@@ -58,7 +58,6 @@ def _get_oidc_token(gh_token: str) -> str:
             _log("Couldn't find a recent token, waiting...")
             time.sleep(30)
 
-        # TODO(alex): Figure out what the workflow ID is.
         resp: requests.Response = session.get(
             url=_OIDC_BEACON_API_URL + f"/workflows/{_OIDC_BEACON_WORKFLOW_ID}/runs",
             headers=headers,
