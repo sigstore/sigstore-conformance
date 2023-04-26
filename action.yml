@@ -28,4 +28,5 @@ runs:
       env:
         GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT: "${{ inputs.entrypoint }}"
         GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG: "${{ inputs.internal-be-careful-debug }}"
+        GHA_SIGSTORE_GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       shell: bash

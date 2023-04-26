@@ -38,9 +38,11 @@ class OidcTokenError(Exception):
 
 
 def _get_oidc_token() -> str:
-    gh_token = os.getenv("GITHUB_TOKEN")
+    gh_token = os.getenv("GHA_SIGSTORE_GITHUB_TOKEN")
     if gh_token is None:
-        raise OidcTokenError("`GITHUB_TOKEN` environment variable not found")
+        raise OidcTokenError(
+            "`GHA_SIGSTORE_GITHUB_TOKEN` environment variable not found"
+        )
 
     session = requests.Session()
     headers = {
