@@ -37,7 +37,11 @@ class OidcTokenError(Exception):
     pass
 
 
-def _get_oidc_token(gh_token: str) -> str:
+def _get_oidc_token() -> str:
+    gh_token = os.getenv("GITHUB_TOKEN")
+    if gh_token is None:
+        raise OidcTokenError("`GITHUB_TOKEN` environment variable not found")
+
     session = requests.Session()
     headers = {
         "Accept": "application/vnd.github+json",
@@ -110,7 +114,7 @@ def _get_oidc_token(gh_token: str) -> str:
     with ZipFile(BytesIO(resp.content)) as artifact_zip:
         artifact_file = artifact_zip.open("oidc-token.txt")
 
-        # NOTE(alex): Strip newline.
+        # Strip newline.
         return artifact_file.read().decode().rstrip()
 
 
@@ -151,13 +155,11 @@ entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
 if entrypoint:
     sigstore_conformance_args.extend(["--entrypoint", entrypoint])
 
-gh_token = os.getenv("GHA_SIGSTORE_CONFORMANCE_GITHUB_TOKEN")
-if gh_token:
-    try:
-        oidc_token = _get_oidc_token(gh_token)
-    except OidcTokenError as e:
-        _fatal_help(f"Could not retrieve OIDC token: {str(e)}")
-    sigstore_conformance_args.extend(["--identity-token", oidc_token])
+try:
+    oidc_token = _get_oidc_token()
+except OidcTokenError as e:
+    _fatal_help(f"Could not retrieve OIDC token: {str(e)}")
+sigstore_conformance_args.extend(["--identity-token", oidc_token])
 
 _debug(f"running: sigstore-conformance {[str(a) for a in sigstore_conformance_args]}")
 
