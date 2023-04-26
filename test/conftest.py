@@ -19,6 +19,13 @@ def pytest_addoption(parser):
         required=True,
         type=str,
     )
+    parser.addoption(
+        "--identity-token",
+        action="store",
+        help="the OIDC token to supply to the Sigstore client under test",
+        required=True,
+        type=str,
+    )
 
 
 @pytest.fixture
@@ -27,7 +34,8 @@ def client(pytestconfig):
     Parametrize each test with the client under test.
     """
     entrypoint = pytestconfig.getoption("--entrypoint")
-    return SigstoreClient(entrypoint)
+    identity_token = pytestconfig.getoption("--identity-token")
+    return SigstoreClient(entrypoint, identity_token)
 
 
 @pytest.fixture(autouse=True)
