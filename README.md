@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: install
         run: python -m pip install .
-      - uses: sigstore/sigstore-conformance@v0.0.3
+      - uses: sigstore/sigstore-conformance@v0.0.4
         with:
           entrypoint: sigstore
 ```
