@@ -10,8 +10,8 @@ from .client import (BundleMaterials, SignatureCertificateMaterials,
                      SigstoreClient, VerificationMaterials)
 
 _M = TypeVar("_M", bound=VerificationMaterials)
-MakeMaterialsByType = Callable[[str, _M], Tuple[Path, _M]]
-MakeMaterials = Callable[[str], Tuple[Path, VerificationMaterials]]
+_MakeMaterialsByType = Callable[[str, _M], Tuple[Path, _M]]
+_MakeMaterials = Callable[[str], Tuple[Path, VerificationMaterials]]
 
 
 def pytest_addoption(parser):
@@ -38,7 +38,7 @@ def client(pytestconfig):
 
 
 @pytest.fixture
-def make_materials_by_type() -> MakeMaterialsByType:
+def make_materials_by_type() -> _MakeMaterialsByType:
     """
     Returns a function that constructs the requested subclass of
     `VerificationMaterials` alongside an appropriate input path.
@@ -56,7 +56,7 @@ def make_materials_by_type() -> MakeMaterialsByType:
 
 
 @pytest.fixture(params=[BundleMaterials, SignatureCertificateMaterials])
-def make_materials(request, make_materials_by_type) -> MakeMaterials:
+def make_materials(request, make_materials_by_type) -> _MakeMaterials:
     """
     Returns a function that constructs `VerificationMaterials` alongside an
     appropriate input path. The subclass of `VerificationMaterials` that is returned
