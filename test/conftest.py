@@ -48,10 +48,10 @@ def make_materials_by_type():
 
 @pytest.fixture(params=[BundleMaterials, SignatureCertificateMaterials])
 def make_materials(request, make_materials_by_type):
-    def _curry(input_name: str):
+    def _make_materials(input_name: str):
         return make_materials_by_type(input_name, request.param)
 
-    return _curry
+    return _make_materials
 
 
 @pytest.fixture(autouse=True)

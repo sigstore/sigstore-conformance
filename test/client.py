@@ -79,6 +79,10 @@ class SigstoreClient:
 
     The `sigstore-conformance` test suite expects that clients expose a CLI that
     adheres to the protocol outlined at `docs/cli_protocol.md`.
+
+    The `sign` and `verify` methods are dispatched over the two flows that clients
+    should support: signature/certificate and bundle. The overloads of those
+    methods should not be called directly.
     """
 
     def __init__(self, entrypoint: str, identity_token: str) -> None:
@@ -105,7 +109,9 @@ class SigstoreClient:
     @singledispatchmethod
     def sign(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
         """
-        Sign an artifact with the Sigstore client.
+        Sign an artifact with the Sigstore client. Dispatches to `_sign_for_sigcrt`
+        when given `SignatureCertificateMaterials`, or `_sign_for_bundle` when given
+        `BundleMaterials`.
 
         `artifact` is a path to the file to sign.
         `materials` contains paths to write the generated materials to.
@@ -114,9 +120,16 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot sign with {type(materials)}")
 
     @sign.register
-    def _(
+    def _sign_for_sigcrt(
         self, materials: SignatureCertificateMaterials, artifact: os.PathLike
     ) -> None:
+        """
+        Sign an artifact with the Sigstore client, producing a signature and certificate.
+
+        This is an overload of `sign` for the signature/certificate flow and should not
+        be called directly.
+        """
+
         self.run(
             "sign",
             "--identity-token",
@@ -129,7 +142,13 @@ class SigstoreClient:
         )
 
     @sign.register
-    def _(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+    def _sign_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+        """
+        Sign an artifact with the Sigstore client, producing a bundle.
+
+        This is an overload of `sign` for the bundle flow and should not be called directly.
+        """
+
         self.run(
             "sign-bundle",
             "--identity-token",
@@ -146,7 +165,9 @@ class SigstoreClient:
         artifact: os.PathLike,
     ) -> None:
         """
-        Verify an artifact with the Sigstore client.
+        Verify an artifact with the Sigstore client. Dispatches to `_verify_for_sigcrt`
+        when given `SignatureCertificateMaterials`, or `_verify_for_bundle` when given
+        `BundleMaterials`.
 
         `artifact` is the path to the file to verify.
         `materials` contains paths to the materials to verify with.
@@ -155,14 +176,20 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot verify with {type(materials)}")
 
     @verify.register
-    def _(
+    def _verify_for_sigcrt(
         self,
         materials: SignatureCertificateMaterials,
         artifact: os.PathLike,
     ) -> None:
+        """
+        Verify an artifact given a signature and certificate with the Sigstore client.
+
+        This is an overload of `verify` for the signature/certificate flow and should
+        not be called directly.
+        """
+
         # The identity and OIDC issuer cannot be specified by the test since they remain constant
         # across the GitHub Actions job.
-
         self.run(
             "verify",
             "--signature",
@@ -177,7 +204,14 @@ class SigstoreClient:
         )
 
     @verify.register
-    def _(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+    def _verify_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+        """
+        Verify an artifact given a bundle with the Sigstore client.
+
+        This is an overload of `verify` for the bundle flow and should not be called
+        directly.
+        """
+
         self.run(
             "verify-bundle",
             "--bundle",
