@@ -6,12 +6,12 @@ import pytest  # type: ignore
 from .client import SignatureCertificateMaterials, SigstoreClient
 
 
-def test_verify_empty(client: SigstoreClient, construct_materials) -> None:
+def test_verify_empty(client: SigstoreClient, make_materials) -> None:
     """
     Tests that verification fails with empty artifacts, certificates and
     signatures.
     """
-    artifact_path, materials = construct_materials("a.txt")
+    artifact_path, materials = make_materials("a.txt")
 
     assert artifact_path.exists()
     assert not materials.exists()
@@ -32,12 +32,12 @@ def test_verify_empty(client: SigstoreClient, construct_materials) -> None:
     client.verify(materials, artifact_path)
 
 
-def test_verify_mismatch(client: SigstoreClient, construct_materials) -> None:
+def test_verify_mismatch(client: SigstoreClient, make_materials) -> None:
     """
     Tests that verification fails with mismatching artifacts, certificates and
     signatures.
     """
-    a_artifact_path, a_materials = construct_materials("a.txt")
+    a_artifact_path, a_materials = make_materials("a.txt")
 
     assert a_artifact_path.exists()
     assert not a_materials.exists()
@@ -47,7 +47,7 @@ def test_verify_mismatch(client: SigstoreClient, construct_materials) -> None:
     assert a_materials.exists()
 
     # Sign b.txt.
-    b_artifact_path, b_materials = construct_materials("b.txt")
+    b_artifact_path, b_materials = make_materials("b.txt")
 
     client.sign(b_materials, b_artifact_path)
     assert b_materials.exists()
@@ -60,15 +60,15 @@ def test_verify_mismatch(client: SigstoreClient, construct_materials) -> None:
     client.verify(a_materials, a_artifact_path)
 
 
-def test_verify_sigcrt(client: SigstoreClient, construct_materials_for_cls) -> None:
+def test_verify_sigcrt(client: SigstoreClient, make_materials_by_type) -> None:
     """
     Test cases for the signature+certificate flow: empty sigs/crts and
     mismatched sigs/crts.
     """
-    a_artifact_path, a_materials = construct_materials_for_cls(
+    a_artifact_path, a_materials = make_materials_by_type(
         "a.txt", SignatureCertificateMaterials
     )
-    b_artifact_path, b_materials = construct_materials_for_cls(
+    b_artifact_path, b_materials = make_materials_by_type(
         "b.txt", SignatureCertificateMaterials
     )
 
