@@ -33,11 +33,12 @@ templates below.
 #### Signature and certificate flow
 
 ```console
-${ENTRYPOINT} sign --signature FILE --certificate FILE FILE
+${ENTRYPOINT} sign --identity-token TOKEN --signature FILE --certificate FILE FILE
 ```
 
 | Option | Description |
 | --- | --- |
+| `--identity-token` | The OIDC identity token to use |
 | `--signature FILE` | The path to write the signature to |
 | `--certificate FILE` | The path to write the signing certificate to |
 | `FILE` | The artifact to sign |
@@ -50,6 +51,7 @@ ${ENTRYPOINT} sign-bundle --bundle FILE FILE
 
 | Option | Description |
 | --- | --- |
+| `--identity-token` | The OIDC identity token to use |
 | `--bundle FILE` | The path to write the bundle to |
 | `FILE` | The artifact to sign |
 

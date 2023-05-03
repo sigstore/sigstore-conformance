@@ -6,11 +6,8 @@ from functools import singledispatchmethod
 from pathlib import Path
 
 CERTIFICATE_IDENTITY = (
-    os.environ["GITHUB_SERVER_URL"]
-    + "/"
-    + os.environ["GITHUB_REPOSITORY"]
-    + "/.github/workflows/conformance.yml@"
-    + os.environ["GITHUB_REF"]
+    "https://github.com/sigstore-conformance/extremely-dangerous-public-oidc-beacon/.github/"
+    "workflows/extremely-dangerous-oidc-beacon.yml@refs/heads/main"
 )
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
 
@@ -84,13 +81,14 @@ class SigstoreClient:
     adheres to the protocol outlined at `docs/cli_protocol.md`.
     """
 
-    def __init__(self, entrypoint: str) -> None:
+    def __init__(self, entrypoint: str, identity_token: str) -> None:
         """
         Create a new `SigstoreClient`.
 
         `entrypoint` is the command to invoke the Sigstore client.
         """
         self.entrypoint = entrypoint
+        self.identity_token = identity_token
 
     def run(self, *args) -> None:
         """
@@ -121,6 +119,8 @@ class SigstoreClient:
     ) -> None:
         self.run(
             "sign",
+            "--identity-token",
+            self.identity_token,
             "--signature",
             materials.signature,
             "--certificate",
@@ -130,7 +130,14 @@ class SigstoreClient:
 
     @sign.register
     def _(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
-        self.run("sign-bundle", "--bundle", materials.bundle, artifact)
+        self.run(
+            "sign-bundle",
+            "--identity-token",
+            self.identity_token,
+            "--bundle",
+            materials.bundle,
+            artifact,
+        )
 
     @singledispatchmethod
     def verify(
