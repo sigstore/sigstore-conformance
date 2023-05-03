@@ -15,7 +15,7 @@ CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
 class VerificationMaterials:
     """
     A wrapper around verification materials. Materials can be either bundles
-    or signatures and certificates.
+    or detached pairs of signatures and certificates.
     """
 
     @classmethod
