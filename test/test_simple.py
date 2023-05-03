@@ -1,10 +1,4 @@
-from pathlib import Path
-
-import pytest  # type: ignore
-
-from .client import (
-    SigstoreClient,
-)
+from .client import SigstoreClient
 
 
 def test_simple(client: SigstoreClient, make_materials) -> None:
