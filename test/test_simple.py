@@ -1,7 +1,9 @@
+from test.conftest import MakeMaterials
+
 from .client import SigstoreClient
 
 
-def test_simple(client: SigstoreClient, make_materials) -> None:
+def test_simple(client: SigstoreClient, make_materials: MakeMaterials) -> None:
     """
     A simple test that signs and verifies an artifact for a given Sigstore
     client.

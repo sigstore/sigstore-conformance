@@ -1,12 +1,13 @@
 import subprocess
 from pathlib import Path
+from test.conftest import MakeMaterials, MakeMaterialsByType
 
 import pytest  # type: ignore
 
 from .client import SignatureCertificateMaterials, SigstoreClient
 
 
-def test_verify_empty(client: SigstoreClient, make_materials) -> None:
+def test_verify_empty(client: SigstoreClient, make_materials: MakeMaterials) -> None:
     """
     Tests that verification fails with empty artifacts, certificates and
     signatures.
@@ -32,7 +33,7 @@ def test_verify_empty(client: SigstoreClient, make_materials) -> None:
     client.verify(materials, artifact_path)
 
 
-def test_verify_mismatch(client: SigstoreClient, make_materials) -> None:
+def test_verify_mismatch(client: SigstoreClient, make_materials: MakeMaterials) -> None:
     """
     Tests that verification fails with mismatching artifacts, certificates and
     signatures.
@@ -60,7 +61,9 @@ def test_verify_mismatch(client: SigstoreClient, make_materials) -> None:
     client.verify(a_materials, a_artifact_path)
 
 
-def test_verify_sigcrt(client: SigstoreClient, make_materials_by_type) -> None:
+def test_verify_sigcrt(
+    client: SigstoreClient, make_materials_by_type: MakeMaterialsByType
+) -> None:
     """
     Test cases for the signature+certificate flow: empty sigs/crts and
     mismatched sigs/crts.

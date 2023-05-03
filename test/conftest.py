@@ -2,12 +2,16 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Tuple
+from typing import Callable, Tuple, TypeVar
 
 import pytest  # type: ignore
 
 from .client import (BundleMaterials, SignatureCertificateMaterials,
                      SigstoreClient, VerificationMaterials)
+
+_M = TypeVar("_M", bound=VerificationMaterials)
+MakeMaterialsByType = Callable[[str, _M], Tuple[Path, _M]]
+MakeMaterials = Callable[[str], Tuple[Path, VerificationMaterials]]
 
 
 def pytest_addoption(parser):
@@ -34,7 +38,7 @@ def client(pytestconfig):
 
 
 @pytest.fixture
-def make_materials_by_type():
+def make_materials_by_type() -> MakeMaterialsByType:
     def _make_materials_by_type(
         input_name: str, cls: VerificationMaterials
     ) -> Tuple[Path, VerificationMaterials]:
@@ -47,7 +51,7 @@ def make_materials_by_type():
 
 
 @pytest.fixture(params=[BundleMaterials, SignatureCertificateMaterials])
-def make_materials(request, make_materials_by_type):
+def make_materials(request, make_materials_by_type) -> MakeMaterials:
     def _make_materials(input_name: str):
         return make_materials_by_type(input_name, request.param)
 
