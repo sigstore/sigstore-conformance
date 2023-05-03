@@ -39,6 +39,11 @@ def client(pytestconfig):
 
 @pytest.fixture
 def make_materials_by_type() -> MakeMaterialsByType:
+    """
+    Returns a function that constructs the requested subclass of
+    `VerificationMaterials` alongside an appropriate input path.
+    """
+
     def _make_materials_by_type(
         input_name: str, cls: VerificationMaterials
     ) -> Tuple[Path, VerificationMaterials]:
@@ -52,6 +57,15 @@ def make_materials_by_type() -> MakeMaterialsByType:
 
 @pytest.fixture(params=[BundleMaterials, SignatureCertificateMaterials])
 def make_materials(request, make_materials_by_type) -> MakeMaterials:
+    """
+    Returns a function that constructs `VerificationMaterials` alongside an
+    appropriate input path. The subclass of `VerificationMaterials` that is returned
+    is parameterized across `BundleMaterials` and `SignatureCertificateMaterials`.
+
+    See `make_materials_by_type` for a fixture that uses a specific subclass of
+    `VerificationMaterials`.
+    """
+
     def _make_materials(input_name: str):
         return make_materials_by_type(input_name, request.param)
 
