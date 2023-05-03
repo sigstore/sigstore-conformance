@@ -33,7 +33,8 @@ def client(pytestconfig):
     Parametrize each test with the client under test.
     """
     entrypoint = pytestconfig.getoption("--entrypoint")
-    return SigstoreClient(entrypoint)
+    identity_token = pytestconfig.getoption("--identity-token")
+    return SigstoreClient(entrypoint, identity_token)
 
 
 @pytest.fixture
