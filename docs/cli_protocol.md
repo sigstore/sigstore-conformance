@@ -46,7 +46,7 @@ ${ENTRYPOINT} sign --identity-token TOKEN --signature FILE --certificate FILE FI
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} sign-bundle --bundle FILE FILE
+${ENTRYPOINT} sign-bundle --identity-token TOKEN --bundle FILE FILE
 ```
 
 | Option | Description |
