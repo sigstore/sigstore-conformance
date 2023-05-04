@@ -1,4 +1,3 @@
-from pathlib import Path
 from subprocess import CalledProcessError
 from test.client import BundleMaterials, SigstoreClient
 from test.conftest import _MakeMaterialsByType
