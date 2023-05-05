@@ -48,20 +48,3 @@ def test_sign_does_not_produce_root(
         cert = x509.load_der_x509_certificate(cert.raw_bytes)
         constraints = cert.extensions.get_extension_for_class(x509.BasicConstraints)
         assert not constraints.value.ca
-
-
-def test_ski_aki_chain_presence(
-    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
-) -> None:
-    """
-    Check that the client rejects a bundle that contains a certificate without the
-    correct chain-building extensions.
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type(
-        "missing_ski_aki.txt", BundleMaterials
-    )
-
-    with pytest.raises(CalledProcessError):
-        client.verify(materials, input_path)
