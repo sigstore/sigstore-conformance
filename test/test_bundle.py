@@ -46,5 +46,10 @@ def test_sign_does_not_produce_root(
     certs = bundle.verification_material.x509_certificate_chain
     for cert in certs.certificates:
         cert = x509.load_der_x509_certificate(cert.raw_bytes)
-        constraints = cert.extensions.get_extension_for_class(x509.BasicConstraints)
-        assert not constraints.value.ca
+
+        try:
+            constraints = cert.extensions.get_extension_for_class(x509.BasicConstraints)
+            assert not constraints.value.ca
+        # BasicConstraints isn't required to appear in leaf certificates.
+        except x509.ExtensionNotFound:
+            pass
