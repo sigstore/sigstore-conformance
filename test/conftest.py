@@ -16,12 +16,19 @@ _MakeMaterials = Callable[[str], Tuple[Path, VerificationMaterials]]
 
 def pytest_addoption(parser):
     """
-    Add the `--entrypoint` flag to the `pytest` CLI.
+    Add the `--entrypoint` and `--identity-token` flags to the `pytest` CLI.
     """
     parser.addoption(
         "--entrypoint",
         action="store",
         help="the command to invoke the Sigstore client under test",
+        required=True,
+        type=str,
+    )
+    parser.addoption(
+        "--identity-token",
+        action="store",
+        help="the OIDC token to supply to the Sigstore client under test",
         required=True,
         type=str,
     )
