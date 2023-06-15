@@ -7,6 +7,21 @@ from cryptography import x509
 from sigstore_protobuf_specs.dev.sigstore.bundle.v1 import Bundle
 
 
+def test_verify(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
+    """
+    Test the happy path of verification
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type(
+        "a.txt", BundleMaterials
+    )
+
+    client.verify(materials, input_path)
+
+
 def test_verify_rejects_root(
     client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
 ) -> None:
