@@ -11,6 +11,10 @@ inputs:
     description: "run with debug logs (default false)"
     required: false
     default: "false"
+  skip-signing:
+    description: "skip tests that involve signing (default false)"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -28,5 +32,6 @@ runs:
       env:
         GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT: "${{ inputs.entrypoint }}"
         GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG: "${{ inputs.internal-be-careful-debug }}"
+        GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING: "${{ inputs.skip_signing }}"
         GHA_SIGSTORE_GITHUB_TOKEN: "${{ github.token }}"
       shell: bash

@@ -3,6 +3,7 @@ from test.conftest import _MakeMaterials
 from .client import SigstoreClient
 
 
+@pytest.mark.signing
 def test_simple(client: SigstoreClient, make_materials: _MakeMaterials) -> None:
     """
     A simple test that signs and verifies an artifact for a given Sigstore

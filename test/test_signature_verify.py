@@ -6,6 +6,7 @@ import pytest  # type: ignore
 from .client import ClientFail, SignatureCertificateMaterials, SigstoreClient
 
 
+@pytest.mark.signing
 def test_verify_empty(client: SigstoreClient, make_materials: _MakeMaterials) -> None:
     """
     Tests that verification fails with empty artifacts, certificates and
@@ -32,6 +33,7 @@ def test_verify_empty(client: SigstoreClient, make_materials: _MakeMaterials) ->
     client.verify(materials, artifact_path)
 
 
+@pytest.mark.signing
 def test_verify_mismatch(
     client: SigstoreClient, make_materials: _MakeMaterials
 ) -> None:

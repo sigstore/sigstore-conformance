@@ -148,6 +148,10 @@ entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
 if entrypoint:
     sigstore_conformance_args.extend(["--entrypoint", entrypoint])
 
+skip_signing = os.getenv("GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING")
+if skip_signing:
+    sigstore_conformance_args.extend(["--skip-signing"])
+
 try:
     oidc_token = _get_oidc_token()
 except OidcTokenError as e:

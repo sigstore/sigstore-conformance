@@ -20,7 +20,8 @@ _MakeMaterials = Callable[[str], Tuple[Path, VerificationMaterials]]
 
 def pytest_addoption(parser):
     """
-    Add the `--entrypoint` and `--identity-token` flags to the `pytest` CLI.
+    Add the `--entrypoint`, `--identity-token`, and `--skip-signing` flags to
+    the `pytest` CLI.
     """
     parser.addoption(
         "--entrypoint",
@@ -35,6 +36,24 @@ def pytest_addoption(parser):
         help="the OIDC token to supply to the Sigstore client under test",
         required=True,
         type=str,
+    )
+    parser.addoption(
+        "--skip-signing",
+        action="store_true",
+        help="skip tests that require signing functionality",
+    )
+
+
+def pytest_runtest_setup(item):
+    if "signing" in item.keywords and item.config.getoption("--skip-signing"):
+        pytest.skip(
+            "skipping test that requires signing support due to `--skip-signing` flag"
+        )
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "signing: mark test as requiring signing functionality"
     )
 
 
