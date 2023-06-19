@@ -1,3 +1,4 @@
+from pathlib import Path
 from subprocess import CalledProcessError
 from test.client import BundleMaterials, SigstoreClient
 from test.conftest import _MakeMaterialsByType
@@ -63,10 +64,8 @@ def test_verify_rejects_staging_cert(
     """
 
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type(
-        "a.txt", BundleMaterials
-    )
-    materials.bundle = "a.txt.staging.sigstore"
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.staging.sigstore")
 
     with pytest.raises(CalledProcessError):
         client.verify(materials, input_path)
@@ -81,10 +80,8 @@ def test_verify_rejects_invalid_set(
     """
 
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type(
-        "a.txt", BundleMaterials
-    )
-    materials.bundle = "a.txt.invalid_set.sigstore"
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_set.sigstore")
 
     with pytest.raises(CalledProcessError):
         client.verify(materials, input_path)
@@ -98,10 +95,8 @@ def test_verify_rejects_invalid_signature(
     """
 
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type(
-        "a.txt", BundleMaterials
-    )
-    materials.bundle = "a.txt.invalid_signature.sigstore"
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_signature.sigstore")
 
     with pytest.raises(CalledProcessError):
         client.verify(materials, input_path)
@@ -115,10 +110,8 @@ def test_verify_rejects_invalid_digest(
     """
 
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type(
-        "a.txt", BundleMaterials
-    )
-    materials.bundle = "a.txt.invalid_digest.sigstore"
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_digest.sigstore")
 
     with pytest.raises(CalledProcessError):
         client.verify(materials, input_path)
