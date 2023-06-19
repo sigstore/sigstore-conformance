@@ -1,5 +1,7 @@
 from test.conftest import _MakeMaterials
 
+import pytest  # type: ignore
+
 from .client import SigstoreClient
 
 
