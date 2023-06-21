@@ -1,3 +1,4 @@
+from pathlib import Path
 from subprocess import CalledProcessError
 from test.client import BundleMaterials, SigstoreClient
 from test.conftest import _MakeMaterialsByType
@@ -53,3 +54,64 @@ def test_sign_does_not_produce_root(
         # BasicConstraints isn't required to appear in leaf certificates.
         except x509.ExtensionNotFound:
             pass
+
+
+def test_verify_rejects_staging_cert(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
+    """
+    Check that the client rejects a bundle that doesn't match trust root.
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.staging.sigstore")
+
+    with pytest.raises(CalledProcessError):
+        client.verify(materials, input_path)
+
+
+def test_verify_rejects_invalid_set(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
+    """
+    Check that the client rejects a bundle with a signed entry timestamp from
+    the future.
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_set.sigstore")
+
+    with pytest.raises(CalledProcessError):
+        client.verify(materials, input_path)
+
+
+def test_verify_rejects_invalid_signature(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
+    """
+    Check that the client rejects a bundle with a modified signature.
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_signature.sigstore")
+
+    with pytest.raises(CalledProcessError):
+        client.verify(materials, input_path)
+
+
+def test_verify_rejects_invalid_digest(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
+    """
+    Check that the client rejects a bundle with a modified digest.
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_digest.sigstore")
+
+    with pytest.raises(CalledProcessError):
+        client.verify(materials, input_path)
