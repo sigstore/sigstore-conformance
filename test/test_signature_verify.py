@@ -1,4 +1,3 @@
-import subprocess
 from pathlib import Path
 from test.conftest import _MakeMaterials, _MakeMaterialsByType
 
