@@ -5,8 +5,6 @@
 # all state is passed in as environment variables
 
 import os
-import string
-import subprocess
 import sys
 import time
 from datetime import datetime, timedelta
@@ -121,11 +119,6 @@ def _get_oidc_token() -> str:
         return artifact_file.read().decode().rstrip()
 
 
-def _template(name):
-    path = _TEMPLATES / f"{name}.md"
-    return string.Template(path.read_text())
-
-
 def _summary(msg):
     if _RENDER_SUMMARY:
         print(msg, file=_SUMMARY)
@@ -152,7 +145,7 @@ def _fatal_help(msg):
 sigstore_conformance_args = []
 
 if _DEBUG:
-    sigstore_conformance_args.extend(["-s", "-vv"])
+    sigstore_conformance_args.extend(["-s", "-vv", "--showlocals"])
 
 entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
 if entrypoint:
