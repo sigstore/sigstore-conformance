@@ -21,7 +21,9 @@ _TEMPLATES = _HERE / "templates"
 
 _SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY")).open("a")  # type: ignore
 _RENDER_SUMMARY = os.getenv("GHA_SIGSTORE_CONFORMANCE_SUMMARY", "true") == "true"
-_DEBUG = False
+_DEBUG = (
+    os.getenv("GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG", "false") != "false"
+)
 _ACTION_PATH = Path(os.getenv("GITHUB_ACTION_PATH"))  # type: ignore
 _OIDC_BEACON_API_URL = (
     "https://api.github.com/repos/sigstore-conformance/extremely-dangerous-public-oidc-beacon/"
