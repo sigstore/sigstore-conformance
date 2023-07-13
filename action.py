@@ -16,9 +16,6 @@ from zipfile import ZipFile
 import pytest
 import requests
 
-_HERE = Path(__file__).parent.resolve()
-_TEMPLATES = _HERE / "templates"
-
 _SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY")).open("a")  # type: ignore
 _RENDER_SUMMARY = os.getenv("GHA_SIGSTORE_CONFORMANCE_SUMMARY", "true") == "true"
 _DEBUG = (
