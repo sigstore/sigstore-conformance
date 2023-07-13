@@ -10,7 +10,7 @@ inputs:
   internal-be-careful-debug:
     description: "run with debug logs (default false)"
     required: false
-    default: false
+    default: "false"
 
 runs:
   using: "composite"

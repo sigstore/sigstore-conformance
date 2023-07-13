@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Optional
 from zipfile import ZipFile
 
+import pytest
 import requests
 
 _HERE = Path(__file__).parent.resolve()
@@ -139,8 +140,8 @@ def _log(msg):
     print(msg, file=sys.stderr)
 
 
-def _sigstore_conformance(*args):
-    return ["pytest", _ACTION_PATH / "test", *args]
+def _sigstore_conformance(*args) -> int:
+    return pytest.main([str(_ACTION_PATH / "test"), *args])
 
 
 def _fatal_help(msg):
@@ -165,15 +166,9 @@ sigstore_conformance_args.extend(["--identity-token", oidc_token])
 
 _debug(f"running: sigstore-conformance {[str(a) for a in sigstore_conformance_args]}")
 
-status = subprocess.run(
-    _sigstore_conformance(*sigstore_conformance_args),
-    text=True,
-    capture_output=True,
-)
+status = _sigstore_conformance(*sigstore_conformance_args)
 
-_debug(status.stdout)
-
-if status.returncode == 0:
+if status == 0:
     _summary("🎉 sigstore-conformance exited successfully")
 else:
     _summary("❌ sigstore-conformance found one or more test failures")
@@ -188,7 +183,6 @@ _summary(
 ```
     """
 )
-_log(status.stdout)
 _summary(
     """
 ```
@@ -196,4 +190,4 @@ _summary(
     """
 )
 
-sys.exit(status.returncode)
+sys.exit(status)
