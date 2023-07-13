@@ -11,6 +11,23 @@ CERTIFICATE_IDENTITY = (
 )
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
 
+_CLIENT_ERROR_MSG = """
+!!! CLIENT FAILURE !!!
+
+Arguments: {args}
+Exit code: {exitcode}
+
+!!! STDOUT !!!
+==============
+
+{stdout}
+
+!!! STDERR !!!
+==============
+
+{stderr}
+"""
+
 
 class VerificationMaterials:
     """
@@ -98,13 +115,21 @@ class SigstoreClient:
         """
         Execute a command against the Sigstore client.
         """
-        subprocess.run(
-            [self.entrypoint, *args],
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            check=True,
-        )
+        try:
+            subprocess.run(
+                [self.entrypoint, *args],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                check=True,
+            )
+        except subprocess.CalledProcessError as cpe:
+            assert False, _CLIENT_ERROR_MSG.format(
+                exitcode=cpe.returncode,
+                args=cpe.args,
+                stdout=cpe.stdout,
+                stderr=cpe.stderr,
+            )
 
     @singledispatchmethod
     def sign(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
