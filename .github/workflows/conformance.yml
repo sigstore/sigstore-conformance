@@ -26,4 +26,3 @@ jobs:
         id: sigstore-conformance
         with:
           entrypoint: ${{ github.workspace }}/sigstore-python-conformance
-          internal-be-careful-debug: "true"

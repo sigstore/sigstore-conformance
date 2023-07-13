@@ -29,6 +29,10 @@ Exit code: {exitcode}
 """
 
 
+class ClientFail(Exception):
+    pass
+
+
 class VerificationMaterials:
     """
     A wrapper around verification materials. Materials can be either bundles
@@ -124,12 +128,13 @@ class SigstoreClient:
                 check=True,
             )
         except subprocess.CalledProcessError as cpe:
-            assert False, _CLIENT_ERROR_MSG.format(
+            msg = _CLIENT_ERROR_MSG.format(
                 exitcode=cpe.returncode,
                 args=cpe.args,
                 stdout=cpe.stdout,
                 stderr=cpe.stderr,
             )
+            raise ClientFail(msg)
 
     @singledispatchmethod
     def sign(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
