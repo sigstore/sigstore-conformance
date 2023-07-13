@@ -152,7 +152,7 @@ def _fatal_help(msg):
 sigstore_conformance_args = []
 
 if _DEBUG:
-    sigstore_conformance_args.extend(["-s", "-vv", "--showlocals"])
+    sigstore_conformance_args.extend(["-s", "-vv"])
 
 entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
 if entrypoint:
@@ -173,21 +173,5 @@ if status == 0:
 else:
     _summary("❌ sigstore-conformance found one or more test failures")
 
-_summary(
-    """
-<details>
-<summary>
-    Raw `sigstore-conformance` output
-</summary>
-
-```
-    """
-)
-_summary(
-    """
-```
-</details>
-    """
-)
 
 sys.exit(status)
