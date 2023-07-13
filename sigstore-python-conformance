@@ -5,7 +5,6 @@ A wrapper to convert `sigstore-conformance` CLI protocol invocations to match `s
 """
 
 import os
-import subprocess
 import sys
 
 SUBCMD_REPLACEMENTS = {
