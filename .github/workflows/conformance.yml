@@ -19,7 +19,7 @@ jobs:
 
       - name: install sigstore-python
         # TODO: Remove this version pin once the 2.x series is released.
-        run: pip install "git+https://github.com/sigstore/sigstore-python.git@ww/bump-protobuf-specs"
+        run: pip install "sigstore==2.0.0rc2"
 
       - name: conformance test sigstore-python
         uses: ./
