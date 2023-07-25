@@ -5,8 +5,6 @@
 # all state is passed in as environment variables
 
 import os
-import string
-import subprocess
 import sys
 import time
 from datetime import datetime, timedelta
@@ -15,10 +13,8 @@ from pathlib import Path
 from typing import Optional
 from zipfile import ZipFile
 
+import pytest
 import requests
-
-_HERE = Path(__file__).parent.resolve()
-_TEMPLATES = _HERE / "templates"
 
 _SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY")).open("a")  # type: ignore
 _RENDER_SUMMARY = os.getenv("GHA_SIGSTORE_CONFORMANCE_SUMMARY", "true") == "true"
@@ -120,11 +116,6 @@ def _get_oidc_token() -> str:
         return artifact_file.read().decode().rstrip()
 
 
-def _template(name):
-    path = _TEMPLATES / f"{name}.md"
-    return string.Template(path.read_text())
-
-
 def _summary(msg):
     if _RENDER_SUMMARY:
         print(msg, file=_SUMMARY)
@@ -139,8 +130,8 @@ def _log(msg):
     print(msg, file=sys.stderr)
 
 
-def _sigstore_conformance(*args):
-    return ["pytest", _ACTION_PATH / "test", *args]
+def _sigstore_conformance(*args) -> int:
+    return pytest.main([str(_ACTION_PATH / "test"), *args])
 
 
 def _fatal_help(msg):
@@ -165,35 +156,12 @@ sigstore_conformance_args.extend(["--identity-token", oidc_token])
 
 _debug(f"running: sigstore-conformance {[str(a) for a in sigstore_conformance_args]}")
 
-status = subprocess.run(
-    _sigstore_conformance(*sigstore_conformance_args),
-    text=True,
-    capture_output=True,
-)
+status = _sigstore_conformance(*sigstore_conformance_args)
 
-_debug(status.stdout)
-
-if status.returncode == 0:
+if status == 0:
     _summary("🎉 sigstore-conformance exited successfully")
 else:
     _summary("❌ sigstore-conformance found one or more test failures")
 
-_summary(
-    """
-<details>
-<summary>
-    Raw `sigstore-conformance` output
-</summary>
 
-```
-    """
-)
-_log(status.stdout)
-_summary(
-    """
-```
-</details>
-    """
-)
-
-sys.exit(status.returncode)
+sys.exit(status)

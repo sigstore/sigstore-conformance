@@ -4,7 +4,7 @@
 A wrapper to convert `sigstore-conformance` CLI protocol invocations to match `sigstore-python`.
 """
 
-import subprocess
+import os
 import sys
 
 SUBCMD_REPLACEMENTS = {
@@ -40,4 +40,4 @@ elif subcommand == "verify":
 else:
     raise ValueError(f"unsupported subcommand: {subcommand}")
 
-subprocess.run(fixed_args, text=True, check=True)
+os.execvp("sigstore", fixed_args)

@@ -1,6 +1,5 @@
 from pathlib import Path
-from subprocess import CalledProcessError
-from test.client import BundleMaterials, SigstoreClient
+from test.client import BundleMaterials, ClientFail, SigstoreClient
 from test.conftest import _MakeMaterialsByType
 
 import pytest  # type: ignore
@@ -20,7 +19,7 @@ def test_verify_rejects_root(
         "has_root_in_chain.txt", BundleMaterials
     )
 
-    with pytest.raises(CalledProcessError):
+    with pytest.raises(ClientFail):
         client.verify(materials, input_path)
 
 
@@ -67,7 +66,7 @@ def test_verify_rejects_staging_cert(
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
     materials.bundle = Path("a.txt.staging.sigstore")
 
-    with pytest.raises(CalledProcessError):
+    with pytest.raises(ClientFail):
         client.verify(materials, input_path)
 
 
@@ -83,7 +82,7 @@ def test_verify_rejects_invalid_set(
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
     materials.bundle = Path("a.txt.invalid_set.sigstore")
 
-    with pytest.raises(CalledProcessError):
+    with pytest.raises(ClientFail):
         client.verify(materials, input_path)
 
 
@@ -98,7 +97,7 @@ def test_verify_rejects_invalid_signature(
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
     materials.bundle = Path("a.txt.invalid_signature.sigstore")
 
-    with pytest.raises(CalledProcessError):
+    with pytest.raises(ClientFail):
         client.verify(materials, input_path)
 
 
@@ -113,5 +112,5 @@ def test_verify_rejects_invalid_digest(
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
     materials.bundle = Path("a.txt.invalid_digest.sigstore")
 
-    with pytest.raises(CalledProcessError):
+    with pytest.raises(ClientFail):
         client.verify(materials, input_path)
