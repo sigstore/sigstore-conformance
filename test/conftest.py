@@ -6,12 +6,8 @@ from typing import Callable, Tuple, TypeVar
 
 import pytest  # type: ignore
 
-from .client import (
-    BundleMaterials,
-    SignatureCertificateMaterials,
-    SigstoreClient,
-    VerificationMaterials,
-)
+from .client import (BundleMaterials, SignatureCertificateMaterials,
+                     SigstoreClient, VerificationMaterials)
 
 _M = TypeVar("_M", bound=VerificationMaterials)
 _MakeMaterialsByType = Callable[[str, _M], Tuple[Path, _M]]
