@@ -31,7 +31,7 @@ class OidcTokenError(Exception):
 
 def pytest_addoption(parser):
     """
-    Add the `--entrypoint`, `--identity-token`, and `--skip-signing` flags to
+    Add the `--entrypoint`, `--github-token`, and `--skip-signing` flags to
     the `pytest` CLI.
     """
     parser.addoption(
@@ -42,9 +42,9 @@ def pytest_addoption(parser):
         type=str,
     )
     parser.addoption(
-        "--identity-token",
+        "--github-token",
         action="store",
-        help="the OIDC token to supply to the Sigstore client under test",
+        help="the GitHub token to supply to the Sigstore client under test",
         required=True,
         type=str,
     )
@@ -70,12 +70,7 @@ def pytest_configure(config):
 
 @pytest.fixture
 def identity_token(pytestconfig):
-    gh_token = os.getenv("GHA_SIGSTORE_GITHUB_TOKEN")
-    if gh_token is None:
-        raise OidcTokenError(
-            "`GHA_SIGSTORE_GITHUB_TOKEN` environment variable not found"
-        )
-
+    gh_token = pytestconfig.getoption("--github-token")
     session = requests.Session()
     headers = {
         "Accept": "application/vnd.github+json",

@@ -56,7 +56,7 @@ if skip_signing:
 
 gh_token = os.getenv("GHA_SIGSTORE_GITHUB_TOKEN")
 if gh_token:
-    sigstore_conformance_args.extend(["--identity-token", gh_token])
+    sigstore_conformance_args.extend(["--github-token", gh_token])
 
 _debug(f"running: sigstore-conformance {[str(a) for a in sigstore_conformance_args]}")
 

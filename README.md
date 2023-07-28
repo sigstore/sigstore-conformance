@@ -57,6 +57,16 @@ In the example above, the workflow is installing [sigstore-python](https://githu
 and providing `sigstore` as the `entrypoint` since this is the command used to
 invoke the client.
 
+## Development
+
+Running the conformance suite locally,
+
+```sh
+(env) $ pytest --entrypoint=SIGSTORE_CLIENT --identity-token=$(gh auth token)
+```
+
+Using the [`gh` CLI](https://cli.github.com/) and noting SIGSTORE_CLIENT is the absolute path to a client implementing the [CLI specification](https://github.com/sigstore/sigstore-conformance/blob/main/docs/cli_protocol.md).
+
 ## Licensing
 
 `sigstore-conformance` is licensed under the Apache 2.0 License.
