@@ -7,6 +7,20 @@ from cryptography import x509
 from sigstore_protobuf_specs.dev.sigstore.bundle.v1 import Bundle
 
 
+def test_verify(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
+    """
+    Test the happy path of verification
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.good.sigstore")
+
+    client.verify(materials, input_path)
+
+
 def test_verify_rejects_root(
     client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
 ) -> None:
@@ -23,6 +37,7 @@ def test_verify_rejects_root(
         client.verify(materials, input_path)
 
 
+@pytest.mark.signing
 def test_sign_does_not_produce_root(
     client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
 ) -> None:
@@ -101,16 +116,16 @@ def test_verify_rejects_invalid_signature(
         client.verify(materials, input_path)
 
 
-def test_verify_rejects_invalid_digest(
+def test_verify_rejects_different_materials(
     client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
 ) -> None:
     """
-    Check that the client rejects a bundle with a modified digest.
+    Check that the client rejects a bundle for different materials.
     """
 
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_digest.sigstore")
+    input_path, materials = make_materials_by_type("b.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.good.sigstore")
 
     with pytest.raises(ClientFail):
         client.verify(materials, input_path)
