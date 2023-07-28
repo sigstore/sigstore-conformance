@@ -1,5 +1,4 @@
 from pathlib import Path
-from subprocess import CalledProcessError
 from test.client import BundleMaterials, ClientFail, SigstoreClient
 from test.conftest import _MakeMaterialsByType
 
@@ -17,6 +16,7 @@ def test_verify(
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.good.sigstore")
 
     client.verify(materials, input_path)
 
@@ -33,7 +33,7 @@ def test_verify_rejects_root(
         "has_root_in_chain.txt", BundleMaterials
     )
 
-    with pytest.raises(CalledProcessError):
+    with pytest.raises(ClientFail):
         client.verify(materials, input_path)
 
 
