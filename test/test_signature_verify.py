@@ -64,6 +64,7 @@ def test_verify_mismatch(
     client.verify(a_materials, a_artifact_path)
 
 
+@pytest.mark.signing
 def test_verify_sigcrt(
     client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
 ) -> None:
