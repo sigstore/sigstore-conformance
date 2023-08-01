@@ -11,8 +11,12 @@ from zipfile import ZipFile
 import pytest  # type: ignore
 import requests
 
-from .client import (BundleMaterials, SignatureCertificateMaterials,
-                     SigstoreClient, VerificationMaterials)
+from .client import (
+    BundleMaterials,
+    SignatureCertificateMaterials,
+    SigstoreClient,
+    VerificationMaterials,
+)
 
 _M = TypeVar("_M", bound=VerificationMaterials)
 _MakeMaterialsByType = Callable[[str, _M], Tuple[Path, _M]]
@@ -23,6 +27,8 @@ _OIDC_BEACON_API_URL = (
     "actions"
 )
 _OIDC_BEACON_WORKFLOW_ID = 55399612
+
+_XFAIL_LIST = os.getenv("GHA_SIGSTORE_CONFORMANCE_XFAIL", "").split()
 
 
 class OidcTokenError(Exception):
@@ -208,3 +214,11 @@ def workspace():
 
     yield Path(workspace.name)
     workspace.cleanup()
+
+
+@pytest.fixture(autouse=True)
+def conformance_xfail(request):
+    if request.node.originalname in _XFAIL_LIST:
+        request.node.add_marker(
+            pytest.mark.xfail(reason="skipped by suite runner", strict=True)
+        )
