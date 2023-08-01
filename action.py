@@ -28,17 +28,8 @@ def _debug(msg):
         print(f"\033[93mDEBUG: {msg}\033[0m", file=sys.stderr)
 
 
-def _log(msg):
-    print(msg, file=sys.stderr)
-
-
 def _sigstore_conformance(*args) -> int:
     return pytest.main([str(_ACTION_PATH / "test"), *args])
-
-
-def _fatal_help(msg):
-    print(f"::error::❌ {msg}")
-    sys.exit(1)
 
 
 sigstore_conformance_args = []
