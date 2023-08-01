@@ -50,7 +50,9 @@ entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
 if entrypoint:
     sigstore_conformance_args.extend(["--entrypoint", entrypoint])
 
-skip_signing = os.getenv("GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING")
+skip_signing = (
+    os.getenv("GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING", "false").lower() == "true"
+)
 if skip_signing:
     sigstore_conformance_args.extend(["--skip-signing"])
 
