@@ -26,9 +26,7 @@ if subcmd in SUBCMD_REPLACEMENTS:
     fixed_args[0] = SUBCMD_REPLACEMENTS[subcmd]
 
 # Replace incompatible flags.
-fixed_args = [
-    ARG_REPLACEMENTS[arg] if arg in ARG_REPLACEMENTS else arg for arg in fixed_args
-]
+fixed_args = [ARG_REPLACEMENTS[arg] if arg in ARG_REPLACEMENTS else arg for arg in fixed_args]
 
 # Fix-up the subcommand: the conformance suite uses `verify`, but
 # `sigstore` requires `verify identity` for identity based verifications.

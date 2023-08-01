@@ -172,9 +172,7 @@ class SigstoreClient:
         )
 
     @sign.register
-    def _sign_for_bundle(
-        self, materials: BundleMaterials, artifact: os.PathLike
-    ) -> None:
+    def _sign_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
         """
         Sign an artifact with the Sigstore client, producing a bundle.
 
@@ -236,9 +234,7 @@ class SigstoreClient:
         )
 
     @verify.register
-    def _verify_for_bundle(
-        self, materials: BundleMaterials, artifact: os.PathLike
-    ) -> None:
+    def _verify_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
         """
         Verify an artifact given a bundle with the Sigstore client.
 

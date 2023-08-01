@@ -12,9 +12,7 @@ import pytest
 
 _SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY")).open("a")  # type: ignore
 _RENDER_SUMMARY = os.getenv("GHA_SIGSTORE_CONFORMANCE_SUMMARY", "true") == "true"
-_DEBUG = (
-    os.getenv("GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG", "false") != "false"
-)
+_DEBUG = os.getenv("GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG", "false") != "false"
 _ACTION_PATH = Path(os.getenv("GITHUB_ACTION_PATH"))  # type: ignore
 
 
@@ -28,17 +26,8 @@ def _debug(msg):
         print(f"\033[93mDEBUG: {msg}\033[0m", file=sys.stderr)
 
 
-def _log(msg):
-    print(msg, file=sys.stderr)
-
-
 def _sigstore_conformance(*args) -> int:
     return pytest.main([str(_ACTION_PATH / "test"), *args])
-
-
-def _fatal_help(msg):
-    print(f"::error::❌ {msg}")
-    sys.exit(1)
 
 
 sigstore_conformance_args = []
@@ -50,7 +39,7 @@ entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
 if entrypoint:
     sigstore_conformance_args.extend(["--entrypoint", entrypoint])
 
-skip_signing = os.getenv("GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING")
+skip_signing = os.getenv("GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING", "false").lower() == "true"
 if skip_signing:
     sigstore_conformance_args.extend(["--skip-signing"])
 

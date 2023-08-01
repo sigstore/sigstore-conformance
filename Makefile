@@ -18,6 +18,5 @@ dev: env/pyvenv.cfg
 .PHONY: lint
 lint: env/pyvenv.cfg $(ALL_PY_SRCS)
 	./env/bin/python -m black $(ALL_PY_SRCS)
-	./env/bin/python -m isort $(ALL_PY_SRCS)
-	./env/bin/python -m flake8 --max-line-length 100 $(ALL_PY_SRCS)
+	./env/bin/python -m ruff --fix $(ALL_PY_SRCS)
 	./env/bin/python -m mypy action.py test/
