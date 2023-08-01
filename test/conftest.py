@@ -2,13 +2,14 @@ import os
 import shutil
 import tempfile
 import time
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from io import BytesIO
 from pathlib import Path
-from typing import Callable, Optional, Tuple, TypeVar
+from typing import TypeVar
 from zipfile import ZipFile
 
-import pytest  # type: ignore
+import pytest
 import requests
 
 from .client import (
@@ -19,8 +20,8 @@ from .client import (
 )
 
 _M = TypeVar("_M", bound=VerificationMaterials)
-_MakeMaterialsByType = Callable[[str, _M], Tuple[Path, _M]]
-_MakeMaterials = Callable[[str], Tuple[Path, VerificationMaterials]]
+_MakeMaterialsByType = Callable[[str, _M], tuple[Path, _M]]
+_MakeMaterials = Callable[[str], tuple[Path, VerificationMaterials]]
 
 _OIDC_BEACON_API_URL = (
     "https://api.github.com/repos/sigstore-conformance/extremely-dangerous-public-oidc-beacon/"
@@ -35,7 +36,7 @@ class OidcTokenError(Exception):
     pass
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser) -> None:
     """
     Add the `--entrypoint`, `--github-token`, and `--skip-signing` flags to
     the `pytest` CLI.
@@ -63,19 +64,15 @@ def pytest_addoption(parser):
 
 def pytest_runtest_setup(item):
     if "signing" in item.keywords and item.config.getoption("--skip-signing"):
-        pytest.skip(
-            "skipping test that requires signing support due to `--skip-signing` flag"
-        )
+        pytest.skip("skipping test that requires signing support due to `--skip-signing` flag")
 
 
 def pytest_configure(config):
-    config.addinivalue_line(
-        "markers", "signing: mark test as requiring signing functionality"
-    )
+    config.addinivalue_line("markers", "signing: mark test as requiring signing functionality")
 
 
 @pytest.fixture
-def identity_token(pytestconfig):
+def identity_token(pytestconfig) -> str:
     gh_token = pytestconfig.getoption("--github-token")
     session = requests.Session()
     headers = {
@@ -84,13 +81,11 @@ def identity_token(pytestconfig):
         "Authorization": f"Bearer {gh_token}",
     }
 
-    workflow_time: Optional[datetime] = None
+    workflow_time: datetime | None = None
     run_id: str
 
     # We need a token that was generated in the last 5 minutes. Keep checking until we find one.
-    while workflow_time is None or datetime.now() - workflow_time >= timedelta(
-        minutes=5
-    ):
+    while workflow_time is None or datetime.now() - workflow_time >= timedelta(minutes=5):
         # If there's a lot of traffic in the GitHub Actions cron queue, we might not have a valid
         # token to use. In that case, wait for 30 seconds and try again.
         if workflow_time is not None:
@@ -116,9 +111,7 @@ def identity_token(pytestconfig):
             continue
 
         run_id = workflow_run["id"]
-        workflow_time = datetime.strptime(
-            workflow_run["run_started_at"], "%Y-%m-%dT%H:%M:%SZ"
-        )
+        workflow_time = datetime.strptime(workflow_run["run_started_at"], "%Y-%m-%dT%H:%M:%SZ")
 
     resp = session.get(
         url=_OIDC_BEACON_API_URL + f"/runs/{run_id}/artifacts",
@@ -172,7 +165,7 @@ def make_materials_by_type() -> _MakeMaterialsByType:
 
     def _make_materials_by_type(
         input_name: str, cls: VerificationMaterials
-    ) -> Tuple[Path, VerificationMaterials]:
+    ) -> tuple[Path, VerificationMaterials]:
         input_path = Path(input_name)
         output = cls.from_input(input_path)
 
@@ -219,6 +212,4 @@ def workspace():
 @pytest.fixture(autouse=True)
 def conformance_xfail(request):
     if request.node.originalname in _XFAIL_LIST:
-        request.node.add_marker(
-            pytest.mark.xfail(reason="skipped by suite runner", strict=True)
-        )
+        request.node.add_marker(pytest.mark.xfail(reason="skipped by suite runner", strict=True))

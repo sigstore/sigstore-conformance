@@ -34,9 +34,7 @@ def test_verify_empty(client: SigstoreClient, make_materials: _MakeMaterials) ->
 
 
 @pytest.mark.signing
-def test_verify_mismatch(
-    client: SigstoreClient, make_materials: _MakeMaterials
-) -> None:
+def test_verify_mismatch(client: SigstoreClient, make_materials: _MakeMaterials) -> None:
     """
     Tests that verification fails with mismatching artifacts, certificates and
     signatures.
@@ -72,12 +70,8 @@ def test_verify_sigcrt(
     Test cases for the signature+certificate flow: empty sigs/crts and
     mismatched sigs/crts.
     """
-    a_artifact_path, a_materials = make_materials_by_type(
-        "a.txt", SignatureCertificateMaterials
-    )
-    b_artifact_path, b_materials = make_materials_by_type(
-        "b.txt", SignatureCertificateMaterials
-    )
+    a_artifact_path, a_materials = make_materials_by_type("a.txt", SignatureCertificateMaterials)
+    b_artifact_path, b_materials = make_materials_by_type("b.txt", SignatureCertificateMaterials)
 
     # Sign a.txt, b.txt.
     client.sign(a_materials, a_artifact_path)
