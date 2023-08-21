@@ -112,6 +112,37 @@ def test_verify_rejects_invalid_signature(
         client.verify(materials, input_path)
 
 
+def test_verify_rejects_invalid_key(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
+    """
+    Check that the client rejects a bundle with a modified public key in the
+    hashrekord entry.
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_key.sigstore")
+
+    with pytest.raises(ClientFail):
+        client.verify(materials, input_path)
+
+
+def test_verify_rejects_invalid_inclusion_proof(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
+    """
+    Check that the client rejects a bundle with an old inclusion proof
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_inclusion_proof.sigstore")
+
+    with pytest.raises(ClientFail):
+        client.verify(materials, input_path)
+
+
 def test_verify_rejects_different_materials(
     client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
 ) -> None:
