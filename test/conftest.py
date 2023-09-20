@@ -52,7 +52,6 @@ def pytest_addoption(parser) -> None:
         "--github-token",
         action="store",
         help="the GitHub token to supply to the Sigstore client under test",
-        required=True,
         type=str,
     )
     parser.addoption(
@@ -73,6 +72,9 @@ def pytest_configure(config):
 
 @pytest.fixture
 def identity_token(pytestconfig) -> str:
+    if pytestconfig.getoption("--skip-signing"):
+        return ""
+
     gh_token = pytestconfig.getoption("--github-token")
     session = requests.Session()
     headers = {

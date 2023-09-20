@@ -62,7 +62,13 @@ invoke the client.
 Running the conformance suite locally,
 
 ```sh
-(env) $ pytest --entrypoint=SIGSTORE_CLIENT --identity-token=$(gh auth token)
+(env) $ pytest test --entrypoint=SIGSTORE_CLIENT --identity-token=$(gh auth token)
+```
+
+Or if you are only checking verification use cases,
+
+```sh
+(env) $ pytest test --skip-signing --entrypoint=SIGSTORE_CLIENT
 ```
 
 Using the [`gh` CLI](https://cli.github.com/) and noting SIGSTORE_CLIENT is the absolute path to a client implementing the [CLI specification](https://github.com/sigstore/sigstore-conformance/blob/main/docs/cli_protocol.md).
