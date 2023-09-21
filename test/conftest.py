@@ -36,6 +36,10 @@ class OidcTokenError(Exception):
     pass
 
 
+class ConfigError(Exception):
+    pass
+
+
 def pytest_addoption(parser) -> None:
     """
     Add the `--entrypoint`, `--github-token`, and `--skip-signing` flags to
@@ -67,7 +71,18 @@ def pytest_runtest_setup(item):
 
 
 def pytest_configure(config):
+    if not config.getoption("--github-token") and not config.getoption("--skip-signing"):
+        raise ConfigError("Please specify one of '--github-token' or '--skip-signing'")
+
     config.addinivalue_line("markers", "signing: mark test as requiring signing functionality")
+
+
+def pytest_internalerror(excrepr, excinfo):
+    if excinfo.type == ConfigError:
+        print(excinfo.value)
+        return True
+
+    return False
 
 
 @pytest.fixture
