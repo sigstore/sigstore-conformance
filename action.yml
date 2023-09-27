@@ -15,6 +15,10 @@ inputs:
     description: "skip tests that involve signing (default false)"
     required: false
     default: "false"
+  supports-trusted-root:
+    description: "library under test supports providing a custom trusted root"
+    required: false
+    defailt: "false"
   xfail:
     description: "one or more tests that are expected to fail, whitespace-separated"
     required: false
@@ -37,6 +41,7 @@ runs:
         GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT: "${{ inputs.entrypoint }}"
         GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG: "${{ inputs.internal-be-careful-debug }}"
         GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING: "${{ inputs.skip-signing }}"
+        GHA_SIGSTORE_CONFORMANCE_SUPPORTS_TRUSTED_ROOT: "${{ inputs.supports-trusted-root }}"
         GHA_SIGSTORE_CONFORMANCE_XFAIL: "${{ inputs.xfail }}"
         GHA_SIGSTORE_GITHUB_TOKEN: "${{ github.token }}"
       shell: bash

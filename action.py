@@ -43,6 +43,12 @@ skip_signing = os.getenv("GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING", "false").lower
 if skip_signing:
     sigstore_conformance_args.extend(["--skip-signing"])
 
+supports_trustedroot = (
+    os.getenv("GHA_SIGSTORE_CONFORMANCE_SUPPORTS_TRUSTED_ROOT", "false").lower() == "true"
+)
+if supports_trustedroot:
+    sigstore_conformance_args.extend(["--supports-trusted-root"])
+
 gh_token = os.getenv("GHA_SIGSTORE_GITHUB_TOKEN")
 if gh_token:
     sigstore_conformance_args.extend(["--github-token", gh_token])

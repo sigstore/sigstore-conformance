@@ -63,11 +63,22 @@ def pytest_addoption(parser) -> None:
         action="store_true",
         help="skip tests that require signing functionality",
     )
+    parser.addoption(
+        "--supports-trusted-root",
+        action="store_true",
+        help="runs tests that include custom trusted root",
+    )
 
 
 def pytest_runtest_setup(item):
     if "signing" in item.keywords and item.config.getoption("--skip-signing"):
         pytest.skip("skipping test that requires signing support due to `--skip-signing` flag")
+
+    if "trustedroot" in item.keywords and not item.config.getoption("--supports-trusted-root"):
+        pytest.skip(
+            "skipping test that make use of custom trust root; call conformance test with "
+            "`--supports-trusted-root` flag if entrypoint supports `--trusted-root`"
+        )
 
 
 def pytest_configure(config):
@@ -75,6 +86,7 @@ def pytest_configure(config):
         raise ConfigError("Please specify one of '--github-token' or '--skip-signing'")
 
     config.addinivalue_line("markers", "signing: mark test as requiring signing functionality")
+    config.addinivalue_line("markers", "trustedroot: supports supplying a custom trusted root")
 
 
 def pytest_internalerror(excrepr, excinfo):
@@ -162,7 +174,8 @@ def client(pytestconfig, identity_token):
     Parametrize each test with the client under test.
     """
     entrypoint = pytestconfig.getoption("--entrypoint")
-    return SigstoreClient(entrypoint, identity_token)
+    supports_trusted_root = pytestconfig.getoption("--supports-trusted-root")
+    return SigstoreClient(entrypoint, supports_trusted_root, identity_token)
 
 
 @pytest.fixture
