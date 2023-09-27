@@ -111,14 +111,13 @@ class SigstoreClient:
     methods should not be called directly.
     """
 
-    def __init__(self, entrypoint: str, supports_trusted_root: bool, identity_token: str) -> None:
+    def __init__(self, entrypoint: str, identity_token: str) -> None:
         """
         Create a new `SigstoreClient`.
 
         `entrypoint` is the command to invoke the Sigstore client.
         """
         self.entrypoint = entrypoint
-        self.supports_trusted_root = supports_trusted_root
         self.identity_token = identity_token
         self.completed_process: subprocess.CompletedProcess | None = None
 

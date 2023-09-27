@@ -174,8 +174,7 @@ def client(pytestconfig, identity_token):
     Parametrize each test with the client under test.
     """
     entrypoint = pytestconfig.getoption("--entrypoint")
-    supports_trusted_root = pytestconfig.getoption("--supports-trusted-root")
-    return SigstoreClient(entrypoint, supports_trusted_root, identity_token)
+    return SigstoreClient(entrypoint, identity_token)
 
 
 @pytest.fixture
