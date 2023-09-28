@@ -26,7 +26,6 @@ def test_verify_invalid_certificate_chain(client: SigstoreClient) -> None:
         client.verify(materials, artifact_path)
 
 
-@pytest.mark.trustedroot
 def test_verify_with_trust_root(client: SigstoreClient) -> None:
     """
     Test verifying with the correct trusted root
@@ -44,7 +43,6 @@ def test_verify_with_trust_root(client: SigstoreClient) -> None:
     client.verify(materials, artifact_path)
 
 
-@pytest.mark.trustedroot
 def test_verify_trust_root_with_invalid_ct_keys(client: SigstoreClient) -> None:
     """
     Test verifying with a trusted root with an incorrect CT keys.
