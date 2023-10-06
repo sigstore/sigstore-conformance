@@ -137,13 +137,9 @@ def identity_token(pytestconfig) -> str:
     resp.raise_for_status()
 
     resp_json = resp.json()
-    artifact_id = None
-
-    for oidc_artifact in resp_json["artifacts"]:
-        if oidc_artifact["name"] == "oidc-token":
-            artifact_id = oidc_artifact["id"]
-
-    if not artifact_id:
+    try:
+        artifact_id = next(a["id"] for a in resp_json["artifacts"] if a["name"] == "oidc-token")
+    except StopIteration:
         raise OidcTokenError("Artifact 'oidc-token' could not be found")
 
     # Download the OIDC token artifact and unzip the archive.
