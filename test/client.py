@@ -13,7 +13,7 @@ CERTIFICATE_IDENTITY = (
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
 
 _CLIENT_ERROR_MSG = """
-Arguments: {args}
+Command: {command}
 Exit code: {exitcode}
 
 !!! STDOUT !!!
@@ -135,7 +135,7 @@ class SigstoreClient:
         except subprocess.CalledProcessError as cpe:
             msg = _CLIENT_ERROR_MSG.format(
                 exitcode=cpe.returncode,
-                args=cpe.args,
+                command=" ".join(map(str, cpe.args)),
                 stdout=cpe.stdout,
                 stderr=cpe.stderr,
             )
@@ -151,7 +151,7 @@ class SigstoreClient:
             assert self.completed_process
             msg = _CLIENT_ERROR_MSG.format(
                 exitcode=self.completed_process.returncode,
-                args=self.completed_process.args,
+                command=" ".join(map(str, self.completed_process.args)),
                 stdout=self.completed_process.stdout,
                 stderr=self.completed_process.stderr,
             )
