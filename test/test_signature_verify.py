@@ -3,7 +3,7 @@ from test.conftest import _MakeMaterials, _MakeMaterialsByType
 
 import pytest  # type: ignore
 
-from .client import ClientFail, SignatureCertificateMaterials, SigstoreClient
+from .client import SignatureCertificateMaterials, SigstoreClient
 
 
 @pytest.mark.signing
@@ -26,7 +26,7 @@ def test_verify_empty(client: SigstoreClient, make_materials: _MakeMaterials) ->
     blank_path.touch()
 
     # Verify with an empty artifact.
-    with pytest.raises(ClientFail):
+    with client.raises():
         client.verify(materials, blank_path)
 
     # Verify with correct inputs.
@@ -55,7 +55,7 @@ def test_verify_mismatch(client: SigstoreClient, make_materials: _MakeMaterials)
     assert b_materials.exists()
 
     # Verify with a mismatching artifact.
-    with pytest.raises(ClientFail):
+    with client.raises():
         client.verify(a_materials, b_artifact_path)
 
     # Verify with correct inputs.
@@ -82,7 +82,7 @@ def test_verify_sigcrt(
     blank_path.touch()
 
     # Verify with an empty signature.
-    with pytest.raises(ClientFail):
+    with client.raises():
         blank_sig = SignatureCertificateMaterials()
         blank_sig.signature = blank_path
         blank_sig.certificate = a_materials.certificate
@@ -90,7 +90,7 @@ def test_verify_sigcrt(
         client.verify(blank_sig, a_artifact_path)
 
     # Verify with an empty certificate.
-    with pytest.raises(ClientFail):
+    with client.raises():
         blank_crt = SignatureCertificateMaterials()
         blank_crt.signature = a_materials.signature
         blank_crt.certificate = blank_path
@@ -98,7 +98,7 @@ def test_verify_sigcrt(
         client.verify(blank_crt, a_artifact_path)
 
     # Verify with a mismatching certificate.
-    with pytest.raises(ClientFail):
+    with client.raises():
         crt_mismatch = SignatureCertificateMaterials()
         crt_mismatch.certificate = b_materials.certificate
         crt_mismatch.signature = a_materials.signature
@@ -106,7 +106,7 @@ def test_verify_sigcrt(
         client.verify(crt_mismatch, a_artifact_path)
 
     # Verify with a mismatching signature.
-    with pytest.raises(ClientFail):
+    with client.raises():
         sig_mismatch = SignatureCertificateMaterials()
         sig_mismatch.certificate = a_materials.certificate
         sig_mismatch.signature = b_materials.signature
