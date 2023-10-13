@@ -1,4 +1,5 @@
 from __future__ import annotations
+from contextlib import contextmanager
 
 import os
 import subprocess
@@ -12,8 +13,6 @@ CERTIFICATE_IDENTITY = (
 CERTIFICATE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
 
 _CLIENT_ERROR_MSG = """
-!!! CLIENT FAILURE !!!
-
 Arguments: {args}
 Exit code: {exitcode}
 
@@ -30,6 +29,10 @@ Exit code: {exitcode}
 
 
 class ClientFail(Exception):
+    pass
+
+
+class ClientUnexpectedSuccess(Exception):
     pass
 
 
@@ -114,13 +117,15 @@ class SigstoreClient:
         """
         self.entrypoint = entrypoint
         self.identity_token = identity_token
+        self.completed_process: subprocess.CompletedProcess | None = None
 
     def run(self, *args) -> None:
         """
         Execute a command against the Sigstore client.
         """
+        self.completed_process = None
         try:
-            subprocess.run(
+            self.completed_process = subprocess.run(
                 [self.entrypoint, *args],
                 text=True,
                 stdout=subprocess.PIPE,
@@ -135,6 +140,22 @@ class SigstoreClient:
                 stderr=cpe.stderr,
             )
             raise ClientFail(msg)
+
+    @contextmanager
+    def raises(self):
+        try:
+            yield
+        except ClientFail:
+            pass
+        else:
+            assert self.completed_process
+            msg = _CLIENT_ERROR_MSG.format(
+                exitcode=self.completed_process.returncode,
+                args=self.completed_process.args,
+                stdout=self.completed_process.stdout,
+                stderr=self.completed_process.stderr,
+            )
+            raise ClientUnexpectedSuccess(msg)
 
     @singledispatchmethod
     def sign(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
