@@ -18,8 +18,7 @@ jobs:
           cache: "pip"
 
       - name: install sigstore-python
-        # TODO: Remove this version pin once the 2.x series is released.
-        run: pip install "sigstore==2.0.0rc2"
+        run: pip install "sigstore ~= 2.0"
 
       - name: conformance test sigstore-python
         uses: ./
