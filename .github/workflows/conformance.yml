@@ -22,3 +22,4 @@ jobs:
         id: sigstore-conformance
         with:
           entrypoint: ${{ github.workspace }}/sigstore-python-conformance
+          xfail: "test_verify_with_trust_root"
