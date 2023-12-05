@@ -1,8 +1,8 @@
 from __future__ import annotations
-from contextlib import contextmanager
 
 import os
 import subprocess
+from contextlib import contextmanager
 from functools import singledispatchmethod
 from pathlib import Path
 

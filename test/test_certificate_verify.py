@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pytest  # type: ignore
-
 from .client import SignatureCertificateMaterials, SigstoreClient
 
 
@@ -60,5 +58,5 @@ def test_verify_trust_root_with_invalid_ct_keys(client: SigstoreClient) -> None:
     materials.signature = signature_path
     materials.trusted_root = trusted_root
 
-    with pytest.raises(ClientFail):
+    with client.raises():
         client.verify(materials, artifact_path)
