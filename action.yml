@@ -18,7 +18,7 @@ inputs:
   xfail:
     description: "one or more tests that are expected to fail, whitespace-separated"
     required: false
-    default: "test_verify_with_trust_root"
+    default: ""
 
 runs:
   using: "composite"
