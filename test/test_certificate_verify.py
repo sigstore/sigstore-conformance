@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pytest  # type: ignore
-
 from .client import SignatureCertificateMaterials, SigstoreClient
 
 
@@ -21,6 +19,44 @@ def test_verify_invalid_certificate_chain(client: SigstoreClient) -> None:
 
     materials.certificate = certificate_path
     materials.signature = signature_path
+
+    with client.raises():
+        client.verify(materials, artifact_path)
+
+
+def test_verify_with_trust_root(client: SigstoreClient) -> None:
+    """
+    Test verifying with the correct trusted root
+    """
+    artifact_path = Path("a.txt")
+    signature_path = Path("a.txt.good.sig")
+    certificate_path = Path("a.txt.good.crt")
+    trusted_root = Path("trusted_root.public_good.json")
+
+    materials = SignatureCertificateMaterials()
+    materials.certificate = certificate_path
+    materials.signature = signature_path
+    materials.trusted_root = trusted_root
+
+    client.verify(materials, artifact_path)
+
+
+def test_verify_trust_root_with_invalid_ct_keys(client: SigstoreClient) -> None:
+    """
+    Test verifying with a trusted root with an incorrect CT keys.
+
+    The artifact was signed with production, but the trusted root has staging
+    CT keys.
+    """
+    artifact_path = Path("a.txt")
+    signature_path = Path("a.txt.good.sig")
+    certificate_path = Path("a.txt.good.crt")
+    trusted_root = Path("trusted_root.bad_ct.json")
+
+    materials = SignatureCertificateMaterials()
+    materials.certificate = certificate_path
+    materials.signature = signature_path
+    materials.trusted_root = trusted_root
 
     with client.raises():
         client.verify(materials, artifact_path)

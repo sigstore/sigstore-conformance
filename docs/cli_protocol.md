@@ -60,7 +60,7 @@ ${ENTRYPOINT} sign-bundle --identity-token TOKEN --bundle FILE FILE
 #### Signature and certificate flow
 
 ```console
-${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL FILE
+${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE
 ```
 
 | Option | Description |
@@ -69,12 +69,13 @@ ${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-identity 
 | `--certificate FILE` | The path to the signing certificate to verify |
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
+| `--trusted-root` | The path of the custom trusted root to use to verify the signature |
 | `FILE` | The path to the artifact to verify |
 
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} verify-bundle --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL FILE
+${ENTRYPOINT} verify-bundle --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE
 ```
 
 | Option | Description |
@@ -82,4 +83,5 @@ ${ENTRYPOINT} verify-bundle --bundle FILE --certificate-identity IDENTITY --cert
 | `--bundle FILE` | The path to the Sigstore bundle to verify |
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
+| `--trusted-root` | The path of the custom trusted root to use to verify the bundle |
 | `FILE` | The path to the artifact to verify |
