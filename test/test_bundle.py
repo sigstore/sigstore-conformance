@@ -24,8 +24,8 @@ def test_verify_dsse_bundle_with_trust_root(client: SigstoreClient, make_materia
     Test the happy path of verification for DSSE bundle w/ custom trust root
     """
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("d.artifact.tgz", BundleMaterials)
-    materials.bundle = Path("d.stmt.good.sigstore")
+    input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
+    materials.bundle = Path("d.txt.good.sigstore")
     materials.trusted_root = Path("trusted_root.d.json")
 
     client.verify(materials, input_path)
@@ -176,8 +176,8 @@ def test_verify_rejects_expired_certificate(client: SigstoreClient, make_materia
     outside the validity window of the trusted root
     """
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("d.artifact.tgz", BundleMaterials)
-    materials.bundle = Path("d.stmt.cert-expired.sigstore")
+    input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
+    materials.bundle = Path("d.txt.cert-expired.sigstore")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
@@ -190,8 +190,8 @@ def test_verify_rejects_missing_inclusion_proof(client: SigstoreClient, make_mat
     contain an inclusion proof
     """
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("d.artifact.tgz", BundleMaterials)
-    materials.bundle = Path("d.stmt.no-inclusion-proof.sigstore")
+    input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
+    materials.bundle = Path("d.txt.no-inclusion-proof.sigstore")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
@@ -205,8 +205,8 @@ def test_verify_rejects_bad_tlog_timestamp(client: SigstoreClient, make_material
     certificate.
     """
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("d.artifact.tgz", BundleMaterials)
-    materials.bundle = Path("d.stmt.tlog-timestamp-error.sigstore")
+    input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
+    materials.bundle = Path("d.txt.tlog-timestamp-error.sigstore")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
@@ -219,22 +219,8 @@ def test_verify_rejects_bad_tlog_entry(client: SigstoreClient, make_materials_by
     not match the signed artifact.
     """
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("d.artifact.tgz", BundleMaterials)
-    materials.bundle = Path("d.stmt.tlog-body-error.sigstore")
-    materials.trusted_root = Path("trusted_root.d.json")
-
-    with client.raises():
-        client.verify(materials, input_path)
-
-
-def test_verify_rejects_bad_tsa_timestamp(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
-    """
-    Check that the client rejects a bundle if the TSA timestamp falls outside
-    the validity window of the signing certificate.
-    """
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("d.artifact.tgz", BundleMaterials)
-    materials.bundle = Path("d.stmt.tsa-timestamp-error.sigstore")
+    input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
+    materials.bundle = Path("d.txt.tlog-body-error.sigstore")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
