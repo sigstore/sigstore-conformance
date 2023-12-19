@@ -225,3 +225,16 @@ def test_verify_rejects_bad_tlog_entry(client: SigstoreClient, make_materials_by
 
     with client.raises():
         client.verify(materials, input_path)
+
+def test_verify_rejects_bad_tsa_timestamp(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+    """
+    Check that the client rejects a bundle if the TSA timestamp falls outside
+    the validity window of the signing certificate.
+    """
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
+    materials.bundle = Path("d.txt.tsa-timestamp-error.sigstore")
+    materials.trusted_root = Path("trusted_root.d.json")
+
+    with client.raises():
+        client.verify(materials, input_path)
