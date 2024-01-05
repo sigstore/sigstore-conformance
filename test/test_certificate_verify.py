@@ -60,3 +60,23 @@ def test_verify_trust_root_with_invalid_ct_keys(client: SigstoreClient) -> None:
 
     with client.raises():
         client.verify(materials, artifact_path)
+
+def test_verify_valid_cert_chain_but_only_leaf_on_log(client: SigstoreClient) -> None:
+    """
+    Test verifying all certificate verification should pass, but a log entry
+    could not be found because the provided chain is not on the log, only
+    the leaf is.
+
+    This is to ensure clients are checking the provided certificate chain to 
+    do log entry lookups, not just the leaf
+    """
+    artifact_path = Path("a.txt")
+    signature_path = Path("a.txt.good.sig")
+    certificate_path = Path("a.txt.good.full_crt")
+
+    materials = SignatureCertificateMaterials()
+    materials.certificate = certificate_path
+    materials.signature = signature_path
+
+    with client.raises():
+        client.verify(materials, artifact_path)
