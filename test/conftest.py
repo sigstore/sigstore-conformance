@@ -63,6 +63,11 @@ def pytest_addoption(parser) -> None:
         action="store_true",
         help="skip tests that require signing functionality",
     )
+    parser.addoption(
+        "--staging",
+        action="store_true",
+        help="run tests against staging",
+    )
 
 
 def pytest_runtest_setup(item):
@@ -162,7 +167,8 @@ def client(pytestconfig, identity_token):
     Parametrize each test with the client under test.
     """
     entrypoint = pytestconfig.getoption("--entrypoint")
-    return SigstoreClient(entrypoint, identity_token)
+    staging = pytestconfig.getoption("--staging")
+    return SigstoreClient(entrypoint, identity_token, staging)
 
 
 @pytest.fixture
