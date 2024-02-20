@@ -71,6 +71,12 @@ Or if you are only checking verification use cases,
 (env) $ pytest test --skip-signing --entrypoint=SIGSTORE_CLIENT
 ```
 
+You can also run the tests against staging by adding `--staging` on the command,
+
+```sh
+(env) $ pytest test --staging --entrypoint=SIGSTORE_CLIENT
+```
+
 Using the [`gh` CLI](https://cli.github.com/) and noting SIGSTORE_CLIENT is the absolute path to a client implementing the [CLI specification](https://github.com/sigstore/sigstore-conformance/blob/main/docs/cli_protocol.md).
 
 ## Licensing

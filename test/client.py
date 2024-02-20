@@ -111,7 +111,7 @@ class SigstoreClient:
     methods should not be called directly.
     """
 
-    def __init__(self, entrypoint: str, identity_token: str) -> None:
+    def __init__(self, entrypoint: str, identity_token: str, staging: bool) -> None:
         """
         Create a new `SigstoreClient`.
 
@@ -120,15 +120,20 @@ class SigstoreClient:
         self.entrypoint = entrypoint
         self.identity_token = identity_token
         self.completed_process: subprocess.CompletedProcess | None = None
+        self.staging = staging
 
     def run(self, *args) -> None:
         """
         Execute a command against the Sigstore client.
         """
         self.completed_process = None
+        full_command = [self.entrypoint, *args]
+        if self.staging:
+            full_command.append("--staging")
+
         try:
             self.completed_process = subprocess.run(
-                [self.entrypoint, *args],
+                full_command,
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
@@ -182,8 +187,7 @@ class SigstoreClient:
         This is an overload of `sign` for the signature/certificate flow and should not
         be called directly.
         """
-
-        self.run(
+        args = [
             "sign",
             "--identity-token",
             self.identity_token,
@@ -192,7 +196,9 @@ class SigstoreClient:
             "--certificate",
             materials.certificate,
             artifact,
-        )
+        ]
+
+        self.run(*args)
 
     @sign.register
     def _sign_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
@@ -202,21 +208,19 @@ class SigstoreClient:
         This is an overload of `sign` for the bundle flow and should not be called directly.
         """
 
-        self.run(
+        args = [
             "sign-bundle",
             "--identity-token",
             self.identity_token,
             "--bundle",
             materials.bundle,
             artifact,
-        )
+        ]
+
+        self.run(*args)
 
     @singledispatchmethod
-    def verify(
-        self,
-        materials: VerificationMaterials,
-        artifact: os.PathLike,
-    ) -> None:
+    def verify(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
         """
         Verify an artifact with the Sigstore client. Dispatches to `_verify_for_sigcrt`
         when given `SignatureCertificateMaterials`, or `_verify_for_bundle` when given
@@ -230,9 +234,7 @@ class SigstoreClient:
 
     @verify.register
     def _verify_for_sigcrt(
-        self,
-        materials: SignatureCertificateMaterials,
-        artifact: os.PathLike,
+        self, materials: SignatureCertificateMaterials, artifact: os.PathLike
     ) -> None:
         """
         Verify an artifact given a signature and certificate with the Sigstore client.

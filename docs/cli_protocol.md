@@ -24,9 +24,15 @@ client's native CLI accepts.
 This is the set of subcommands that the test CLI must support. Each subcommand
 has a provided syntax and list of descriptions for each argument.
 
-To simplify argument parsing, all arguments are required and will **always** be
+To simplify argument parsing, all arguments are required, except `--staging`, and will **always** be
 supplied by the conformance suite in the order that they are specified in the
 templates below.
+
+All commands below are allowed to run against staging by appending the `--staging` in the command, for example:
+
+```console
+${ENTRYPOINT} sign --identity-token TOKEN --signature FILE --certificate FILE FILE --staging
+```
 
 ### Sign
 
