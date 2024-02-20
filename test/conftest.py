@@ -167,7 +167,11 @@ def client(pytestconfig, identity_token):
     Parametrize each test with the client under test.
     """
     entrypoint = pytestconfig.getoption("--entrypoint")
+    if not os.path.isabs(entrypoint):
+        entrypoint = os.path.join(pytestconfig.invocation_params.dir, entrypoint)
+
     staging = pytestconfig.getoption("--staging")
+
     return SigstoreClient(entrypoint, identity_token, staging)
 
 
