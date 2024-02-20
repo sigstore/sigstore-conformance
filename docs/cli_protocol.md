@@ -28,7 +28,7 @@ To simplify argument parsing, all arguments are required, except `--staging`, an
 supplied by the conformance suite in the order that they are specified in the
 templates below.
 
-All commands below are allowed to run against staging, adding the `--staging` in the command, for example:
+All commands below are allowed to run against staging by appending the `--staging` in the command, for example:
 
 ```console
 ${ENTRYPOINT} sign --identity-token TOKEN --signature FILE --certificate FILE FILE --staging
