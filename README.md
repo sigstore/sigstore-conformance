@@ -59,25 +59,41 @@ invoke the client.
 
 ## Development
 
-Running the conformance suite locally,
-
+Easiest way to run the conformance suite locally is with the provided virtual environment:
 ```sh
-(env) $ pytest test --entrypoint=SIGSTORE_CLIENT --identity-token=$(gh auth token)
+$ make dev
+$ source env/bin/activate
+(env) $
 ```
 
-Or if you are only checking verification use cases,
+The test suite can be configured with
+* `--entrypoint=$SIGSTORE_CLIENT` where SIGSTORE_CLIENT is path to a script that implements the
+  [CLI specification](https://github.com/sigstore/sigstore-conformance/blob/main/docs/cli_protocol.md)
+* `--identity-token=$GITHUB_TOKEN` where GITHUB_TOKEN is a GitHub token with actions:read
+  access for public repositories (--identity-token is only required for signing tests)
+* optional (and currently experimental) `--staging`: This instructs the test suite to run
+  against Sigstore staging infrastructure
+* The environment variable `GHA_SIGSTORE_CONFORMANCE_XFAIL` can be used to
+  set expected results
 
 ```sh
-(env) $ pytest test --skip-signing --entrypoint=SIGSTORE_CLIENT
+(env) $ # run verification tests only
+(env) $ pytest test --entrypoint=$SIGSTORE_CLIENT --skip-signing
+(env) $ # run all tests
+(env) $ pytest test --entrypoint=$SIGSTORE_CLIENT --identity-token=$GITHUB_TOKEN
 ```
 
-You can also run the tests against staging by adding `--staging` on the command,
-
+Following examples run the included sigstore-python-conformance client script and use the
+[`gh` CLI](https://cli.github.com/):
 ```sh
-(env) $ pytest test --staging --entrypoint=SIGSTORE_CLIENT
-```
+(env) $ # run verification tests only
+(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root" \
+    pytest test --entrypoint=sigstore-python-conformance --skip-signing
 
-Using the [`gh` CLI](https://cli.github.com/) and noting SIGSTORE_CLIENT is the absolute path to a client implementing the [CLI specification](https://github.com/sigstore/sigstore-conformance/blob/main/docs/cli_protocol.md).
+(env) $ # run all tests
+(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root" \
+    pytest test --entrypoint=sigstore-python-conformance --identity-token=$(gh auth token)
+```
 
 ## Licensing
 
