@@ -7,6 +7,7 @@ from .client import SignatureCertificateMaterials, SigstoreClient
 
 
 @pytest.mark.signing
+@pytest.mark.staging
 def test_verify_empty(client: SigstoreClient, make_materials: _MakeMaterials) -> None:
     """
     Tests that verification fails with empty artifacts, certificates and
@@ -34,6 +35,7 @@ def test_verify_empty(client: SigstoreClient, make_materials: _MakeMaterials) ->
 
 
 @pytest.mark.signing
+@pytest.mark.staging
 def test_verify_mismatch(client: SigstoreClient, make_materials: _MakeMaterials) -> None:
     """
     Tests that verification fails with mismatching artifacts, certificates and
