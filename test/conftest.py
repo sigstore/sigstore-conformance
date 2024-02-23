@@ -73,6 +73,8 @@ def pytest_addoption(parser) -> None:
 def pytest_runtest_setup(item):
     if "signing" in item.keywords and item.config.getoption("--skip-signing"):
         pytest.skip("skipping test that requires signing support due to `--skip-signing` flag")
+    if "staging" not in item.keywords and item.config.getoption("--staging"):
+        pytest.skip("skipping test that does not support staging yet due to `--staging` flag")
 
 
 def pytest_configure(config):
@@ -80,6 +82,7 @@ def pytest_configure(config):
         raise ConfigError("Please specify one of '--github-token' or '--skip-signing'")
 
     config.addinivalue_line("markers", "signing: mark test as requiring signing functionality")
+    config.addinivalue_line("markers", "staging: mark test as supporting testing against staging")
 
 
 def pytest_internalerror(excrepr, excinfo):

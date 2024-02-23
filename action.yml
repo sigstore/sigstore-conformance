@@ -15,6 +15,10 @@ inputs:
     description: "skip tests that involve signing (default false)"
     required: false
     default: "false"
+  enable-staging:
+    description: "Test against staging infrastructure as well as production (default false)"
+    required: false
+    default: "false"
   xfail:
     description: "one or more tests that are expected to fail, whitespace-separated"
     required: false
@@ -34,6 +38,7 @@ runs:
       run: |
         ${{ github.action_path }}/action.py
       env:
+        GHA_SIGSTORE_CONFORMANCE_ENABLE_STAGING: "${{ inputs.enable-staging }}"
         GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT: "${{ inputs.entrypoint }}"
         GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG: "${{ inputs.internal-be-careful-debug }}"
         GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING: "${{ inputs.skip-signing }}"
