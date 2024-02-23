@@ -25,4 +25,5 @@ jobs:
         id: sigstore-conformance
         with:
           entrypoint: ${{ github.workspace }}/sigstore-python-conformance
+          enable-staging: true
           xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root"
