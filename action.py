@@ -48,15 +48,11 @@ def _sigstore_conformance(staging: bool) -> int:
     if gh_token:
         args.extend(["--github-token", gh_token])
 
+    infra = "staging" if staging else "production"
+    print(f"running sigstore-conformance against Sigstore {infra} infrastructure")
     _debug(f"running: sigstore-conformance {[str(a) for a in args]}")
-    status = pytest.main([str(_ACTION_PATH / "test"), *args])
 
-    if status == 0:
-        _summary("🎉 sigstore-conformance exited successfully")
-    else:
-        _summary("❌ sigstore-conformance found one or more test failures")
-
-    return status
+    return pytest.main([str(_ACTION_PATH / "test"), *args])
 
 
 # Run against production, then optionally against staging
@@ -64,5 +60,9 @@ status = _sigstore_conformance(staging=False)
 if _ENABLE_STAGING:
     status += _sigstore_conformance(staging=True)
 
+if status == 0:
+    _summary("🎉 sigstore-conformance exited successfully")
+else:
+    _summary("❌ sigstore-conformance found one or more test failures")
 
 sys.exit(status)
