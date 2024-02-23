@@ -34,28 +34,34 @@ Some general testing principles for this suite are:
 
 ## Usage
 
-Simply add `sigstore/sigstore-conformance` to one of your workflows:
+1. Include an executable in your project that implements the
+client-under-test [CLI protocol](docs/cli_protocol.md).
+2. Use the `sigstore/sigstore-conformance` action in your test workflow:
+    ```yaml
+    jobs:
+      conformance:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          # insert your client installation steps here
+          - uses: sigstore/sigstore-conformance@v0.0.10
+            with:
+              entrypoint: my-conformance-client
+    ```
 
-```yaml
-jobs:
-  conformance:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: install
-        run: python -m pip install .
-      - uses: sigstore/sigstore-conformance@v0.0.10
-        with:
-          entrypoint: sigstore
-```
+See [sigstore-python conformance test](https://github.com/sigstore/sigstore-python/blob/main/.github/workflows/conformance.yml)
+for a complete example.
 
-The only required configuration is the `entrypoint` parameter which provides a
-command to invoke the client. `sigstore-conformance` expects that the client
-exposes a CLI that conforms to the protocol outlined [here](docs/cli_protocol.md).
+### `sigstore/sigstore-conformance` action inputs
 
-In the example above, the workflow is installing [sigstore-python](https://github.com/sigstore/sigstore-python)
-and providing `sigstore` as the `entrypoint` since this is the command used to
-invoke the client.
+The important action inputs are
+* `entrypoint`: required string. A command that implements the client-under-test
+  [CLI protocol](docs/cli_protocol.md)
+* `enable-staging`: optional boolean. When true, the test suite will run tests against
+  staging infrastructure in addition to running them against production infrastructure
+* `xfail`: optional string. Whitespace separated test names that are expected to fail.
+
+See [action.yml](action.yml) for full list of inputs.
 
 ## Development
 
