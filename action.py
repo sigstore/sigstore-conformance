@@ -15,6 +15,7 @@ _RENDER_SUMMARY = os.getenv("GHA_SIGSTORE_CONFORMANCE_SUMMARY", "true") == "true
 _DEBUG = os.getenv("GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG", "false") != "false"
 _ACTION_PATH = Path(os.getenv("GITHUB_ACTION_PATH"))  # type: ignore
 
+
 def _summary(msg):
     if _RENDER_SUMMARY:
         print(msg, file=_SUMMARY)
