@@ -26,7 +26,6 @@ has a provided syntax and list of descriptions for each argument.
 
 To simplify argument parsing, arguments will **always** be supplied by the
 conformance suite in the order that they are specified in the templates below.
-Other arguments are always present but `--staging` is optional.
 
 ### Sign
 
