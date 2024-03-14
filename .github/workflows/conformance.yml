@@ -5,6 +5,9 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '10 10 * * *'
 
 jobs:
   selftest:
@@ -22,8 +25,13 @@ jobs:
 
       - name: conformance test sigstore-python
         uses: ./
-        id: sigstore-conformance
         with:
           entrypoint: ${{ github.workspace }}/sigstore-python-conformance
-          enable-staging: true
+          xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root"
+
+      - name: Staging conformance test sigstore-python
+        uses: ./
+        with:
+          entrypoint: ${{ github.workspace }}/sigstore-python-conformance
+          environment: staging
           xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root"

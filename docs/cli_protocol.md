@@ -24,26 +24,20 @@ client's native CLI accepts.
 This is the set of subcommands that the test CLI must support. Each subcommand
 has a provided syntax and list of descriptions for each argument.
 
-To simplify argument parsing, all arguments are required, except `--staging`, and will **always** be
-supplied by the conformance suite in the order that they are specified in the
-templates below.
-
-All commands below are allowed to run against staging by appending the `--staging` in the command, for example:
-
-```console
-${ENTRYPOINT} sign --identity-token TOKEN --signature FILE --certificate FILE FILE --staging
-```
+To simplify argument parsing, arguments will **always** be supplied by the
+conformance suite in the order that they are specified in the templates below.
 
 ### Sign
 
 #### Signature and certificate flow
 
 ```console
-${ENTRYPOINT} sign --identity-token TOKEN --signature FILE --certificate FILE FILE
+${ENTRYPOINT} sign [--staging] --identity-token TOKEN --signature FILE --certificate FILE FILE
 ```
 
 | Option | Description |
 | --- | --- |
+| `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
 | `--identity-token` | The OIDC identity token to use |
 | `--signature FILE` | The path to write the signature to |
 | `--certificate FILE` | The path to write the signing certificate to |
@@ -52,11 +46,12 @@ ${ENTRYPOINT} sign --identity-token TOKEN --signature FILE --certificate FILE FI
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} sign-bundle --identity-token TOKEN --bundle FILE FILE
+${ENTRYPOINT} sign-bundle [--staging] --identity-token TOKEN --bundle FILE FILE
 ```
 
 | Option | Description |
 | --- | --- |
+| `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
 | `--identity-token` | The OIDC identity token to use |
 | `--bundle FILE` | The path to write the bundle to |
 | `FILE` | The artifact to sign |
@@ -66,11 +61,12 @@ ${ENTRYPOINT} sign-bundle --identity-token TOKEN --bundle FILE FILE
 #### Signature and certificate flow
 
 ```console
-${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE
+${ENTRYPOINT} verify [--staging] --signature FILE --certificate FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE
 ```
 
 | Option | Description |
 | --- | --- |
+| `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
 | `--signature FILE` | The path to the signature to verify |
 | `--certificate FILE` | The path to the signing certificate to verify |
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
@@ -81,11 +77,12 @@ ${ENTRYPOINT} verify --signature FILE --certificate FILE --certificate-identity 
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} verify-bundle --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE
+${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE
 ```
 
 | Option | Description |
 | --- | --- |
+| `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
 | `--bundle FILE` | The path to the Sigstore bundle to verify |
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |

@@ -43,10 +43,19 @@ client-under-test [CLI protocol](docs/cli_protocol.md).
         runs-on: ubuntu-latest
         steps:
           - uses: actions/checkout@v4
+
           # insert your client installation steps here
+
+          # Run tests against production Sigstore environment
           - uses: sigstore/sigstore-conformance@v0.0.10
             with:
               entrypoint: my-conformance-client
+
+          # Run tests against staging Sigstore environment
+          - uses: sigstore/sigstore-conformance@v0.0.10
+            with:
+              entrypoint: my-conformance-client
+              environment: staging
     ```
 
 See [sigstore-python conformance test](https://github.com/sigstore/sigstore-python/blob/main/.github/workflows/conformance.yml)
@@ -57,8 +66,8 @@ for a complete example.
 The important action inputs are
 * `entrypoint`: required string. A command that implements the client-under-test
   [CLI protocol](docs/cli_protocol.md)
-* `enable-staging`: optional boolean. When true, the test suite will run tests against
-  staging infrastructure in addition to running them against production infrastructure
+* `environment`: 'production' (default) or 'staging'. This selects the Sigstore environment to
+  run against
 * `xfail`: optional string. Whitespace separated test names that are expected to fail.
 
 See [action.yml](action.yml) for full list of inputs.
@@ -77,8 +86,7 @@ The test suite can be configured with
   [CLI specification](https://github.com/sigstore/sigstore-conformance/blob/main/docs/cli_protocol.md)
 * `--identity-token=$GITHUB_TOKEN` where GITHUB_TOKEN is a GitHub token with actions:read
   access for public repositories (--identity-token is only required for signing tests)
-* optional (and currently experimental) `--staging`: This instructs the test suite to run
-  against Sigstore staging infrastructure
+* optional `--staging`: This instructs the test suite to run against Sigstore staging infrastructure
 * The environment variable `GHA_SIGSTORE_CONFORMANCE_XFAIL` can be used to
   set expected results
 

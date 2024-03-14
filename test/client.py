@@ -128,8 +128,6 @@ class SigstoreClient:
         """
         self.completed_process = None
         full_command = [self.entrypoint, *args]
-        if self.staging:
-            full_command.append("--staging")
 
         try:
             self.completed_process = subprocess.run(
@@ -187,16 +185,20 @@ class SigstoreClient:
         This is an overload of `sign` for the signature/certificate flow and should not
         be called directly.
         """
-        args = [
-            "sign",
-            "--identity-token",
-            self.identity_token,
-            "--signature",
-            materials.signature,
-            "--certificate",
-            materials.certificate,
-            artifact,
-        ]
+        args: list[str | os.PathLike] = ["sign"]
+        if self.staging:
+            args.append("--staging")
+        args.extend(
+            [
+                "--identity-token",
+                self.identity_token,
+                "--signature",
+                materials.signature,
+                "--certificate",
+                materials.certificate,
+                artifact,
+            ]
+        )
 
         self.run(*args)
 
@@ -208,14 +210,18 @@ class SigstoreClient:
         This is an overload of `sign` for the bundle flow and should not be called directly.
         """
 
-        args = [
-            "sign-bundle",
-            "--identity-token",
-            self.identity_token,
-            "--bundle",
-            materials.bundle,
-            artifact,
-        ]
+        args: list[str | os.PathLike] = ["sign-bundle"]
+        if self.staging:
+            args.append("--staging")
+        args.extend(
+            [
+                "--identity-token",
+                self.identity_token,
+                "--bundle",
+                materials.bundle,
+                artifact,
+            ]
+        )
 
         self.run(*args)
 
@@ -243,17 +249,21 @@ class SigstoreClient:
         not be called directly.
         """
 
-        args = [
-            "verify",
-            "--signature",
-            materials.signature,
-            "--certificate",
-            materials.certificate,
-            "--certificate-identity",
-            CERTIFICATE_IDENTITY,
-            "--certificate-oidc-issuer",
-            CERTIFICATE_OIDC_ISSUER,
-        ]
+        args: list[str | os.PathLike] = ["verify"]
+        if self.staging:
+            args.append("--staging")
+        args.extend(
+            [
+                "--signature",
+                materials.signature,
+                "--certificate",
+                materials.certificate,
+                "--certificate-identity",
+                CERTIFICATE_IDENTITY,
+                "--certificate-oidc-issuer",
+                CERTIFICATE_OIDC_ISSUER,
+            ]
+        )
 
         if getattr(materials, "trusted_root", None) is not None:
             args.extend(["--trusted-root", materials.trusted_root])
@@ -270,16 +280,19 @@ class SigstoreClient:
         This is an overload of `verify` for the bundle flow and should not be called
         directly.
         """
-
-        args = [
-            "verify-bundle",
-            "--bundle",
-            materials.bundle,
-            "--certificate-identity",
-            CERTIFICATE_IDENTITY,
-            "--certificate-oidc-issuer",
-            CERTIFICATE_OIDC_ISSUER,
-        ]
+        args: list[str | os.PathLike] = ["verify-bundle"]
+        if self.staging:
+            args.append("--staging")
+        args.extend(
+            [
+                "--bundle",
+                materials.bundle,
+                "--certificate-identity",
+                CERTIFICATE_IDENTITY,
+                "--certificate-oidc-issuer",
+                CERTIFICATE_OIDC_ISSUER,
+            ]
+        )
 
         if getattr(materials, "trusted_root", None) is not None:
             args.extend(["--trusted-root", materials.trusted_root])
