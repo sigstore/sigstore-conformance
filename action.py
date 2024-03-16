@@ -45,10 +45,6 @@ def _sigstore_conformance(environment: str) -> int:
     if skip_signing:
         args.extend(["--skip-signing"])
 
-    gh_token = os.getenv("GHA_SIGSTORE_GITHUB_TOKEN")
-    if gh_token:
-        args.extend(["--github-token", gh_token])
-
     print(f"running sigstore-conformance against Sigstore {environment} infrastructure")
     _debug(f"running: sigstore-conformance {[str(a) for a in args]}")
 
