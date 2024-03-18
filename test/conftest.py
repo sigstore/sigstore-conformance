@@ -1,16 +1,18 @@
+import json
 import os
 import shutil
+import subprocess
 import tempfile
 import time
+from base64 import b64decode
 from collections.abc import Callable
 from datetime import datetime, timedelta
-from io import BytesIO
+from functools import lru_cache
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import TypeVar
-from zipfile import ZipFile
 
 import pytest
-import requests
 
 from .client import (
     BundleMaterials,
@@ -41,21 +43,12 @@ class ConfigError(Exception):
 
 
 def pytest_addoption(parser) -> None:
-    """
-    Add the `--entrypoint`, `--github-token`, and `--skip-signing` flags to
-    the `pytest` CLI.
-    """
+    """Add `--entrypoint` and `--skip-signing` flags to CLI."""
     parser.addoption(
         "--entrypoint",
         action="store",
         help="the command to invoke the Sigstore client under test",
         required=True,
-        type=str,
-    )
-    parser.addoption(
-        "--github-token",
-        action="store",
-        help="the GitHub token to supply to the Sigstore client under test",
         type=str,
     )
     parser.addoption(
@@ -78,9 +71,6 @@ def pytest_runtest_setup(item):
 
 
 def pytest_configure(config):
-    if not config.getoption("--github-token") and not config.getoption("--skip-signing"):
-        raise ConfigError("Please specify one of '--github-token' or '--skip-signing'")
-
     config.addinivalue_line("markers", "signing: mark test as requiring signing functionality")
     config.addinivalue_line("markers", "staging: mark test as supporting testing against staging")
 
@@ -94,75 +84,47 @@ def pytest_internalerror(excrepr, excinfo):
 
 
 @pytest.fixture
+@lru_cache
 def identity_token(pytestconfig) -> str:
+    # following code is modified from extremely-dangerous-public-oidc-beacon download-token.py.
+    # Caching can be made smarter (to return the cached token only if it is valid) if token
+    # starts going invalid during runs
+    MIN_VALIDITY = timedelta(seconds=20)
+    MAX_RETRY_TIME = timedelta(minutes=5 if os.getenv("CI") else 1)
+    RETRY_SLEEP_SECS = 30 if os.getenv("CI") else 5
+    GIT_URL = "https://github.com/sigstore-conformance/extremely-dangerous-public-oidc-beacon.git"
+
+    def git_clone(url: str, dir: str) -> None:
+        base_cmd = ["git", "clone", "--quiet", "--branch", "current-token", "--depth", "1"]
+        subprocess.run(base_cmd + [url, dir], check=True)
+
+    def is_valid_at(token: str, reference_time: datetime) -> bool:
+        # split token, b64 decode (with padding), parse as json, validate expiry
+        payload = token.split(".")[1]
+        payload += "=" * (4 - len(payload) % 4)
+        payload_json = json.loads(b64decode(payload))
+
+        expiry = datetime.fromtimestamp(payload_json["exp"])
+        return reference_time < expiry
+
     if pytestconfig.getoption("--skip-signing"):
         return ""
 
-    gh_token = pytestconfig.getoption("--github-token")
-    session = requests.Session()
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer {gh_token}",
-    }
+    start_time = datetime.now()
+    while datetime.now() <= start_time + MAX_RETRY_TIME:
+        with TemporaryDirectory() as tempdir:
+            git_clone(GIT_URL, tempdir)
 
-    workflow_time: datetime | None = None
-    run_id: str
+            with Path(tempdir, "oidc-token.txt").open() as f:
+                token = f.read().rstrip()
 
-    # We need a token that was generated in the last 5 minutes. Keep checking until we find one.
-    while workflow_time is None or datetime.now() - workflow_time >= timedelta(minutes=5):
-        # If there's a lot of traffic in the GitHub Actions cron queue, we might not have a valid
-        # token to use. In that case, wait for 30 seconds and try again.
-        if workflow_time is not None:
-            # FIXME(jl): logging in pytest?
-            # _log("Couldn't find a recent token, waiting...")
-            time.sleep(30)
+            if is_valid_at(token, datetime.now() + MIN_VALIDITY):
+                return token
 
-        resp: requests.Response = session.get(
-            url=_OIDC_BEACON_API_URL + f"/workflows/{_OIDC_BEACON_WORKFLOW_ID}/runs",
-            headers=headers,
-        )
-        resp.raise_for_status()
+        print(f"Current token expires too early, retrying in {RETRY_SLEEP_SECS} seconds.")
+        time.sleep(RETRY_SLEEP_SECS)
 
-        resp_json = resp.json()
-        workflow_runs = resp_json["workflow_runs"]
-        if not workflow_runs:
-            raise OidcTokenError(f"Found no workflow runs: {resp_json}")
-
-        workflow_run = workflow_runs[0]
-
-        # If the job is still running, the token artifact won't have been generated yet.
-        if workflow_run["status"] != "completed":
-            continue
-
-        run_id = workflow_run["id"]
-        workflow_time = datetime.strptime(workflow_run["run_started_at"], "%Y-%m-%dT%H:%M:%SZ")
-
-    resp = session.get(
-        url=_OIDC_BEACON_API_URL + f"/runs/{run_id}/artifacts",
-        headers=headers,
-    )
-    resp.raise_for_status()
-
-    resp_json = resp.json()
-    try:
-        artifact_id = next(a["id"] for a in resp_json["artifacts"] if a["name"] == "oidc-token")
-    except StopIteration:
-        raise OidcTokenError("Artifact 'oidc-token' could not be found")
-
-    # Download the OIDC token artifact and unzip the archive.
-    resp = session.get(
-        url=_OIDC_BEACON_API_URL + f"/artifacts/{artifact_id}/zip",
-        headers=headers,
-    )
-    resp.raise_for_status()
-
-    with ZipFile(BytesIO(resp.content)) as artifact_zip:
-        artifact_file = artifact_zip.open("oidc-token.txt")
-
-        # Strip newline.
-        return artifact_file.read().decode().rstrip()
-
+    raise TimeoutError(f"Failed to find a valid token in {MAX_RETRY_TIME}")
 
 @pytest.fixture
 def client(pytestconfig, identity_token):
