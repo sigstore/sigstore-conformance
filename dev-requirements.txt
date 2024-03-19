@@ -1,4 +1,4 @@
-sigstore
+sigstore ~= 2.0
 ruff
 black
 mypy
