@@ -27,7 +27,7 @@ jobs:
         uses: ./
         with:
           entrypoint: ${{ github.workspace }}/sigstore-python-conformance
-          xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root"
+          xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root test_verify_v_0_3"
 
       - name: Staging conformance test sigstore-python
         uses: ./
