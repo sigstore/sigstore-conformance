@@ -134,7 +134,7 @@ class SigstoreClient:
                 full_command,
                 text=True,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
+                stderr=subprocess.PIPE,
                 check=True,
             )
         except subprocess.CalledProcessError as cpe:
