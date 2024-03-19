@@ -18,6 +18,17 @@ def test_verify(client: SigstoreClient, make_materials_by_type: _MakeMaterialsBy
 
     client.verify(materials, input_path)
 
+def test_verify_v_0_3(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+    """
+    Test the happy path of verification of a v0.3 bundle
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.good.v0.3.sigstore")
+
+    client.verify(materials, input_path)
+
 
 def test_verify_dsse_bundle_with_trust_root(
     client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType

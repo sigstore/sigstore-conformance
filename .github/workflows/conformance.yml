@@ -7,7 +7,7 @@ on:
   pull_request:
   workflow_dispatch:
   schedule:
-    - cron: '10 10 * * *'
+    - cron: "10 10 * * *"
 
 jobs:
   selftest:
@@ -34,4 +34,4 @@ jobs:
         with:
           entrypoint: ${{ github.workspace }}/sigstore-python-conformance
           environment: staging
-          xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root"
+          xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root test_verify_v_0_3"
