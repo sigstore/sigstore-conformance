@@ -133,8 +133,7 @@ class SigstoreClient:
             self.completed_process = subprocess.run(
                 full_command,
                 text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 check=True,
             )
         except subprocess.CalledProcessError as cpe:
