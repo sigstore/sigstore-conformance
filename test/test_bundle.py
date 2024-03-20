@@ -262,3 +262,39 @@ def test_verify_rejects_bad_tsa_timestamp(
 
     with client.raises():
         client.verify(materials, input_path)
+
+def test_verify_rejects_bad_checkpoint(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+    """
+    Check that the client rejects a bundle if the checkpoint signature is
+    invalid.
+    """
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.checkpoint_invalid_signature.sigstore")
+
+    with client.raises():
+        client.verify(materials, input_path)
+
+def test_verify_rejects_valid_but_mismatched_checkpoint(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+    """
+    Check that the client rejects a bundle if the checkpoint self consistent
+    but does not apply to this bundle (root hash is wrong).
+    """
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.checkpoint_wrong_roothash.sigstore")
+
+    with client.raises():
+        client.verify(materials, input_path)
+
+def test_verify_rejects_checkpoint_with_no_matching_key(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+    """
+    Check that the client rejects a bundle if the checkpoint signature
+    does not match the transparency log providing the entry.
+    """
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.checkpoint_bad_keyhint.sigstore")
+
+    with client.raises():
+        client.verify(materials, input_path)
