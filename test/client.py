@@ -69,7 +69,7 @@ class BundleMaterials(VerificationMaterials):
     @classmethod
     def from_input(cls, input: Path) -> BundleMaterials:
         mats = cls()
-        mats.bundle = input.parent / f"{input.name}.sigstore"
+        mats.bundle = input.parent / f"{input.name}.sigstore.json"
 
         return mats
 

@@ -14,7 +14,7 @@ def test_verify(client: SigstoreClient, make_materials_by_type: _MakeMaterialsBy
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.good.sigstore")
+    materials.bundle = Path("a.txt.good.sigstore.json")
 
     client.verify(materials, input_path)
 
@@ -38,7 +38,7 @@ def test_verify_dsse_bundle_with_trust_root(
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
-    materials.bundle = Path("d.txt.good.sigstore")
+    materials.bundle = Path("d.txt.good.sigstore.json")
     materials.trusted_root = Path("trusted_root.d.json")
 
     client.verify(materials, input_path)
@@ -100,7 +100,7 @@ def test_verify_rejects_staging_cert(
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.staging.sigstore")
+    materials.bundle = Path("a.txt.staging.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
@@ -116,7 +116,7 @@ def test_verify_rejects_invalid_set(
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_set.sigstore")
+    materials.bundle = Path("a.txt.invalid_set.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
@@ -131,7 +131,7 @@ def test_verify_rejects_invalid_signature(
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_signature.sigstore")
+    materials.bundle = Path("a.txt.invalid_signature.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
@@ -147,7 +147,7 @@ def test_verify_rejects_invalid_key(
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_key.sigstore")
+    materials.bundle = Path("a.txt.invalid_key.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
@@ -162,7 +162,7 @@ def test_verify_rejects_invalid_inclusion_proof(
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_inclusion_proof.sigstore")
+    materials.bundle = Path("a.txt.invalid_inclusion_proof.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
@@ -177,7 +177,7 @@ def test_verify_rejects_different_materials(
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("b.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.good.sigstore")
+    materials.bundle = Path("a.txt.good.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
@@ -192,7 +192,7 @@ def test_verify_rejects_expired_certificate(
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
-    materials.bundle = Path("d.txt.cert-expired.sigstore")
+    materials.bundle = Path("d.txt.cert-expired.sigstore.json")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
@@ -208,7 +208,7 @@ def test_verify_rejects_missing_inclusion_proof(
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
-    materials.bundle = Path("d.txt.no-inclusion-proof.sigstore")
+    materials.bundle = Path("d.txt.no-inclusion-proof.sigstore.json")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
@@ -225,7 +225,7 @@ def test_verify_rejects_bad_tlog_timestamp(
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
-    materials.bundle = Path("d.txt.tlog-timestamp-error.sigstore")
+    materials.bundle = Path("d.txt.tlog-timestamp-error.sigstore.json")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
@@ -241,7 +241,7 @@ def test_verify_rejects_bad_tlog_entry(
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
-    materials.bundle = Path("d.txt.tlog-body-error.sigstore")
+    materials.bundle = Path("d.txt.tlog-body-error.sigstore.json")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
@@ -257,7 +257,7 @@ def test_verify_rejects_bad_tsa_timestamp(
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
-    materials.bundle = Path("d.txt.tsa-timestamp-error.sigstore")
+    materials.bundle = Path("d.txt.tsa-timestamp-error.sigstore.json")
     materials.trusted_root = Path("trusted_root.d.json")
 
     with client.raises():
@@ -270,7 +270,7 @@ def test_verify_rejects_bad_checkpoint(client: SigstoreClient, make_materials_by
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.checkpoint_invalid_signature.sigstore")
+    materials.bundle = Path("a.txt.checkpoint_invalid_signature.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
@@ -282,7 +282,7 @@ def test_verify_rejects_valid_but_mismatched_checkpoint(client: SigstoreClient, 
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.checkpoint_wrong_roothash.sigstore")
+    materials.bundle = Path("a.txt.checkpoint_wrong_roothash.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
@@ -294,7 +294,7 @@ def test_verify_rejects_checkpoint_with_no_matching_key(client: SigstoreClient, 
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.checkpoint_bad_keyhint.sigstore")
+    materials.bundle = Path("a.txt.checkpoint_bad_keyhint.sigstore.json")
 
     with client.raises():
         client.verify(materials, input_path)
