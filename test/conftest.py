@@ -126,6 +126,7 @@ def identity_token(pytestconfig) -> str:
 
     raise TimeoutError(f"Failed to find a valid token in {MAX_RETRY_TIME}")
 
+
 @pytest.fixture
 def client(pytestconfig, identity_token):
     """

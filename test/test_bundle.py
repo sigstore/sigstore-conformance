@@ -18,6 +18,7 @@ def test_verify(client: SigstoreClient, make_materials_by_type: _MakeMaterialsBy
 
     client.verify(materials, input_path)
 
+
 def test_verify_v_0_3(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
     """
     Test the happy path of verification of a v0.3 bundle
@@ -80,8 +81,8 @@ def test_sign_does_not_produce_root(
 
     # Iterate over our cert chain and check for roots.
     certs = bundle.verification_material.x509_certificate_chain
-    for cert in certs.certificates:
-        cert = x509.load_der_x509_certificate(cert.raw_bytes)
+    for x509cert in certs.certificates:
+        cert = x509.load_der_x509_certificate(x509cert.raw_bytes)
 
         try:
             constraints = cert.extensions.get_extension_for_class(x509.BasicConstraints)
@@ -263,7 +264,10 @@ def test_verify_rejects_bad_tsa_timestamp(
     with client.raises():
         client.verify(materials, input_path)
 
-def test_verify_rejects_bad_checkpoint(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+
+def test_verify_rejects_bad_checkpoint(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
     """
     Check that the client rejects a bundle if the checkpoint signature is
     invalid.
@@ -275,7 +279,10 @@ def test_verify_rejects_bad_checkpoint(client: SigstoreClient, make_materials_by
     with client.raises():
         client.verify(materials, input_path)
 
-def test_verify_rejects_valid_but_mismatched_checkpoint(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+
+def test_verify_rejects_valid_but_mismatched_checkpoint(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
     """
     Check that the client rejects a bundle if the checkpoint self consistent
     but does not apply to this bundle (root hash is wrong).
@@ -287,7 +294,10 @@ def test_verify_rejects_valid_but_mismatched_checkpoint(client: SigstoreClient, 
     with client.raises():
         client.verify(materials, input_path)
 
-def test_verify_rejects_checkpoint_with_no_matching_key(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+
+def test_verify_rejects_checkpoint_with_no_matching_key(
+    client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
+) -> None:
     """
     Check that the client rejects a bundle if the checkpoint signature
     does not match the transparency log providing the entry.
