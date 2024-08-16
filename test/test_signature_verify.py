@@ -1,7 +1,8 @@
 from pathlib import Path
-from test.conftest import _MakeMaterials, _MakeMaterialsByType
 
 import pytest  # type: ignore
+
+from test.conftest import _MakeMaterials, _MakeMaterialsByType
 
 from .client import SignatureCertificateMaterials, SigstoreClient
 
