@@ -8,26 +8,26 @@ from test.client import BundleMaterials, SigstoreClient
 from test.conftest import _MakeMaterialsByType
 
 
-def test_verify(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
+def test_verify_v_0_1(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
     """
-    Test the happy path of verification
+    Test the happy path of verification for a v0.1 bundle.
     """
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.good.sigstore.json")
+    materials.bundle = Path("a.txt_hashedrekord.good.v0.1.sigstore.json")
 
     client.verify(materials, input_path)
 
 
 def test_verify_v_0_3(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:
     """
-    Test the happy path of verification of a v0.3 bundle
+    Test the happy path of verification for a v0.3 bundle.
     """
 
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.good.v0.3.sigstore")
+    materials.bundle = Path("a.txt_hashedrekord.good.v0.3.sigstore.json")
 
     client.verify(materials, input_path)
 
@@ -40,7 +40,7 @@ def test_verify_dsse_bundle_with_trust_root(
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("d.txt", BundleMaterials)
-    materials.bundle = Path("d.txt.good.sigstore.json")
+    materials.bundle = Path("d.txt+custom-trust-root_intoto_dsse.good.v0.2.sigstore.json")
     materials.trusted_root = Path("trusted_root.d.json")
 
     client.verify(materials, input_path)
