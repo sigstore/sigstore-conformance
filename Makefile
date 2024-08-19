@@ -17,6 +17,6 @@ dev: env/pyvenv.cfg
 
 .PHONY: lint
 lint: env/pyvenv.cfg $(ALL_PY_SRCS)
-	./env/bin/python -m black $(ALL_PY_SRCS)
+	./env/bin/python -m ruff format $(ALL_PY_SRCS)
 	./env/bin/python -m ruff check --fix $(ALL_PY_SRCS)
 	./env/bin/python -m mypy action.py test/

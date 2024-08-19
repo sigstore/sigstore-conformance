@@ -1,10 +1,11 @@
 from pathlib import Path
-from test.client import BundleMaterials, SigstoreClient
-from test.conftest import _MakeMaterialsByType
 
 import pytest  # type: ignore
 from cryptography import x509
 from sigstore_protobuf_specs.dev.sigstore.bundle.v1 import Bundle
+
+from test.client import BundleMaterials, SigstoreClient
+from test.conftest import _MakeMaterialsByType
 
 
 def test_verify(client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType) -> None:

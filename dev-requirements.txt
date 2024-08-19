@@ -1,5 +1,4 @@
-sigstore ~= 2.1.3
+sigstore ~= 3.0
 ruff
-black
 mypy
 types-requests

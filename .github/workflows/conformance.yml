@@ -25,11 +25,11 @@ jobs:
           cache: "pip"
 
       - name: install sigstore-python
-        run: pip install "sigstore ~= 2.0"
+        run: pip install "sigstore ~= 3.0"
 
       - name: conformance test sigstore-python
         uses: ./
         with:
           entrypoint: ${{ github.workspace }}/sigstore-python-conformance
           environment: ${{ matrix.sigstore-env }}
-          xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root test_verify_v_0_3"
+          xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root"
