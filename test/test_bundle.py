@@ -32,7 +32,7 @@ def test_verify_v_0_3(client: SigstoreClient, make_materials_by_type: _MakeMater
     client.verify(materials, input_path)
 
 
-def test_verify_dsse_bundle_with_trust_root(
+def test_verify_intoto_dsse_bundle_with_trust_root(
     client: SigstoreClient, make_materials_by_type: _MakeMaterialsByType
 ) -> None:
     """
