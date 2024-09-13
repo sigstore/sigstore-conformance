@@ -318,6 +318,13 @@ def test_verify_cpython_release_bundles(subtests):
     if not cpython_release_dir.is_dir():
         pytest.skip("cpython-release-tracker data is not available")
 
-    releases = cpython_release_dir / "releases"
-    for release_path in releases.glob("*.json"):
-        json.loads(release_path.read_text())
+    _identities = json.loads((cpython_release_dir / "signing-identities.json").read_text())
+
+    versions = cpython_release_dir / "versions"
+    for version_path in versions.glob("*.json"):
+        version = json.loads(version_path.read_text())
+        for artifact in version:
+            bundle = artifact.get("sigstore")
+            if bundle:
+                with subtests.test(artifact["url"]):
+                    pass
