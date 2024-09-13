@@ -325,6 +325,7 @@ def test_verify_cpython_release_bundles(subtests):
         version = json.loads(version_path.read_text())
         for artifact in version:
             bundle = artifact.get("sigstore")
-            if bundle:
-                with subtests.test(artifact["url"]):
-                    pass
+            if not bundle:
+                continue
+            with subtests.test(artifact["url"]):
+                pass
