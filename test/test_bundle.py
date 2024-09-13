@@ -1,3 +1,5 @@
+import json
+import os
 from pathlib import Path
 
 import pytest  # type: ignore
@@ -309,3 +311,13 @@ def test_verify_rejects_checkpoint_with_no_matching_key(
 
     with client.raises():
         client.verify(materials, input_path)
+
+
+def test_verify_cpython_release_bundles(subtests):
+    cpython_release_dir = Path(os.getenv("GITHUB_WORKSPACE")) / "cpython-release-tracker"
+    if not cpython_release_dir.is_dir():
+        pytest.skip("cpython-release-tracker data is not available")
+
+    releases = cpython_release_dir / "releases"
+    for release_path in releases.glob("*.json"):
+        json.loads(release_path.read_text())

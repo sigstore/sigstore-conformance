@@ -1,4 +1,5 @@
 pytest~=7.1
+pytest-subtests
 requests~=2.32
 cryptography>=39
 sigstore-protobuf-specs~=0.3.0
