@@ -8,7 +8,7 @@ import pytest  # type: ignore
 from cryptography import x509
 from sigstore_protobuf_specs.dev.sigstore.bundle.v1 import Bundle
 
-from test.client import BundleMaterials, SigstoreClient
+from test.client import BundleMaterials, ClientFail, SigstoreClient
 from test.conftest import _MakeMaterialsByType, _VerifyBundle
 
 
@@ -392,24 +392,28 @@ def test_verify_cpython_release_bundles(subtests, client):
 
         version = json.loads(version_path.read_text())
         for artifact in version:
-            bundle = artifact.get("sigstore")
-            if not bundle:
-                continue
+            with subtests.test(artifact["url"]):
+                bundle = artifact.get("sigstore")
+                if not bundle:
+                    continue
 
-            bundle_path = temp_bundle_path(bundle)
-            sha256 = artifact["sha256"]
+                bundle_path = temp_bundle_path(bundle)
+                sha256 = artifact["sha256"]
 
-            # NOTE: We currently do this completely manually,
-            # since the client verify APIs are baked around
-            # the assumption of a static identity.
-            client.run(
-                "verify-bundle",
-                "--bundle",
-                str(bundle_path),
-                "--certificate-identity",
-                ident["Release manager"],
-                "--certificate-oidc-issuer",
-                ident["OIDC Issuer"],
-                "--verify-digest",
-                f"sha256:{sha256}",
-            )
+                # NOTE: We currently do this completely manually,
+                # since the client verify APIs are baked around
+                # the assumption of a static identity.
+                try:
+                    client.run(
+                        "verify-bundle",
+                        "--bundle",
+                        str(bundle_path),
+                        "--certificate-identity",
+                        ident["Release manager"],
+                        "--certificate-oidc-issuer",
+                        ident["OIDC Issuer"],
+                        "--verify-digest",
+                        f"sha256:{sha256}",
+                    )
+                except ClientFail as e:
+                    pytest.fail(f"verify for {artifact['url']} failed: {e}")
