@@ -1,4 +1,6 @@
+import enum
 import functools
+import hashlib
 import json
 import os
 import shutil
@@ -24,6 +26,7 @@ from .client import (
 _M = TypeVar("_M", bound=VerificationMaterials)
 _MakeMaterialsByType = Callable[[str, _M], tuple[Path, _M]]
 _MakeMaterials = Callable[[str], tuple[Path, VerificationMaterials]]
+_VerifyBundle = Callable[[VerificationMaterials, Path], None]
 
 _OIDC_BEACON_API_URL = (
     "https://api.github.com/repos/sigstore-conformance/extremely-dangerous-public-oidc-beacon/"
@@ -182,7 +185,7 @@ def make_materials_by_type() -> _MakeMaterialsByType:
         input_path = Path(input_name)
         output = cls.from_input(input_path)
 
-        return (input_path, output)
+        return input_path, output
 
     return _make_materials_by_type
 
@@ -202,6 +205,32 @@ def make_materials(request, make_materials_by_type) -> _MakeMaterials:
         return make_materials_by_type(input_name, request.param)
 
     return _make_materials
+
+
+class ArtifactInputType(enum.Enum):
+    PATH = enum.auto()
+    DIGEST = enum.auto()
+
+
+@pytest.fixture(params=[ArtifactInputType.PATH, ArtifactInputType.DIGEST])
+def verify_bundle(request, client) -> _VerifyBundle:
+    """
+    Returns a function that verifies an artifact using the given verification materials
+
+    The fixture is parametrized to run twice, one verifying the artifact itself (passing
+    the file path to the verification function), and another verifying the artifact's
+    digest.
+    """
+
+    def _verify_bundle(materials: VerificationMaterials, input_path: Path) -> None:
+        if request.param == ArtifactInputType.PATH:
+            client.verify(materials, input_path)
+        else:
+            with open(input_path, "rb") as f:
+                digest = f"sha256:{hashlib.sha256(f.read()).hexdigest()}"
+                client.verify(materials, digest)
+
+    return _verify_bundle
 
 
 @pytest.fixture(autouse=True)
