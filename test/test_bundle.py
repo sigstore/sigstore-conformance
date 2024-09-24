@@ -364,7 +364,7 @@ def test_verify_cpython_release_bundles(subtests, client):
 
     identities = json.loads((cpython_release_dir / "signing-identities.json").read_text())
 
-    def version_path_to_identity(path: Path) -> dict[str, Any]:
+    def version_path_to_identity(path: Path) -> dict[str, Any] | None:
         # Transforms /foo/bar/versions/3.11.6.json into a suitable
         # verification identity.
 
@@ -374,7 +374,7 @@ def test_verify_cpython_release_bundles(subtests, client):
         # "3.11"
         version = ".".join(full_version.split(".")[0:2])
 
-        return next(ident for ident in identities if ident["Release"] == version)
+        return next([ident for ident in identities if ident["Release"] == version], None)
 
     def temp_bundle_path(bundle: dict) -> Path:
         # We let the system dispose of these after process teardown.
@@ -387,6 +387,9 @@ def test_verify_cpython_release_bundles(subtests, client):
     versions = cpython_release_dir / "versions"
     for version_path in versions.glob("*.json"):
         ident = version_path_to_identity(version_path)
+        if not ident:
+            continue
+
         version = json.loads(version_path.read_text())
         for artifact in version:
             bundle = artifact.get("sigstore")
