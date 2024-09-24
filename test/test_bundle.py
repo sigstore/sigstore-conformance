@@ -378,7 +378,7 @@ def test_verify_cpython_release_bundles(subtests, client):
 
     def temp_bundle_path(bundle: dict) -> Path:
         # We let the system dispose of these after process teardown.
-        tmpfile = tempfile.NamedTemporaryFile(suffix=".sigstore.json", delete=False)
+        tmpfile = tempfile.NamedTemporaryFile(mode="w+t", suffix=".sigstore.json", delete=False)
         tmpfile.write(json.dumps(bundle))
         tmpfile.close()
 
