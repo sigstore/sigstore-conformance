@@ -374,7 +374,7 @@ def test_verify_cpython_release_bundles(subtests, client):
         # "3.11"
         version = ".".join(full_version.split(".")[0:2])
 
-        return next([ident for ident in identities if ident["Release"] == version], None)
+        return next((ident for ident in identities if ident["Release"] == version), None)
 
     def temp_bundle_path(bundle: dict) -> Path:
         # We let the system dispose of these after process teardown.
