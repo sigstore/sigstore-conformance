@@ -225,13 +225,13 @@ class SigstoreClient:
         self.run(*args)
 
     @singledispatchmethod
-    def verify(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
+    def verify(self, materials: VerificationMaterials, artifact: os.PathLike | str) -> None:
         """
         Verify an artifact with the Sigstore client. Dispatches to `_verify_for_sigcrt`
-        when given `SignatureCertificateMaterials`, or `_verify_for_bundle` when given
-        `BundleMaterials`.
+        when given `SignatureCertificateMaterials`, or
+         `_verify_{artifact|digest}_for_bundle` when given `BundleMaterials`.
 
-        `artifact` is the path to the file to verify.
+        `artifact` is the path to the file to verify, or its digest.
         `materials` contains paths to the materials to verify with.
         """
 
@@ -272,7 +272,9 @@ class SigstoreClient:
         self.run(*args, artifact)
 
     @verify.register
-    def _verify_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+    def _verify_artifact_for_bundle(
+        self, materials: BundleMaterials, artifact: os.PathLike
+    ) -> None:
         """
         Verify an artifact given a bundle with the Sigstore client.
 
@@ -297,3 +299,31 @@ class SigstoreClient:
             args.extend(["--trusted-root", materials.trusted_root])
 
         self.run(*args, artifact)
+
+    @verify.register
+    def _verify_digest_for_bundle(self, materials: BundleMaterials, digest: str) -> None:
+        """
+        Verify a digest given a bundle with the Sigstore client.
+
+        This is an overload of `verify` for the bundle flow and should not be called
+        directly. The digest string is expected to start with the `sha256:` prefix.
+        """
+        args: list[str | os.PathLike] = ["verify-bundle"]
+        if self.staging:
+            args.append("--staging")
+        args.extend(
+            [
+                "--bundle",
+                materials.bundle,
+                "--certificate-identity",
+                CERTIFICATE_IDENTITY,
+                "--certificate-oidc-issuer",
+                CERTIFICATE_OIDC_ISSUER,
+                "--verify-digest",
+            ]
+        )
+
+        if getattr(materials, "trusted_root", None) is not None:
+            args.extend(["--trusted-root", materials.trusted_root])
+
+        self.run(*args, digest)

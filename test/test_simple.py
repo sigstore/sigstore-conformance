@@ -1,6 +1,6 @@
 import pytest  # type: ignore
 
-from test.conftest import _MakeMaterials, identity_token
+from test.conftest import _MakeMaterials
 
 from .client import SigstoreClient
 
