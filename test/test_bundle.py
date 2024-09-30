@@ -417,3 +417,28 @@ def test_verify_cpython_release_bundles(subtests, client):
                     )
                 except ClientFail as e:
                     pytest.fail(f"verify for {artifact['url']} failed: {e}")
+
+def test_verify_in_toto_in_dsse_envelope(
+        client: SigstoreClient,
+) -> None:
+    """
+    Check that the client can verify a bundle that contains an in-toto
+    metadata file in a DSSE envelope.
+    """
+    sha256 = "cd53809273ad6011fdd98e0244c5c2276b15f3dd1294e4715627ebd4f9c6e0f1"
+    bundle_path = Path(f"sha256:{sha256}.jsonl")
+
+    try:
+        client.run(
+            "verify-bundle",
+            "--bundle",
+            str(bundle_path),
+            "--certificate-identity",
+            "https://github.com/cli/cli/.github/workflows/deployment.yml@refs/heads/trunk",
+            "--certificate-oidc-issuer",
+            "https://token.actions.githubusercontent.com",
+            "--verify-digest",
+            f"sha256:{sha256}",
+        )
+    except ClientFail as e:
+        pytest.fail(f"verify for sha256:{sha256} failed: {e}")
