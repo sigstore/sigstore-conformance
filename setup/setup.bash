@@ -12,6 +12,12 @@ if [[ "${0}" == "${BASH_SOURCE[0]}" ]]; then
   die "Internal error: setup harness was executed instead of being sourced?"
 fi
 
+# We expect cpython-release-tracker to have been checked out;
+# the unit tests expect to load its assets.
+if [[ ! -d "${GITHUB_WORKSPACE}/cpython-release-tracker" ]]; then
+  die "cpython-release-tracker is not checked out!"
+fi
+
 # Check the Python version, making sure it's new enough (3.7+)
 # The installation step immediately below will technically catch this,
 # but doing it explicitly gives us the opportunity to produce a better

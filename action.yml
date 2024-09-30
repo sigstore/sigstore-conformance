@@ -27,6 +27,14 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Check out latest CPython release metadata
+      uses: actions/checkout@v4
+      with:
+        repository: woodruffw/cpython-release-tracker
+        persist-credentials: false
+        path: cpython-release-tracker
+        ref: 31c7721f29ae4181484ae9b399ecc5f04da947e1
+
     - name: Set up sigstore-conformance
       run: |
         # NOTE: Sourced, not executed as a script.

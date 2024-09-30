@@ -67,6 +67,12 @@ class BundleMaterials(VerificationMaterials):
     trusted_root: Path
 
     @classmethod
+    def from_path(cls, bundle: Path) -> BundleMaterials:
+        mats = cls()
+        mats.bundle = bundle
+        return mats
+
+    @classmethod
     def from_input(cls, input: Path) -> BundleMaterials:
         mats = cls()
         mats.bundle = input.parent / f"{input.name}.sigstore.json"

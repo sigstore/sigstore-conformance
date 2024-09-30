@@ -1,10 +1,14 @@
+import json
+import os
+import tempfile
 from pathlib import Path
+from typing import Any
 
 import pytest  # type: ignore
 from cryptography import x509
 from sigstore_protobuf_specs.dev.sigstore.bundle.v1 import Bundle
 
-from test.client import BundleMaterials, SigstoreClient
+from test.client import BundleMaterials, ClientFail, SigstoreClient
 from test.conftest import _MakeMaterialsByType, _VerifyBundle
 
 
@@ -351,3 +355,65 @@ def test_verify_rejects_checkpoint_with_no_matching_key(
 
     with client.raises():
         verify_bundle(materials, input_path)
+
+
+def test_verify_cpython_release_bundles(subtests, client):
+    cpython_release_dir = Path(os.getenv("GITHUB_WORKSPACE")) / "cpython-release-tracker"
+    if not cpython_release_dir.is_dir():
+        pytest.skip("cpython-release-tracker data is not available")
+
+    identities = json.loads((cpython_release_dir / "signing-identities.json").read_text())
+
+    def version_path_to_identity(path: Path) -> dict[str, Any] | None:
+        # Transforms /foo/bar/versions/3.11.6.json into a suitable
+        # verification identity.
+
+        # "3.11.6"
+        full_version = path.with_suffix("").name
+
+        # "3.11"
+        version = ".".join(full_version.split(".")[0:2])
+
+        return next((ident for ident in identities if ident["Release"] == version), None)
+
+    def temp_bundle_path(bundle: dict) -> Path:
+        # We let the system dispose of these after process teardown.
+        tmpfile = tempfile.NamedTemporaryFile(mode="w+t", suffix=".sigstore.json", delete=False)
+        tmpfile.write(json.dumps(bundle))
+        tmpfile.close()
+
+        return Path(tmpfile.name)
+
+    versions = cpython_release_dir / "versions"
+    for version_path in versions.glob("*.json"):
+        ident = version_path_to_identity(version_path)
+        if not ident:
+            continue
+
+        version = json.loads(version_path.read_text())
+        for artifact in version:
+            with subtests.test(artifact["url"]):
+                bundle = artifact.get("sigstore")
+                if not bundle:
+                    continue
+
+                bundle_path = temp_bundle_path(bundle)
+                sha256 = artifact["sha256"]
+
+                # NOTE: We currently do this completely manually,
+                # since the client verify APIs are baked around
+                # the assumption of a static identity.
+                try:
+                    client.run(
+                        "verify-bundle",
+                        "--bundle",
+                        str(bundle_path),
+                        "--certificate-identity",
+                        ident["Release manager"],
+                        "--certificate-oidc-issuer",
+                        ident["OIDC Issuer"],
+                        "--verify-digest",
+                        f"sha256:{sha256}",
+                    )
+                except ClientFail as e:
+                    pytest.fail(f"verify for {artifact['url']} failed: {e}")
