@@ -325,7 +325,6 @@ class SigstoreClient:
                 CERTIFICATE_IDENTITY,
                 "--certificate-oidc-issuer",
                 CERTIFICATE_OIDC_ISSUER,
-                "--verify-digest",
             ]
         )
 

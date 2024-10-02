@@ -412,7 +412,6 @@ def test_verify_cpython_release_bundles(subtests, client):
                         ident["Release manager"],
                         "--certificate-oidc-issuer",
                         ident["OIDC Issuer"],
-                        "--verify-digest",
                         f"sha256:{sha256}",
                     )
                 except ClientFail as e:
