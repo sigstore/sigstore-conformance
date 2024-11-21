@@ -77,7 +77,7 @@ ${ENTRYPOINT} verify [--staging] --signature FILE --certificate FILE --certifica
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] [--verify-digest] FILE_OR_DIGEST
+${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE_OR_DIGEST
 ```
 
 | Option | Description |
@@ -87,5 +87,4 @@ ${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --certificate-identity IDE
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
 | `--trusted-root` | The path of the custom trusted root to use to verify the bundle |
-| `--verify-digest` | Presence indicates client should interpret `FILE_OR_DIGEST` as a digest. |
-| `FILE_OR_DIGEST` | The path to the artifact to verify, or its digest. The digest should start with the `sha256:` prefix. |
+| `FILE_OR_DIGEST` | The path to the artifact to verify, or its digest. The digest should start with the `sha256:` prefix, should be the right length for a hexadecimal SHA-256 digest, and should not be a path on disk. If any of those conditions are not met, the input should be interpreted as a filepath instead. |

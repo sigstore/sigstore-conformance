@@ -356,6 +356,22 @@ def test_verify_rejects_checkpoint_with_no_matching_key(
     with client.raises():
         verify_bundle(materials, input_path)
 
+def test_verify_rejects_mismatched_hashedrekord(
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    verify_bundle: _VerifyBundle,
+) -> None:
+    """
+    Check that the client rejects a bundle if the hash in the hashedrekord
+    entry from rekor does not match the artifact is question. The bundle is
+    otherwise valid.
+    """
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.invalid_tlog_hashrekord.sigstore.json")
+
+    with client.raises():
+        verify_bundle(materials, input_path)
 
 def test_verify_cpython_release_bundles(subtests, client):
     cpython_release_dir = Path(os.getenv("GITHUB_WORKSPACE")) / "cpython-release-tracker"
@@ -412,7 +428,6 @@ def test_verify_cpython_release_bundles(subtests, client):
                         ident["Release manager"],
                         "--certificate-oidc-issuer",
                         ident["OIDC Issuer"],
-                        "--verify-digest",
                         f"sha256:{sha256}",
                     )
                 except ClientFail as e:
