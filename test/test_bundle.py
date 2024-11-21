@@ -356,6 +356,52 @@ def test_verify_rejects_checkpoint_with_no_matching_key(
     with client.raises():
         verify_bundle(materials, input_path)
 
+def test_verify_dsse(
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    verify_bundle: _VerifyBundle,
+) -> None:
+    """
+    Test the happy path of verification for bundles with dsse wrapped intoto statements
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.dsse_intoto.good.sigstore.json")
+
+    verify_bundle(materials, input_path)
+
+def test_verify_dsse_rejects_no_matching_subject((
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    verify_bundle: _VerifyBundle,
+) -> None:
+    """
+    Check that the client rejects a bundle where the artifact is not found in the intoto statement
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("b.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.dsse_intoto.good.sigstore.json")
+
+    with client.raises():
+        verify_bundle(materials, input_path)
+
+def test_verify_dsse_reject_invalid_signature((
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    verify_bundle: _VerifyBundle,
+) -> None:
+    """
+    Check that the client rejects a bundle where the dsee signature is invalid
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.dsse_intoto.invalid_signature.sigstore.json")
+
+    with client.raises():
+        verify_bundle(materials, input_path)
 
 def test_verify_cpython_release_bundles(subtests, client):
     cpython_release_dir = Path(os.getenv("GITHUB_WORKSPACE")) / "cpython-release-tracker"
