@@ -357,19 +357,21 @@ def test_verify_rejects_checkpoint_with_no_matching_key(
         verify_bundle(materials, input_path)
 
 
+@pytest.mark.parametrize("test_file_ext", ["wrong_artifact", "wrong_cert_and_sig", "wrong_entry"])
 def test_verify_rejects_mismatched_hashedrekord(
     client: SigstoreClient,
     make_materials_by_type: _MakeMaterialsByType,
     verify_bundle: _VerifyBundle,
+    test_file_ext: str,
 ) -> None:
     """
-    Check that the client rejects a bundle if the hash in the hashedrekord
-    entry from rekor does not match the artifact is question. The bundle is
-    otherwise valid.
+    Check that the client rejects a bundle if the provided log entry does not
+    apply to the artifact and signing event data embedded in the bundle.
+    The bundle is otherwise cryptographically valid.
     """
     materials: BundleMaterials
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_tlog_hashrekord.sigstore.json")
+    materials.bundle = Path(f"a.txt.invalid_tlog_hashrekord_{test_file_ext}.sigstore.json")
 
     with client.raises():
         verify_bundle(materials, input_path)
