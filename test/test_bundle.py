@@ -378,9 +378,12 @@ def test_verify_rejects_mismatched_hashedrekord(
 
 
 def test_verify_cpython_release_bundles(subtests, client):
-    cpython_release_dir = Path(os.getenv("GITHUB_WORKSPACE")) / "cpython-release-tracker"
-    if not cpython_release_dir.is_dir():
-        pytest.skip("cpython-release-tracker data is not available")
+    if gh_workspace := os.getenv("GITHUB_WORKSPACE"):
+        cpython_release_dir = Path(gh_workspace) / "cpython-release-tracker"
+        if not cpython_release_dir.is_dir():
+            pytest.skip("cpython-release-tracker data is not available")
+    else:
+        pytest.skip("GITHUB_WORKSPACE not set")
 
     identities = json.loads((cpython_release_dir / "signing-identities.json").read_text())
 
