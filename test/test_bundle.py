@@ -383,8 +383,10 @@ def test_verify_rejects_mismatched_hashedrekord(
         verify_bundle(materials, input_path)
 
 
-@pytest.mark.skipif(SKIP_CPYTHON_RELEASE_TESTS, "CPython release bundle tests explicitly skipped")
-@pytest.mark.skipif(not GITHUB_WORKSPACE, "GITHUB_WORKSPACE not set")
+@pytest.mark.skipif(
+    SKIP_CPYTHON_RELEASE_TESTS, reason="CPython release bundle tests explicitly skipped"
+)
+@pytest.mark.skipif(not GITHUB_WORKSPACE, reason="GITHUB_WORKSPACE not set")
 def test_verify_cpython_release_bundles(subtests, client):
     cpython_release_dir = Path(GITHUB_WORKSPACE) / "cpython-release-tracker"
     if not cpython_release_dir.is_dir():
