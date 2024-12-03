@@ -11,6 +11,12 @@ from sigstore_protobuf_specs.dev.sigstore.bundle.v1 import Bundle
 from test.client import BundleMaterials, ClientFail, SigstoreClient
 from test.conftest import _MakeMaterialsByType, _VerifyBundle
 
+SKIP_CPYTHON_RELEASE_TESTS = (
+    os.getenv("GHA_SIGSTORE_CONFORMANCE_SKIP_CPYTHON_RELEASE_TESTS", "false") != "false"
+)
+
+GITHUB_WORKSPACE = os.getenv("GITHUB_WORKSPACE")
+
 
 def test_verify(
     client: SigstoreClient,
@@ -377,13 +383,14 @@ def test_verify_rejects_mismatched_hashedrekord(
         verify_bundle(materials, input_path)
 
 
+@pytest.mark.skipif(
+    SKIP_CPYTHON_RELEASE_TESTS, reason="CPython release bundle tests explicitly skipped"
+)
+@pytest.mark.skipif(not GITHUB_WORKSPACE, reason="GITHUB_WORKSPACE not set")
 def test_verify_cpython_release_bundles(subtests, client):
-    if gh_workspace := os.getenv("GITHUB_WORKSPACE"):
-        cpython_release_dir = Path(gh_workspace) / "cpython-release-tracker"
-        if not cpython_release_dir.is_dir():
-            pytest.skip("cpython-release-tracker data is not available")
-    else:
-        pytest.skip("GITHUB_WORKSPACE not set")
+    cpython_release_dir = Path(GITHUB_WORKSPACE) / "cpython-release-tracker"
+    if not cpython_release_dir.is_dir():
+        pytest.skip("cpython-release-tracker data is not available")
 
     identities = json.loads((cpython_release_dir / "signing-identities.json").read_text())
 

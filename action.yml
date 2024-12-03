@@ -15,6 +15,10 @@ inputs:
     description: "skip tests that involve signing (default false)"
     required: false
     default: "false"
+  skip-cpython-release-tests:
+    description: "skip all CPython Sigstore bundle tests"
+    required: false
+    default: "false"
   environment:
     description: "'production' (default) or 'staging'"
     required: false
@@ -50,5 +54,6 @@ runs:
         GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT: "${{ inputs.entrypoint }}"
         GHA_SIGSTORE_CONFORMANCE_INTERNAL_BE_CAREFUL_DEBUG: "${{ inputs.internal-be-careful-debug }}"
         GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING: "${{ inputs.skip-signing }}"
+        GHA_SIGSTORE_CONFORMANCE_SKIP_CPYTHON_RELEASE_TESTS: "${{ inputs.skip-cpython-release-tests }}"
         GHA_SIGSTORE_CONFORMANCE_XFAIL: "${{ inputs.xfail }}"
       shell: bash
