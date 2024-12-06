@@ -18,7 +18,6 @@ import pytest
 
 from .client import (
     BundleMaterials,
-    SignatureCertificateMaterials,
     SigstoreClient,
     VerificationMaterials,
 )
@@ -190,12 +189,12 @@ def make_materials_by_type() -> _MakeMaterialsByType:
     return _make_materials_by_type
 
 
-@pytest.fixture(params=[BundleMaterials, SignatureCertificateMaterials])
+@pytest.fixture(params=[BundleMaterials])
 def make_materials(request, make_materials_by_type) -> _MakeMaterials:
     """
     Returns a function that constructs `VerificationMaterials` alongside an
     appropriate input path. The subclass of `VerificationMaterials` that is returned
-    is parameterized across `BundleMaterials` and `SignatureCertificateMaterials`.
+    is parameterized across `BundleMaterials`.
 
     See `make_materials_by_type` for a fixture that uses a specific subclass of
     `VerificationMaterials`.
