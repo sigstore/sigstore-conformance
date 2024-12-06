@@ -29,20 +29,6 @@ conformance suite in the order that they are specified in the templates below.
 
 ### Sign
 
-#### Signature and certificate flow
-
-```console
-${ENTRYPOINT} sign [--staging] --identity-token TOKEN --signature FILE --certificate FILE FILE
-```
-
-| Option | Description |
-| --- | --- |
-| `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
-| `--identity-token` | The OIDC identity token to use |
-| `--signature FILE` | The path to write the signature to |
-| `--certificate FILE` | The path to write the signing certificate to |
-| `FILE` | The artifact to sign |
-
 #### Bundle flow
 
 ```console
@@ -57,22 +43,6 @@ ${ENTRYPOINT} sign-bundle [--staging] --identity-token TOKEN --bundle FILE FILE
 | `FILE` | The artifact to sign |
 
 ### Verify
-
-#### Signature and certificate flow
-
-```console
-${ENTRYPOINT} verify [--staging] --signature FILE --certificate FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE
-```
-
-| Option | Description |
-| --- | --- |
-| `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
-| `--signature FILE` | The path to the signature to verify |
-| `--certificate FILE` | The path to the signing certificate to verify |
-| `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
-| `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
-| `--trusted-root` | The path of the custom trusted root to use to verify the signature |
-| `FILE` | The path to the artifact to verify |
 
 #### Bundle flow
 
