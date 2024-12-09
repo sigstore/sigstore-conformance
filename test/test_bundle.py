@@ -363,6 +363,23 @@ def test_verify_rejects_checkpoint_with_no_matching_key(
         verify_bundle(materials, input_path)
 
 
+def test_verify_invalid_trust_root_ct_key(
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    verify_bundle: _VerifyBundle,
+) -> None:
+    """
+    Check that the client rejects a bundle if the trusted root CT key is wrong.
+    """
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.good.sigstore.json")
+    materials.trusted_root = Path("trusted_root.a.invalid_ct.json")
+
+    with client.raises():
+        verify_bundle(materials, input_path)
+
+
 @pytest.mark.parametrize("test_file_ext", ["wrong_artifact", "wrong_cert_and_sig", "wrong_entry"])
 def test_verify_rejects_mismatched_hashedrekord(
     client: SigstoreClient,
