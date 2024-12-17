@@ -467,24 +467,34 @@ def test_verify_cpython_release_bundles(subtests, client):
 
 def test_verify_in_toto_in_dsse_envelope(
     client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    verify_bundle: _VerifyBundle,
 ) -> None:
     """
     Check that the client can verify a bundle that contains an in-toto
     metadata file in a DSSE envelope.
     """
-    sha256 = "cd53809273ad6011fdd98e0244c5c2276b15f3dd1294e4715627ebd4f9c6e0f1"
-    bundle_path = Path("intoto-in-dsse-v3.sigstore.json")
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("intoto-in-dsse-v3.sigstore.json")
 
-    try:
-        client.run(
-            "verify-bundle",
-            "--bundle",
-            str(bundle_path),
-            "--certificate-identity",
-            "https://github.com/cli/cli/.github/workflows/deployment.yml@refs/heads/trunk",
-            "--certificate-oidc-issuer",
-            "https://token.actions.githubusercontent.com",
-            f"sha256:{sha256}",
-        )
-    except ClientFail as e:
-        pytest.fail(f"verify for {bundle_path} failed: {e}")
+    verify_bundle(materials, input_path)
+
+
+@pytest.mark.parametrize("test_file_ext", ["bad_sig", "mismatched_sig", "mismatched_envelope"])
+def test_verify_in_toto_in_dsse_envelope_rejects_invalid_envelope(
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    verify_bundle: _VerifyBundle,
+    test_file_ext: str,
+) -> None:
+    """
+    Check that the client will fail if the dsse envelope is invalid or inconsistent with the bundle
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path(f"intoto-in-dsse-v3.{test_file_ext}.sigstore.json")
+
+    with client.raises():
+        verify_bundle(materials, input_path)
