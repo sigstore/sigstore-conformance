@@ -105,8 +105,14 @@ def test_sign_does_not_produce_root(
     bundle = Bundle().from_json(bundle_contents)
 
     # Iterate over our cert chain and check for roots.
-    certs = bundle.verification_material.x509_certificate_chain
-    for x509cert in certs.certificates:
+    if bundle.verification_material.is_set("x509_certificate_chain"):
+        certs = bundle.verification_material.x509_certificate_chain.certificates
+    elif bundle.verification_material.is_set("certificate"):
+        certs = [bundle.verification_material.certificate]
+    else:
+        assert False, "expected certs in either `x509_certificate_chain` or `certificate`"
+
+    for x509cert in certs:
         cert = x509.load_der_x509_certificate(x509cert.raw_bytes)
 
         try:
