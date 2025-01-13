@@ -47,12 +47,12 @@ client-under-test [CLI protocol](docs/cli_protocol.md).
           # insert your client installation steps here
 
           # Run tests against production Sigstore environment
-          - uses: sigstore/sigstore-conformance@v0.0.15
+          - uses: sigstore/sigstore-conformance@v0.0.16
             with:
               entrypoint: my-conformance-client
 
           # Run tests against staging Sigstore environment
-          - uses: sigstore/sigstore-conformance@v0.0.15
+          - uses: sigstore/sigstore-conformance@v0.0.16
             with:
               entrypoint: my-conformance-client
               environment: staging
