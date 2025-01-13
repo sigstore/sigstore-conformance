@@ -14,9 +14,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - { sigstore-env: production, skip-cpython-release-tests: false }
-          - { sigstore-env: production, skip-cpython-release-tests: true }
-          - { sigstore-env: staging, skip-cpython-release-tests: false }
+          - { sigstore-infra: production, skip-cpython-release-tests: false }
+          - { sigstore-infra: production, skip-cpython-release-tests: true }
+          - { sigstore-infra: staging, skip-cpython-release-tests: false }
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +34,7 @@ jobs:
 
           cat <<EOF > ./sigstore-env/bin/conformance
           #!/bin/sh
-          # allow wrapper to find "sigstore" binary from venv
+          # allow sigstore-python-conformance wrapper to find "sigstore" binary from venv
           PATH=$PWD/sigstore-env/bin/:$PATH
           $PWD/sigstore-env/bin/python $PWD/sigstore-python-conformance "\$@"
           EOF
@@ -46,5 +46,5 @@ jobs:
         with:
           entrypoint: ${{ github.workspace }}/sigstore-env/bin/conformance
           skip-cpython-release-tests: ${{ matrix.skip-cpython-release-tests }}
-          environment: ${{ matrix.sigstore-env }}
+          environment: ${{ matrix.sigstore-infra }}
           xfail: "test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root"
