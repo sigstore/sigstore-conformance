@@ -1,3 +1,3 @@
 -r ../requirements.txt
 
-sigstore~=1.1.2
+sigstore~=3.6.1
