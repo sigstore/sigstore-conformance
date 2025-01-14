@@ -1,4 +1,3 @@
-sigstore ~= 3.6
 ruff
 mypy
 types-requests

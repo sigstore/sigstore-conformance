@@ -1,4 +1,5 @@
 env/
+sigstore-env/
 pip-wheel-metadata/
 *.egg-info/
 __pycache__/

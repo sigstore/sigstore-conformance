@@ -13,11 +13,17 @@ env/bootstrap: dev-requirements.txt
 	./env/bin/python -m pip install --requirement dev-requirements.txt
 	touch env/bootstrap
 
+sigstore-env/pyvenv.cfg: sigstore-requirements.txt
+	python3 -m venv sigstore-env
+	./sigstore-env/bin/python -m pip install --upgrade pip
+	./sigstore-env/bin/python -m pip install --requirement sigstore-requirements.txt
+
+
 env/pyvenv.cfg: env/bootstrap requirements.txt
 	./env/bin/python -m pip install --requirement requirements.txt
 
 .PHONY: dev
-dev: env/pyvenv.cfg
+dev: env/pyvenv.cfg sigstore-env/pyvenv.cfg
 
 .PHONY: lint
 lint: env/pyvenv.cfg $(ALL_PY_SRCS)
