@@ -1,3 +1,4 @@
+# Test suite requirements
 pytest==8.3.4
 pytest-subtests==0.14.1
 requests==2.32.3
