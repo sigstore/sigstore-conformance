@@ -2,7 +2,10 @@
 
 """
 A wrapper to convert `sigstore-conformance` CLI protocol invocations to match `sigstore-python`.
+
+This wrapper expects to find sigstore-python binary installed in sigstore_env/bin/sigstore
 """
+
 
 import os
 import sys
@@ -16,6 +19,15 @@ ARG_REPLACEMENTS = {
     "--certificate-identity": "--cert-identity",
     "--certificate-oidc-issuer": "--cert-oidc-issuer",
 }
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
+SIGSTORE_BINARY = os.path.join(script_dir, "sigstore-env", "bin", "sigstore")
+
+if not os.path.exists(SIGSTORE_BINARY):
+    exit(
+        f"Error: sigstore binary not found in {SIGSTORE_BINARY}.\n"
+        "Has the environment been initialized with 'make dev'?"
+    )
 
 # Trim the script name.
 fixed_args = sys.argv[1:]
@@ -44,4 +56,4 @@ else:
 # Replace incompatible flags.
 command.extend(ARG_REPLACEMENTS[arg] if arg in ARG_REPLACEMENTS else arg for arg in fixed_args)
 
-os.execvp("sigstore", command)
+os.execvp(SIGSTORE_BINARY, command)

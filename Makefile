@@ -7,13 +7,18 @@ ALL_PY_SRCS := action.py \
 all:
 	@echo "Run my targets individually!"
 
+sigstore-env/pyvenv.cfg: sigstore-requirements.txt
+	python3 -m venv sigstore-env
+	./sigstore-env/bin/python -m pip install --upgrade pip
+	./sigstore-env/bin/python -m pip install --requirement sigstore-requirements.txt
+
 env/pyvenv.cfg: dev-requirements.txt requirements.txt
 	python3 -m venv env
 	./env/bin/python -m pip install --upgrade pip
 	./env/bin/python -m pip install --requirement dev-requirements.txt --requirement requirements.txt
 
 .PHONY: dev
-dev: env/pyvenv.cfg
+dev: env/pyvenv.cfg sigstore-env/pyvenv.cfg
 
 .PHONY: lint
 lint: env/pyvenv.cfg $(ALL_PY_SRCS)
