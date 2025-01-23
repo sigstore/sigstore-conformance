@@ -41,8 +41,10 @@ runs:
 
     - name: Set up sigstore-conformance
       run: |
+        echo "::group::Install sigstore-conformance requirements"
         # NOTE: Sourced, not executed as a script.
         source "${{ github.action_path }}/setup/setup.bash"
+        echo "::endgroup::"
       shell: bash
 
     - name: Run sigstore-conformance
