@@ -3,7 +3,7 @@
 """
 A wrapper to convert `sigstore-conformance` CLI protocol invocations to match `sigstore-python`.
 
-This wrapper expects to find sigstore-python binary installed in sigstore_env/bin/sigstore
+This wrapper expects to find sigstore-python binary installed in selftest-env/bin/sigstore
 """
 
 
@@ -21,7 +21,7 @@ ARG_REPLACEMENTS = {
 }
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-SIGSTORE_BINARY = os.path.join(script_dir, "sigstore-env", "bin", "sigstore")
+SIGSTORE_BINARY = os.path.join(script_dir, "selftest-env", "bin", "sigstore")
 
 if not os.path.exists(SIGSTORE_BINARY):
     exit(
