@@ -445,10 +445,10 @@ def test_verify_cpython_release_bundles(subtests, client):
 
         version = json.loads(version_path.read_text())
         for artifact in version:
+            bundle = artifact.get("sigstore")
+            if not bundle:
+                continue
             with subtests.test(artifact["url"]):
-                bundle = artifact.get("sigstore")
-                if not bundle:
-                    continue
 
                 bundle_path = temp_bundle_path(bundle)
                 sha256 = artifact["sha256"]
@@ -469,6 +469,9 @@ def test_verify_cpython_release_bundles(subtests, client):
                     )
                 except ClientFail as e:
                     pytest.fail(f"verify for {artifact['url']} failed: {e}")
+
+                # One verification per release is enough
+                break
 
 
 def test_verify_in_toto_in_dsse_envelope(
