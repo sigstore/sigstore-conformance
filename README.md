@@ -2,8 +2,8 @@ sigstore-conformance
 ====================
 
 <!--- @begin-badges@ --->
-![CI](https://github.com/sigstore/sigstore-conformance/workflows/CI/badge.svg)
-![Self-test](https://github.com/sigstore/sigstore-conformance/workflows/Self-test/badge.svg)
+[![CI](https://github.com/sigstore/sigstore-conformance/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sigstore/sigstore-conformance/actions/workflows/ci.yml)
+[![Self-test](https://github.com/sigstore/sigstore-conformance/actions/workflows/conformance.yml/badge.svg?branch=main)](https://github.com/sigstore/sigstore-conformance/actions/workflows/conformance.yml)
 <!--- @end-badges@ --->
 
 `sigstore-conformance` is a conformance testing suite for Sigstore clients.
