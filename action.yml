@@ -37,7 +37,7 @@ runs:
         repository: woodruffw/cpython-release-tracker
         persist-credentials: false
         path: cpython-release-tracker
-        ref: 124a4005d3822cc21f16396e81bf08af3e858561
+        ref: f5ef7e3a49c5b9aa2a5c8f9591e2c9feb1939060
 
     - name: Set up sigstore-conformance
       run: |
