@@ -28,4 +28,5 @@ min_vers=$(cut -d '.' -f2 <<< "${vers}")
 
 [[ "${maj_vers}" == "3" && "${min_vers}" -ge 7 ]] || die "Bad Python version: ${vers}"
 
-python -m pip install --requirement "${GITHUB_ACTION_PATH}/requirements.txt"
+python3 -m venv sigstore-conformance-env
+./sigstore-conformance-env/bin/python -m pip install --requirement "${GITHUB_ACTION_PATH}/requirements.txt"
