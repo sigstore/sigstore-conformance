@@ -50,7 +50,7 @@ runs:
     - name: Run sigstore-conformance
       id: sigstore-conformance
       run: |
-        ${{ github.action_path }}/action.py
+        ./sigstore-conformance-env/bin/python ${{ github.action_path }}/action.py
       env:
         GHA_SIGSTORE_CONFORMANCE_ENVIRONMENT: "${{ inputs.environment }}"
         GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT: "${{ inputs.entrypoint }}"
