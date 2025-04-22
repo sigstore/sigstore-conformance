@@ -102,7 +102,7 @@ def test_sign_does_not_produce_root(
 
     # Parse the output bundle.
     bundle_contents = materials.bundle.read_bytes()
-    bundle = Bundle().from_json(bundle_contents)
+    bundle = Bundle.from_dict(json.loads(bundle_contents))
 
     # Iterate over our cert chain and check for roots.
     if bundle.verification_material.is_set("x509_certificate_chain"):
@@ -449,7 +449,6 @@ def test_verify_cpython_release_bundles(subtests, client):
             if not bundle:
                 continue
             with subtests.test(artifact["url"]):
-
                 bundle_path = temp_bundle_path(bundle)
                 sha256 = artifact["sha256"]
 
