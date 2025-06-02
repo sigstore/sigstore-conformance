@@ -9,7 +9,7 @@ all:
 
 env/bootstrap: dev-requirements.txt
 	python3 -m venv env
-	./env/bin/python -m pip install --upgrade pip
+	./env/bin/python -m pip install --upgrade 'pip < 25.1' # workaround #206
 	./env/bin/python -m pip install --requirement dev-requirements.txt
 	touch env/bootstrap
 
