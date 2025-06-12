@@ -49,6 +49,24 @@ def test_verify_v_0_3(
 
     verify_bundle(materials, input_path)
 
+def test_verify_rekorv2_hashed_rekord_entry(
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    verify_bundle: _VerifyBundle,
+) -> None:
+    """
+    Test the happy path of verification of a v0.3 bundle with a rekor v2
+    entry (hashedrekord v002)
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.bundle = Path("a.txt.staging-with-rekor-v2-entry.sigstore.json")
+    # Use staging trustedroot but provide it with --trusted-root
+    materials.trusted_root = Path("trusted_root.staging.json")
+
+    verify_bundle(materials, input_path)
+
 
 def test_verify_dsse_bundle_with_trust_root(
     client: SigstoreClient,
