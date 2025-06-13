@@ -18,20 +18,24 @@ SKIP_CPYTHON_RELEASE_TESTS = (
 GITHUB_WORKSPACE = os.getenv("GITHUB_WORKSPACE")
 
 
-def test_verify(
+def test_verify_bundle(
     client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
+    subtests,
     verify_bundle: _VerifyBundle,
 ) -> None:
     """
-    Test the happy path of verification
+    Test all bundles in assets/bundle-verify/*
     """
 
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.good.sigstore.json")
+    for f in Path("bundle-verify").glob("*"):
+        subtest_dir = Path(f)
+        if not subtest_dir.is_dir():
+            continue
 
-    verify_bundle(materials, input_path)
+        with subtests.test(subtest_dir.name):
+            materials = BundleMaterials.from_path(subtest_dir / "bundle.sigstore.json")
+            artifact_path = Path("bundle-verify", "a.txt")
+            verify_bundle(materials, artifact_path)
 
 
 def test_verify_v_0_3(
