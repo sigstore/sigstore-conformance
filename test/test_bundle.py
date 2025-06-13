@@ -34,8 +34,22 @@ def test_verify_bundle(
 
         with subtests.test(subtest_dir.name):
             materials = BundleMaterials.from_path(subtest_dir / "bundle.sigstore.json")
-            artifact_path = Path("bundle-verify", "a.txt")
-            verify_bundle(materials, artifact_path)
+
+            # use custom trust root if one is provided
+            trusted_root_path = subtest_dir / "trusted_root.json"
+            if trusted_root_path.exists():
+                materials.trusted_root = trusted_root_path
+
+            # use custom artifact path if one is provided
+            artifact_path = subtest_dir / "artifact"
+            if not artifact_path.exists():
+                artifact_path = Path("bundle-verify", "a.txt")
+
+            if subtest_dir.name.endswith("fail"):
+                with client.raises():
+                    verify_bundle(materials, artifact_path)
+            else:
+                verify_bundle(materials, artifact_path)
 
 
 def test_verify_dsse_bundle_with_trust_root(
@@ -52,22 +66,6 @@ def test_verify_dsse_bundle_with_trust_root(
     materials.trusted_root = Path("trusted_root.d.json")
 
     verify_bundle(materials, input_path)
-
-
-def test_verify_rejects_root(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle that contains a root certificate.
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("has_root_in_chain.txt", BundleMaterials)
-
-    with client.raises():
-        verify_bundle(materials, input_path)
 
 
 @pytest.mark.signing
@@ -109,110 +107,6 @@ def test_sign_does_not_produce_root(
         # BasicConstraints isn't required to appear in leaf certificates.
         except x509.ExtensionNotFound:
             pass
-
-
-def test_verify_rejects_staging_cert(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle that doesn't match trust root.
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.staging.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
-def test_verify_rejects_invalid_set(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle with a signed entry timestamp from
-    the future.
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_set.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
-def test_verify_rejects_invalid_signature(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle with a modified signature.
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_signature.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
-def test_verify_rejects_invalid_key(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle with a modified public key in the
-    hashrekord entry.
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_key.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
-def test_verify_rejects_invalid_inclusion_proof(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle with an old inclusion proof
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.invalid_inclusion_proof.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
-def test_verify_rejects_different_materials(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle for different materials.
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("b.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.good.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
 
 
 def test_verify_rejects_expired_certificate(
@@ -306,57 +200,6 @@ def test_verify_rejects_bad_tsa_timestamp(
         verify_bundle(materials, input_path)
 
 
-def test_verify_rejects_bad_checkpoint(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle if the checkpoint signature is
-    invalid.
-    """
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.checkpoint_invalid_signature.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
-def test_verify_rejects_valid_but_mismatched_checkpoint(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle if the checkpoint self consistent
-    but does not apply to this bundle (root hash is wrong).
-    """
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.checkpoint_wrong_roothash.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
-def test_verify_rejects_checkpoint_with_no_matching_key(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client rejects a bundle if the checkpoint signature
-    does not match the transparency log providing the entry.
-    """
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("a.txt.checkpoint_bad_keyhint.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
 def test_verify_invalid_trust_root_ct_key(
     client: SigstoreClient,
     make_materials_by_type: _MakeMaterialsByType,
@@ -369,26 +212,6 @@ def test_verify_invalid_trust_root_ct_key(
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
     materials.bundle = Path("a.txt.good.sigstore.json")
     materials.trusted_root = Path("trusted_root.a.invalid_ct.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
-
-
-@pytest.mark.parametrize("test_file_ext", ["wrong_artifact", "wrong_cert_and_sig", "wrong_entry"])
-def test_verify_rejects_mismatched_hashedrekord(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-    test_file_ext: str,
-) -> None:
-    """
-    Check that the client rejects a bundle if the provided log entry does not
-    apply to the artifact and signing event data embedded in the bundle.
-    The bundle is otherwise cryptographically valid.
-    """
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path(f"a.txt.invalid_tlog_hashrekord_{test_file_ext}.sigstore.json")
 
     with client.raises():
         verify_bundle(materials, input_path)
@@ -459,22 +282,6 @@ def test_verify_cpython_release_bundles(subtests, client):
 
                 # One verification per release is enough
                 break
-
-
-def test_verify_in_toto_in_dsse_envelope(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-) -> None:
-    """
-    Check that the client can verify a bundle that contains an in-toto
-    metadata file in a DSSE envelope.
-    """
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path("intoto-in-dsse-v3.sigstore.json")
-
-    verify_bundle(materials, input_path)
 
 
 @pytest.mark.parametrize("test_file_ext", ["bad_sig", "mismatched_sig", "mismatched_envelope"])
