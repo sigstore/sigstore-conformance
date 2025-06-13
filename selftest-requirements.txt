@@ -1,2 +1,2 @@
 # Requirements for the self test client sigstore-python-conformance
-sigstore ~= 3.6.2
+sigstore @ git+https://github.com/sigstore/sigstore-python.git@sign-with-rekorv2
