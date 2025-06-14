@@ -18,7 +18,7 @@ SKIP_CPYTHON_RELEASE_TESTS = (
 GITHUB_WORKSPACE = os.getenv("GITHUB_WORKSPACE")
 
 
-def test_verify_bundle(
+def test_verify(
     client: SigstoreClient,
     bundle_verify_dir,
     verify_bundle: _VerifyBundle,

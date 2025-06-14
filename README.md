@@ -31,6 +31,8 @@ Some general testing principles for this suite are:
   Sigstore infrastructure such as Rekor, Fulcio, etc. These tests should run
   against Sigstore staging and production infrastructure as well as custom built
   mock services to test atypical scenarios.
+- *Most verification tests can be parametrized without new code.* See
+  [test/assets/bundle-verify/README](test/assets/bundle-verify/README.md)
 
 ## Usage
 
@@ -69,7 +71,7 @@ The important action inputs are
 * `environment`: 'production' (default) or 'staging'. This selects the Sigstore environment to
   run against
 * `xfail`: optional string. Whitespace separated test names that are expected to fail. Shell style
-  wild-cards can be used (e.g. `test_verify_bundle*intoto*`). Note that "[" used in some test names is
+  wild-cards can be used (e.g. `test_verify*intoto*`). Note that "[" used in some test names is
   a wild card character.
 
 See [action.yml](action.yml) for full list of inputs.
@@ -101,7 +103,7 @@ The test suite can be configured with
 Following example runs the test suite with the included sigstore-python-conformance client script:
 ```sh
 (env) $ # run all tests
-(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify_bundle*-intoto-with-custom-trust-root]" \
+(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify*-intoto-with-custom-trust-root]" \
     pytest test --entrypoint=sigstore-python-conformance
 ```
 
