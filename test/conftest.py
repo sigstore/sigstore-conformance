@@ -254,3 +254,14 @@ def workspace():
 def conformance_xfail(request):
     if request.node.originalname in _XFAIL_LIST:
         request.node.add_marker(pytest.mark.xfail(reason="skipped by suite runner", strict=True))
+
+
+def pytest_generate_tests(metafunc):
+    """
+    Parametrize bundle_verify tests over all sudirectories under assets/bundle-verify
+    """
+    if "bundle_verify_dir" in metafunc.fixturenames:
+        asset_root = Path(__file__).parent / "assets" / "bundle-verify"
+        directories = [d for d in asset_root.iterdir() if d.is_dir()]
+        dir_paths = [str(d) for d in directories]
+        metafunc.parametrize("bundle_verify_dir", dir_paths, ids=[d.name for d in directories])

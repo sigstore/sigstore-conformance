@@ -20,36 +20,31 @@ GITHUB_WORKSPACE = os.getenv("GITHUB_WORKSPACE")
 
 def test_verify_bundle(
     client: SigstoreClient,
-    subtests,
+    bundle_verify_dir,
     verify_bundle: _VerifyBundle,
 ) -> None:
     """
-    Test all bundles in assets/bundle-verify/*
+    Test all bundles in assets/bundle-verify/*. See assets/bundle-verify/README
     """
+    path = Path(bundle_verify_dir)
 
-    for f in Path("bundle-verify").glob("*"):
-        subtest_dir = Path(f)
-        if not subtest_dir.is_dir():
-            continue
+    materials = BundleMaterials.from_path(path / "bundle.sigstore.json")
 
-        with subtests.test(subtest_dir.name):
-            materials = BundleMaterials.from_path(subtest_dir / "bundle.sigstore.json")
+    # use custom trust root if one is provided
+    trusted_root_path = path / "trusted_root.json"
+    if trusted_root_path.exists():
+        materials.trusted_root = trusted_root_path
 
-            # use custom trust root if one is provided
-            trusted_root_path = subtest_dir / "trusted_root.json"
-            if trusted_root_path.exists():
-                materials.trusted_root = trusted_root_path
+    # use custom artifact path if one is provided
+    artifact_path = path / "artifact"
+    if not artifact_path.exists():
+        artifact_path = Path("bundle-verify", "a.txt")
 
-            # use custom artifact path if one is provided
-            artifact_path = subtest_dir / "artifact"
-            if not artifact_path.exists():
-                artifact_path = Path("bundle-verify", "a.txt")
-
-            if subtest_dir.name.endswith("fail"):
-                with client.raises():
-                    verify_bundle(materials, artifact_path)
-            else:
-                verify_bundle(materials, artifact_path)
+    if path.name.endswith("fail"):
+        with client.raises():
+            verify_bundle(materials, artifact_path)
+    else:
+        verify_bundle(materials, artifact_path)
 
 
 def test_verify_dsse_bundle_with_trust_root(
