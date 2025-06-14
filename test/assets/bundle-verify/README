@@ -1,5 +1,5 @@
-Each subdirectory is considered a subtest of test_verify_bundle
-* the name of the directory is the subtest name
+Each subdirectory will be used to parametrize test_verify_bundle
+* the name of the directory is the parametrized part of test name
 * name should end in "_fail" if the verification is expected to fail
 * directory must contain
   * bundle.sigstore.json: The signature bundle
