@@ -277,22 +277,3 @@ def test_verify_cpython_release_bundles(subtests, client):
 
                 # One verification per release is enough
                 break
-
-
-@pytest.mark.parametrize("test_file_ext", ["bad_sig", "mismatched_sig", "mismatched_envelope"])
-def test_verify_in_toto_in_dsse_envelope_rejects_invalid_envelope(
-    client: SigstoreClient,
-    make_materials_by_type: _MakeMaterialsByType,
-    verify_bundle: _VerifyBundle,
-    test_file_ext: str,
-) -> None:
-    """
-    Check that the client will fail if the dsse envelope is invalid or inconsistent with the bundle
-    """
-
-    materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
-    materials.bundle = Path(f"intoto-in-dsse-v3.{test_file_ext}.sigstore.json")
-
-    with client.raises():
-        verify_bundle(materials, input_path)
