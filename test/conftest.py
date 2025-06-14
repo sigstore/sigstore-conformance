@@ -1,4 +1,5 @@
 import enum
+from fnmatch import fnmatch
 import functools
 import hashlib
 import json
@@ -210,6 +211,9 @@ class ArtifactInputType(enum.Enum):
     PATH = enum.auto()
     DIGEST = enum.auto()
 
+    def __str__(self) -> str:
+        return "PATH" if self == ArtifactInputType.PATH else "DIGEST"
+
 
 @pytest.fixture(params=[ArtifactInputType.PATH, ArtifactInputType.DIGEST])
 def verify_bundle(request, client) -> _VerifyBundle:
@@ -252,7 +256,8 @@ def workspace():
 
 @pytest.fixture(autouse=True)
 def conformance_xfail(request):
-    if request.node.originalname in _XFAIL_LIST:
+
+    if any([fnmatch(request.node.name, xfail_pattern) for xfail_pattern in _XFAIL_LIST]):
         request.node.add_marker(pytest.mark.xfail(reason="skipped by suite runner", strict=True))
 
 

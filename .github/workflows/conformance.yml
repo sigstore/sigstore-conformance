@@ -38,4 +38,4 @@ jobs:
           entrypoint: ${{ github.workspace }}/sigstore-python-conformance
           skip-cpython-release-tests: ${{ matrix.skip-cpython-release-tests }}
           environment: ${{ matrix.sigstore-infra }}
-          xfail: "test_verify_dsse_bundle_with_trust_root"
+          xfail: "test_verify_bundle*dsse-with-custom-trust-root]"

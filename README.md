@@ -68,7 +68,9 @@ The important action inputs are
   [CLI protocol](docs/cli_protocol.md)
 * `environment`: 'production' (default) or 'staging'. This selects the Sigstore environment to
   run against
-* `xfail`: optional string. Whitespace separated test names that are expected to fail.
+* `xfail`: optional string. Whitespace separated test names that are expected to fail. Shell style
+  wild-cards can be used (e.g. `test_verify_bundle*dsse*`). Note that "[" used in some test names is
+  a wild card character.
 
 See [action.yml](action.yml) for full list of inputs.
 
@@ -99,7 +101,7 @@ The test suite can be configured with
 Following example runs the test suite with the included sigstore-python-conformance client script:
 ```sh
 (env) $ # run all tests
-(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root" \
+(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify_bundle*-dsse-with-custom-trust-root]" \
     pytest test --entrypoint=sigstore-python-conformance
 ```
 
