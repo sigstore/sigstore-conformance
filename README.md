@@ -72,7 +72,7 @@ The important action inputs are
   run against
 * `xfail`: optional string. Whitespace separated test names that are expected to fail. Shell style
   wild-cards can be used (e.g. `test_verify*intoto*`). Note that "[" used in some test names is
-  a wild card character.
+  a wild card character that can be matched with e.g. "[[]".
 
 See [action.yml](action.yml) for full list of inputs.
 
@@ -95,16 +95,20 @@ The test suite can be configured with
 
 ```sh
 (env) $ # run all tests
-(env) $ pytest test --entrypoint=$SIGSTORE_CLIENT
+(env) $ pytest -v --entrypoint=$SIGSTORE_CLIENT
 (env) $ # run verification tests only
-(env) $ pytest test --entrypoint=$SIGSTORE_CLIENT --skip-signing
+(env) $ pytest -v --entrypoint=$SIGSTORE_CLIENT --skip-signing
 ```
 
 Following example runs the test suite with the included sigstore-python-conformance client script:
 ```sh
 (env) $ # run all tests
 (env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify*-intoto-with-custom-trust-root]" \
-    pytest test --entrypoint=sigstore-python-conformance
+    pytest -v --entrypoint=sigstore-python-conformance
+...
+(env) $ # run single test
+(env) $ pytest -v --entrypoint=sigstore-python-conformance -k test_verify[DIGEST-happy-path]
+...
 ```
 
 ## Licensing
