@@ -474,9 +474,9 @@ requests==2.32.4 \
     --hash=sha256:27babd3cda2a6d50b30443204ee89830707d396671944c998b5975b031ac2b2c \
     --hash=sha256:27d0316682c8a29834d3264820024b62a36942083d52caf2f14c0591336d3422
     # via -r requirements.in
-sigstore-protobuf-specs==0.4.2 \
-    --hash=sha256:1aca1a0b09672d278def631a265dc3baa3001df3189e01a44b486585e7d736ad \
-    --hash=sha256:9038a5562de33453e18aa049205070592f80e7619618cf3edb2e84ce535a44b8
+sigstore-protobuf-specs==0.4.3 \
+    --hash=sha256:54cbbd7728174524884d053bd831980c2ca5382f810d36d5eedd3519a644d135 \
+    --hash=sha256:ec9abde48f04ba9f079e7825347722252aa03dec040a8a4660a330d3171409e2
     # via -r requirements.in
 six==1.17.0 \
     --hash=sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274 \
