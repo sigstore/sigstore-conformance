@@ -462,9 +462,9 @@ pytest==8.3.5 \
     # via
     #   -r requirements.in
     #   pytest-subtests
-pytest-subtests==0.14.1 \
-    --hash=sha256:350c00adc36c3aff676a66135c81aed9e2182e15f6c3ec8721366918bbbf7580 \
-    --hash=sha256:e92a780d98b43118c28a16044ad9b841727bd7cb6a417073b38fd2d7ccdf052d
+pytest-subtests==0.14.2 \
+    --hash=sha256:7154a8665fd528ee70a76d00216a44d139dc3c9c83521a0f779f7b0ad4f800de \
+    --hash=sha256:8da0787c994ab372a13a0ad7d390533ad2e4385cac167b3ac501258c885d0b66
     # via -r requirements.in
 python-dateutil==2.9.0.post0 \
     --hash=sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3 \
