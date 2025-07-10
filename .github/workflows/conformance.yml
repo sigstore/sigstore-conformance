@@ -9,6 +9,9 @@ on:
   schedule:
     - cron: "10 10 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   selftest:
     strategy:
