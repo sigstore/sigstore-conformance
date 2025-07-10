@@ -1,2 +1,3 @@
 # Requirements for the self test client sigstore-python-conformance
-sigstore ~= 3.6.4
+# Use a commit from main until 4.x release with support for SigningConfigv0.2 is available
+sigstore @ git+https://github.com/sigstore/sigstore-python.git@50eee0dfae022af8f65d83ae5af146c7cfc5641c

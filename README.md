@@ -31,6 +31,8 @@ Some general testing principles for this suite are:
   Sigstore infrastructure such as Rekor, Fulcio, etc. These tests should run
   against Sigstore staging and production infrastructure as well as custom built
   mock services to test atypical scenarios.
+- *Most verification tests can be parametrized without new code.* See
+  [test/assets/bundle-verify/README](test/assets/bundle-verify/README.md)
 
 ## Usage
 
@@ -68,7 +70,9 @@ The important action inputs are
   [CLI protocol](docs/cli_protocol.md)
 * `environment`: 'production' (default) or 'staging'. This selects the Sigstore environment to
   run against
-* `xfail`: optional string. Whitespace separated test names that are expected to fail.
+* `xfail`: optional string. Whitespace separated test names that are expected to fail. Shell style
+  wild-cards can be used (e.g. `test_verify*intoto*`). Note that "[" used in some test names is
+  a wild card character that can be matched with e.g. "[[]".
 
 See [action.yml](action.yml) for full list of inputs.
 
@@ -91,16 +95,20 @@ The test suite can be configured with
 
 ```sh
 (env) $ # run all tests
-(env) $ pytest test --entrypoint=$SIGSTORE_CLIENT
+(env) $ pytest -v --entrypoint=$SIGSTORE_CLIENT
 (env) $ # run verification tests only
-(env) $ pytest test --entrypoint=$SIGSTORE_CLIENT --skip-signing
+(env) $ pytest -v --entrypoint=$SIGSTORE_CLIENT --skip-signing
 ```
 
 Following example runs the test suite with the included sigstore-python-conformance client script:
 ```sh
 (env) $ # run all tests
-(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify_with_trust_root test_verify_dsse_bundle_with_trust_root" \
-    pytest test --entrypoint=sigstore-python-conformance
+(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify*-intoto-with-custom-trust-root]" \
+    pytest -v --entrypoint=sigstore-python-conformance
+...
+(env) $ # run single test
+(env) $ pytest -v --entrypoint=sigstore-python-conformance -k test_verify[DIGEST-happy-path]
+...
 ```
 
 ## Licensing
