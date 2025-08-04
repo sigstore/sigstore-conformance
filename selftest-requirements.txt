@@ -1,3 +1,3 @@
 # Requirements for the self test client sigstore-python-conformance
 # Use a commit from main until 4.x release with support for SigningConfigv0.2 and rekorv2 is available
-sigstore @ git+https://github.com/sigstore/sigstore-python.git@b7d2138044786e56719cb66acc6c16e6805102e2
+sigstore @ git+https://github.com/sigstore/sigstore-python.git@3adc3d4a154a872621b0bf38a5e1a55cd1eecab4
