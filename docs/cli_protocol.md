@@ -40,6 +40,8 @@ ${ENTRYPOINT} sign-bundle [--staging] --identity-token TOKEN --bundle FILE FILE
 | `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
 | `--identity-token` | The OIDC identity token to use |
 | `--bundle FILE` | The path to write the bundle to |
+| `--trusted-root TRUSTROOT` | Optional path to a custom trusted root to use to verify the bundle |
+| `--signing-config SIGNINGCONFIG` | Optional path to a custom signing config to use to verify the bundle |
 | `FILE` | The artifact to sign |
 
 ### Verify
@@ -56,5 +58,5 @@ ${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --certificate-identity IDE
 | `--bundle FILE` | The path to the Sigstore bundle to verify |
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate |
-| `--trusted-root` | The path of the custom trusted root to use to verify the bundle |
+| `--trusted-root TRUSTROOT` | Optional path to a custom trusted root to use to verify the bundle |
 | `FILE_OR_DIGEST` | The path to the artifact to verify, or its digest. The digest should start with the `sha256:` prefix, should be the right length for a hexadecimal SHA-256 digest, and should not be a path on disk. If any of those conditions are not met, the input should be interpreted as a filepath instead. |
