@@ -7,6 +7,7 @@ from typing import Any
 import pytest  # type: ignore
 from cryptography import x509
 from sigstore_protobuf_specs.dev.sigstore.bundle.v1 import Bundle
+from sigstore_protobuf_specs.dev.sigstore.rekor.v1 import KindVersion
 
 from test.client import BundleMaterials, ClientFail, SigstoreClient
 from test.conftest import _MakeMaterialsByType, _VerifyBundle
@@ -86,6 +87,45 @@ def test_sign_does_not_produce_root(
         # BasicConstraints isn't required to appear in leaf certificates.
         except x509.ExtensionNotFound:
             pass
+
+@pytest.mark.signing
+def test_sign_verify_rekor2(
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    project_root: Path,
+) -> None:
+    """
+    assert that client can sign a rekor 2 bundle
+    """
+
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    assert not materials.exists()
+
+    materials.signing_config = input_path.parent / "rekor2_signing_config.json"
+    materials.trusted_root = input_path.parent / "rekor2_trusted_root.json"
+
+    # Sign for our input.
+    client.sign(materials, input_path)
+
+    # Parse the output bundle, verify it's rekor2
+    bundle_contents = materials.bundle.read_bytes()
+    bundle = Bundle.from_dict(json.loads(bundle_contents))
+    kv = bundle.verification_material.tlog_entries[0].kind_version
+    assert kv == KindVersion("hashedrekord", "0.0.2")
+
+    # assert client itself verifies the bundle it produced
+    client.verify(materials, input_path)
+
+    # Use selftest client verify to assert that the bundle is correctly formed
+    # (contains a valid TSA timestamp etc)
+    selftest_client = SigstoreClient(
+        project_root / "sigstore-python-conformance",
+        client.identity_token,
+        client.staging
+    )
+    selftest_client.verify(materials, input_path)
+
 
 
 @pytest.mark.skipif(

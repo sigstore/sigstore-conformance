@@ -180,7 +180,7 @@ class SigstoreClient:
         if getattr(materials, "trusted_root", None) is not None:
             args.extend(["--trusted-root", materials.trusted_root])
         if getattr(materials, "signing_config", None) is not None:
-            args.extend(["--signing_config", materials.signing_config])
+            args.extend(["--signing-config", materials.signing_config])
 
         self.run(*args)
 
