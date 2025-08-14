@@ -64,6 +64,7 @@ class BundleMaterials(VerificationMaterials):
 
     bundle: Path
     trusted_root: Path
+    signing_config: Path
 
     @classmethod
     def from_path(cls, bundle: Path) -> BundleMaterials:
@@ -176,6 +177,10 @@ class SigstoreClient:
                 artifact,
             ]
         )
+        if getattr(materials, "trusted_root", None) is not None:
+            args.extend(["--trusted-root", materials.trusted_root])
+        if getattr(materials, "signing_config", None) is not None:
+            args.extend(["--signing_config", materials.signing_config])
 
         self.run(*args)
 
