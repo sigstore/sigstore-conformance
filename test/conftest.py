@@ -1,5 +1,4 @@
 import enum
-from fnmatch import fnmatch
 import functools
 import hashlib
 import json
@@ -11,6 +10,7 @@ import time
 from base64 import b64decode
 from collections.abc import Callable
 from datetime import datetime, timedelta
+from fnmatch import fnmatch
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import TypeVar
@@ -264,7 +264,6 @@ def workspace(project_root: Path):
 
 @pytest.fixture(autouse=True)
 def conformance_xfail(request):
-
     if any([fnmatch(request.node.name, xfail_pattern) for xfail_pattern in _XFAIL_LIST]):
         request.node.add_marker(pytest.mark.xfail(reason="skipped by suite runner", strict=True))
 

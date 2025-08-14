@@ -88,6 +88,7 @@ def test_sign_does_not_produce_root(
         except x509.ExtensionNotFound:
             pass
 
+
 @pytest.mark.signing
 def test_sign_verify_rekor2(
     client: SigstoreClient,
@@ -120,12 +121,9 @@ def test_sign_verify_rekor2(
     # Use selftest client verify to assert that the bundle is correctly formed
     # (contains a valid TSA timestamp etc)
     selftest_client = SigstoreClient(
-        project_root / "sigstore-python-conformance",
-        client.identity_token,
-        client.staging
+        str(project_root / "sigstore-python-conformance"), client.identity_token, client.staging
     )
     selftest_client.verify(materials, input_path)
-
 
 
 @pytest.mark.skipif(
