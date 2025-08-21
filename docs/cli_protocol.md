@@ -41,7 +41,7 @@ ${ENTRYPOINT} sign-bundle [--staging] --identity-token TOKEN --bundle FILE FILE
 | `--identity-token` | The OIDC identity token to use |
 | `--bundle FILE` | The path to write the bundle to |
 | `--trusted-root TRUSTROOT` | Optional path to a custom trusted root to use to verify the bundle |
-| `--signing-config SIGNINGCONFIG` | Optional path to a custom signing config to use to verify the bundle |
+| `--signing-config SIGNINGCONFIG` | Optional path to a custom signing config to use when signing |
 | `FILE` | The artifact to sign |
 
 ### Verify
