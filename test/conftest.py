@@ -1,5 +1,4 @@
 import enum
-from fnmatch import fnmatch
 import functools
 import hashlib
 import json
@@ -11,6 +10,7 @@ import time
 from base64 import b64decode
 from collections.abc import Callable
 from datetime import datetime, timedelta
+from fnmatch import fnmatch
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import TypeVar
@@ -173,6 +173,14 @@ def client(pytestconfig, identity_token):
 
 
 @pytest.fixture
+def project_root(request) -> Path:
+    """
+    Returns the repository root directory.
+    """
+    return request.config.rootpath
+
+
+@pytest.fixture
 def make_materials_by_type() -> _MakeMaterialsByType:
     """
     Returns a function that constructs the requested subclass of
@@ -237,14 +245,14 @@ def verify_bundle(request, client) -> _VerifyBundle:
 
 
 @pytest.fixture(autouse=True)
-def workspace():
+def workspace(project_root: Path):
     """
     Create a temporary workspace directory to perform the test in.
     """
     workspace = tempfile.TemporaryDirectory()
 
     # Move entire contents of artifacts directory into workspace
-    assets_dir = Path(__file__).parent.parent / "test" / "assets"
+    assets_dir = project_root / "test" / "assets"
     shutil.copytree(assets_dir, workspace.name, dirs_exist_ok=True)
 
     # Now change the current working directory to our workspace
@@ -256,7 +264,6 @@ def workspace():
 
 @pytest.fixture(autouse=True)
 def conformance_xfail(request):
-
     if any([fnmatch(request.node.name, xfail_pattern) for xfail_pattern in _XFAIL_LIST]):
         request.node.add_marker(pytest.mark.xfail(reason="skipped by suite runner", strict=True))
 
