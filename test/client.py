@@ -174,7 +174,6 @@ class SigstoreClient:
                 self.identity_token,
                 "--bundle",
                 materials.bundle,
-                artifact,
             ]
         )
         if getattr(materials, "trusted_root", None) is not None:
@@ -182,7 +181,7 @@ class SigstoreClient:
         if getattr(materials, "signing_config", None) is not None:
             args.extend(["--signing-config", materials.signing_config])
 
-        self.run(*args)
+        self.run(*args, artifact)
 
     @singledispatchmethod
     def verify(self, materials: VerificationMaterials, artifact: os.PathLike | str) -> None:
