@@ -52,8 +52,10 @@ ARG_REPLACEMENTS = {
 }
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-SIGSTORE_BINARY = os.path.join(script_dir, "selftest-env", "bin", "sigstore")
-
+SIGSTORE_BINARY = os.getenv(
+    "GHA_SIGSTORE_CONFORMANCE_SELFTEST_BIN",
+    os.path.join(script_dir, "selftest-env", "bin", "sigstore"),
+)
 if not os.path.exists(SIGSTORE_BINARY):
     exit(
         f"Error: sigstore binary not found in {SIGSTORE_BINARY}.\n"

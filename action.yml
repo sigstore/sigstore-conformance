@@ -58,4 +58,5 @@ runs:
         GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING: "${{ inputs.skip-signing }}"
         GHA_SIGSTORE_CONFORMANCE_SKIP_CPYTHON_RELEASE_TESTS: "${{ inputs.skip-cpython-release-tests }}"
         GHA_SIGSTORE_CONFORMANCE_XFAIL: "${{ inputs.xfail }}"
+        GHA_SIGSTORE_CONFORMANCE_SELFTEST_BIN: "${{ github.workspace }}/sigstore-conformance-selftest-env/bin/sigstore"
       shell: bash
