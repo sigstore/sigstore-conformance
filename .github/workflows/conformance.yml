@@ -15,13 +15,14 @@ permissions:
 jobs:
   selftest:
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - { sigstore-infra: production, skip-cpython-release-tests: false }
           - { sigstore-infra: production, skip-cpython-release-tests: true }
           - { sigstore-infra: staging, skip-cpython-release-tests: false }
-      fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -31,9 +32,15 @@ jobs:
           cache: "pip"
 
       - name: install sigstore-python
+        shell: bash
         run: |
-          python3 -m venv selftest-env
-          ./selftest-env/bin/python -m pip install --requirement selftest-requirements.txt
+          python -m venv selftest-env
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            source selftest-env/Scripts/activate
+          else
+            source selftest-env/bin/activate
+          fi
+          python -m pip install --requirement selftest-requirements.txt
 
       - name: conformance test sigstore-python
         uses: ./
