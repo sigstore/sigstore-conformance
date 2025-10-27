@@ -94,6 +94,7 @@ def test_sign_verify_rekor2(
     client: SigstoreClient,
     make_materials_by_type: _MakeMaterialsByType,
     project_root: Path,
+    staging_config: tuple[Path, Path],
 ) -> None:
     """
     assert that client can sign a rekor 2 bundle
@@ -103,15 +104,14 @@ def test_sign_verify_rekor2(
     input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
     assert not materials.exists()
 
-    materials.signing_config = input_path.parent / "rekor2_signing_config.json"
-    materials.trusted_root = input_path.parent / "rekor2_trusted_root.json"
+    # use current staging signingconfig & trusted root
+    materials.trusted_root, materials.signing_config = staging_config
 
     # Sign for our input.
     client.sign(materials, input_path)
 
-    # Parse the output bundle, verify it's rekor2
-    bundle_contents = materials.bundle.read_bytes()
-    bundle = Bundle.from_dict(json.loads(bundle_contents))
+    # Parse the output bundle, verify it really contains a rekor2 entry
+    bundle = Bundle.from_dict(json.loads(materials.bundle.read_bytes()))
     kv = bundle.verification_material.tlog_entries[0].kind_version
     assert kv == KindVersion("hashedrekord", "0.0.2")
 
