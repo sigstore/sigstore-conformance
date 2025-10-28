@@ -117,6 +117,10 @@ with NamedTemporaryFile(mode="wt") as temp_file:
         command.append("sign")
     elif subcommand == "verify":
         command.extend(["verify", "identity"])
+    elif subcommand == "update-trust-root":
+        # Not part of the client-under-test, added to get easy access to
+        # up-to-date trust config in the test suite
+        command.extend(["plumbing", "update-trust-root"])
     else:
         raise ValueError(f"unsupported subcommand: {subcommand}")
 

@@ -14,6 +14,7 @@ from fnmatch import fnmatch
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import TypeVar
+from urllib import parse
 
 import pytest
 
@@ -277,3 +278,42 @@ def pytest_generate_tests(metafunc):
         directories = [d for d in asset_root.iterdir() if d.is_dir()]
         dir_paths = [str(d) for d in directories]
         metafunc.parametrize("bundle_verify_dir", dir_paths, ids=[d.name for d in directories])
+
+
+def _client_config(project_root: Path, staging: bool) -> tuple[Path, Path]:
+    """Return paths to (up-to-date) TrustedRoot and SigningConfig
+
+    This uses the internal selftest client feature 'update-trust-root'
+    """
+    if staging:
+        cmd = [str(project_root / "sigstore-python-conformance"), "--staging", "update-trust-root"]
+        repo = parse.quote("https://tuf-repo-cdn.sigstage.dev", safe="")
+    else:
+        cmd = [str(project_root / "sigstore-python-conformance"), "update-trust-root"]
+        repo = parse.quote("https://tuf-repo-cdn.sigstore.dev", safe="")
+
+    # run the selftest client to update files in sigstore-python cache
+    subprocess.run(cmd, check=True)
+
+    # then find files in sigstore-python cache
+    cache_dir = Path.home() / ".cache" / "sigstore-python" / "tuf" / repo
+    tr = cache_dir / "trusted_root.json"
+    sc = cache_dir / "signing_config.v0.2.json"
+    assert tr.exists()
+    assert sc.exists()
+
+    return (tr, sc)
+
+
+@pytest.fixture
+@functools.cache
+def staging_config(project_root: Path) -> tuple[Path, Path]:
+    """Return paths to (up-to-date) Staging TrustedRoot and SigningConfig"""
+    return _client_config(project_root, staging=True)
+
+
+@pytest.fixture
+@functools.cache
+def production_config(project_root: Path) -> tuple[Path, Path]:
+    """Return paths to (up-to-date) Production TrustedRoot and SigningConfig"""
+    return _client_config(project_root, staging=False)
