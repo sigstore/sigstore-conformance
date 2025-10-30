@@ -29,9 +29,9 @@ min_vers=$(cut -d '.' -f2 <<< "${vers}")
 [[ "${maj_vers}" == "3" && "${min_vers}" -ge 7 ]] || die "Bad Python version: ${vers}"
 
 # Install test suite
-python3 -m venv sigstore-conformance-env
-./sigstore-conformance-env/bin/python -m pip install --requirement "${GITHUB_ACTION_PATH}/requirements.txt"
+${GITHUB_ACTION_PATH}/setup/create-venv.sh sigstore-conformance-env
+. ./sigstore-conformance-env/bin/activate && uv pip install --requirement "${GITHUB_ACTION_PATH}/requirements.txt"
 
 # Signing test uses selftest client to verify the bundle: install selftest client as well
-python3 -m venv sigstore-conformance-selftest-env
-./sigstore-conformance-selftest-env/bin/python -m pip install --requirement "${GITHUB_ACTION_PATH}/selftest-requirements.txt"
+${GITHUB_ACTION_PATH}/setup/create-venv.sh sigstore-conformance-selftest-env
+. ./sigstore-conformance-selftest-env/bin/activate && uv  pip install --requirement "${GITHUB_ACTION_PATH}/selftest-requirements.txt"
