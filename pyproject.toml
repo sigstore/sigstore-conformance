@@ -3,4 +3,4 @@ line-length = 100
 
 [tool.ruff]
 line-length = 100
-lint.select = ["E", "F", "I", "W", "UP"]
+lint.select = ["E", "F", "I", "UP", "W"]
