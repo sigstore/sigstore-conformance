@@ -50,6 +50,7 @@ def _sigstore_conformance(environment: str) -> int:
 
     return pytest.main([str(_ACTION_PATH / "test"), *args])
 
+
 # Run against chosen environment
 environment = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENVIRONMENT", "production")
 status = _sigstore_conformance(environment)
