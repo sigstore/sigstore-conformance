@@ -36,7 +36,9 @@ jobs:
       - name: Download artifact
         uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
         with:
-          # A token is required to read other repos' artifacts
+          # A token is required to read other repos' artifacts. This token is a fine grained token
+          # with read-only "public repositories" access only. It is set to expire in 1 year
+          # (maximum accepted by OpenSSF)
           github_token: ${{ secrets.READ_ONLY_TOKEN }}
           repo: ${{ matrix.repo }}
           workflow: ${{ matrix.workflow }}
