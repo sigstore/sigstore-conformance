@@ -1,0 +1,106 @@
+name: Publish client conformance report
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch-results:
+    name: Fetch ${{ matrix.name }} results
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Don't stop if one client results download fails
+      matrix:
+        include:
+          - name: sigstore-python
+            repo: sigstore/sigstore-python
+            workflow: conformance.yml
+          - name: sigstore-go
+            repo: sigstore/sigstore-go
+            workflow: conformance.yml
+          - name: sigstore-js
+            repo: sigstore/sigstore-js
+            workflow: conformance.yml
+          - name: sigstore-java
+            repo: sigstore/sigstore-java
+            workflow: conformance.yml
+          - name: cosign
+            repo: sigstore/cosign
+            workflow: conformance.yml
+          - name: sigstore-ruby
+            repo: sigstore/sigstore-ruby
+            workflow: ci.yml
+
+    steps:
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          # A token is required to read other repos' artifacts
+          github_token: ${{ secrets.READ_ONLY_TOKEN }}
+          repo: ${{ matrix.repo }}
+          workflow: ${{ matrix.workflow }}
+          branch: main
+          name: conformance-results
+          workflow_conclusion: success
+          path: ./results/
+        continue-on-error: true
+
+      - name: Rename artifact for aggregation
+        run: |
+          if [ -f "./results/conformance-report.json" ]; then
+            mv ./results/conformance-report.json "./results/${{ matrix.name }}.json"
+          fi
+
+      - name: Upload ${{ matrix.name }} results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}-result
+          path: ./results/${{ matrix.name }}.json
+
+  build-report:
+    name: Build client conformance report
+    runs-on: ubuntu-latest
+    needs: [fetch-results]
+    if: always()
+
+    permissions:
+      contents: write # Push to Pages
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Download all individual results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-result'
+          path: ./results
+
+      - name: Generate report
+        run: |
+          python .github/scripts/generate_client_report.py \
+            --reports-dir ./results \
+            --output results/index.html
+
+      - name: Upload report for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: results/
+
+  deploy-pages:
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-report
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
