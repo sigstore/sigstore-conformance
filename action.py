@@ -27,7 +27,7 @@ def _debug(msg):
 
 
 def _sigstore_conformance(environment: str) -> int:
-    args = ["--durations=0"]
+    args = ["--json-report", "--json-report-file=conformance-report.json", "--durations=0"]
 
     if _DEBUG:
         args.extend(["-s", "-vv", "--showlocals"])
@@ -49,7 +49,6 @@ def _sigstore_conformance(environment: str) -> int:
     _debug(f"running: sigstore-conformance {[str(a) for a in args]}")
 
     return pytest.main([str(_ACTION_PATH / "test"), *args])
-
 
 # Run against chosen environment
 environment = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENVIRONMENT", "production")
