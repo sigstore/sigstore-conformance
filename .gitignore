@@ -6,7 +6,6 @@ __pycache__/
 .coverage*
 html/
 dist/
-.python-version
 build
 
 # Ignore some file types that may litter the root directory

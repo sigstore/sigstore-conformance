@@ -8,17 +8,15 @@ all:
 	@echo "Run my targets individually!"
 
 env/bootstrap: dev-requirements.txt
-	python3 -m venv env
-	./env/bin/python -m pip install --requirement dev-requirements.txt
-	touch env/bootstrap
+	setup/create-venv.sh env
+	. ./env/bin/activate && uv pip install --requirement dev-requirements.txt
 
 selftest-env/pyvenv.cfg: selftest-requirements.txt
-	python3 -m venv selftest-env
-	./selftest-env/bin/python -m pip install --requirement selftest-requirements.txt
-
+	setup/create-venv.sh selftest-env
+	. ./selftest-env/bin/activate && uv pip install --requirement selftest-requirements.txt
 
 env/pyvenv.cfg: env/bootstrap requirements.txt
-	./env/bin/python -m pip install --requirement requirements.txt
+	. ./env/bin/activate && uv pip install --requirement requirements.txt
 
 .PHONY: dev
 dev: env/pyvenv.cfg selftest-env/pyvenv.cfg
@@ -30,4 +28,4 @@ lint: env/pyvenv.cfg $(ALL_PY_SRCS)
 	./env/bin/python -m mypy action.py test/
 
 requirements.txt: requirements.in env/bootstrap
-	./env/bin/pip-compile --generate-hashes --output-file=$@ $<
+	. ./env/bin/activate && uv pip compile --custom-compile-command "make requirements.txt" --prerelease=allow --generate-hashes --output-file=$@ $<
