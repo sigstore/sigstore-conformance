@@ -52,6 +52,10 @@ jobs:
         run: |
           if [ -f "./results/conformance-report.json" ]; then
             mv ./results/conformance-report.json "./results/${{ matrix.name }}.json"
+          else
+            # create empty file so report generator can still include the client as "not found"
+            mkdir ./results
+            echo "{}" > "./results/${{ matrix.name }}.json"
           fi
 
       - name: Upload ${{ matrix.name }} results

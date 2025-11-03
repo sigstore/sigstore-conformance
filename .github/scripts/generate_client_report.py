@@ -10,11 +10,12 @@ from pathlib import Path
 @dataclass
 class Result:
     name: str
-    total: int
-    passed: int
-    failed: int
-    xfailed: int
-    skipped: int
+    results_found: bool = False
+    total: int = -1
+    passed: int = -1
+    failed: int = -1
+    xfailed: int = -1
+    skipped: int = -1
     rekor2_verify: bool = False
     rekor2_sign: bool = False
 
@@ -22,8 +23,13 @@ class Result:
         with report_path.open() as f:
             data = json.load(f)
 
-        summary = data["summary"]
         self.name = report_path.name.replace(".json", "")
+
+        if data == {}:
+           return # no results found
+        self.results_found = True
+
+        summary = data["summary"]
         self.total = summary["total"]
         self.passed = summary.get("passed", 0) + summary.get("subtests passed", 0)
         self.failed = summary.get("failed", 0) + summary.get("subtests failed", 0)
@@ -51,6 +57,7 @@ def _generate_html(results: list[Result]):
             th {{ background-color: #f4f4f4; }}
             .failed {{ background-color: #ffe0e0; }}
             .passed {{ background-color: #e0ffe0; }}
+            .not-found {{ background-color: #eeeeee; }}
         </style>
     </head>
     <body>
@@ -72,15 +79,21 @@ def _generate_html(results: list[Result]):
             <tbody>
     """
     for res in results:
-        status_class = "passed" if res.failed == 0 else "failed"
+        if not res.results_found:
+            status_class = "not-found"
+        elif res.failed == 0:
+            status_class = "passed"
+        else:
+            status_class = "failed"
+        passrate = round(100 * res.passed / res.total) if res.total > 0 else 0
         html += f"""
                 <tr class="{status_class}">
                     <td><strong>{res.name}</strong></td>
-                    <td>{100 * res.passed / res.total:.2f}%</td>
-                    <td>{res.passed}</td>
-                    <td>{res.failed}</td>
-                    <td>{res.skipped}</td>
-                    <td>{res.xfailed}</td>
+                    <td>{f"{passrate}%" if res.results_found else ""}</td>
+                    <td>{res.passed if res.results_found else ""}</td>
+                    <td>{res.failed if res.results_found else ""}</td>
+                    <td>{res.skipped if res.results_found else ""}</td>
+                    <td>{res.xfailed if res.results_found else ""}</td>
                     <td>{"✅" if res.rekor2_verify else "❌"}</td>
                     <td>{"✅" if res.rekor2_sign else "❌"}</td>
                 </tr>
