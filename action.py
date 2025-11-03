@@ -27,7 +27,7 @@ def _debug(msg):
 
 
 def _sigstore_conformance(environment: str) -> int:
-    args = ["--durations=0"]
+    args = ["--json-report", "--json-report-file=conformance-report.json", "--durations=0"]
 
     if _DEBUG:
         args.extend(["-s", "-vv", "--showlocals"])

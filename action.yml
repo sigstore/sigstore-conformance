@@ -60,3 +60,11 @@ runs:
         GHA_SIGSTORE_CONFORMANCE_XFAIL: "${{ inputs.xfail }}"
         GHA_SIGSTORE_CONFORMANCE_SELFTEST_BIN: "${{ github.workspace }}/sigstore-conformance-selftest-env/bin/sigstore"
       shell: bash
+
+    - name: Upload conformance result
+      uses: actions/upload-artifact@v4
+      with:
+        name: conformance-results
+        overwrite: true
+        path: ./conformance-report.json
+        retention-days: 7

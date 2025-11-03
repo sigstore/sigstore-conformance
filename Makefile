@@ -1,7 +1,8 @@
 ALL_PY_SRCS := action.py \
 	sigstore-python-conformance \
 	$(shell find test/ -name '*.py') \
-	$(shell find tools/ -name '*.py')
+	$(shell find tools/ -name '*.py') \
+	$(shell find .github/scripts/ -name '*.py')
 
 .PHONY: all
 all:
