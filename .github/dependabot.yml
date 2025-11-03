@@ -4,12 +4,25 @@ updates:
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
+    cooldown:
+       default-days: 7
+    allow:
+      - dependency-type: "all"
+    groups:
+      python-minor-and-patch-updates:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
+    cooldown:
+       default-days: 7
     groups:
       actions:
         patterns:
