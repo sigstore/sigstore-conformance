@@ -14,7 +14,16 @@ fi
 ENV=$1
 
 BOOTSTRAP_ENV=$(mktemp -d)
-python3 -m venv --clear $BOOTSTRAP_ENV
-. $BOOTSTRAP_ENV/bin/activate && pip install uv && uv venv $ENV && VIRTUAL_ENV=$ENV uv pip install uv
-touch $ENV/bootstrap
-rm -r $BOOTSTRAP_ENV
+python3 -m venv --clear "$BOOTSTRAP_ENV"
+
+# Annoying: Windows venvs use a different structure, for unknown reasons.
+if [ -d "$BOOTSTRAP_ENV/bin" ]; then
+  BIN="$BOOTSTRAP_ENV/bin"
+else
+  BIN="$BOOTSTRAP_ENV/Scripts"
+fi
+
+
+. "$BIN/activate" && pip install uv && uv venv --clear $ENV && VIRTUAL_ENV="$ENV" uv pip install uv
+touch "$ENV/bootstrap"
+rm -r "$BOOTSTRAP_ENV"
