@@ -16,6 +16,7 @@ from tempfile import TemporaryDirectory
 from typing import TypeVar
 from urllib import parse
 
+import platformdirs
 import pytest
 
 from .client import (
@@ -296,7 +297,7 @@ def _client_config(project_root: Path, staging: bool) -> tuple[Path, Path]:
     subprocess.run(cmd, check=True)
 
     # then find files in sigstore-python cache
-    cache_dir = Path.home() / ".cache" / "sigstore-python" / "tuf" / repo
+    cache_dir = Path(platformdirs.user_cache_dir()) / "sigstore-python" / "tuf" / repo
     tr = cache_dir / "trusted_root.json"
     sc = cache_dir / "signing_config.v0.2.json"
     assert tr.exists()
