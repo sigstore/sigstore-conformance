@@ -16,7 +16,7 @@ inputs:
     required: false
     default: "false"
   skip-result-upload:
-    description: "skip upload of conformance results (default false)"
+    description: "skip upload of conformance results (default false), staging environment runs are always skipped."
     required: false
     default: "false"
   skip-cpython-release-tests:
@@ -67,7 +67,7 @@ runs:
 
     - name: Upload conformance result
       if: ${{ inputs.skip-result-upload != 'false' && inputs.environment == 'production' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: conformance-results
         overwrite: true
