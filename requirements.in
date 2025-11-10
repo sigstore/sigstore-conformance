@@ -4,4 +4,4 @@ pytest-subtests==0.15.0
 requests==2.32.5
 cryptography==46.0.3
 sigstore-protobuf-specs==0.5.0
-platformdirs==4.4.0
+platformdirs==4.5.0
