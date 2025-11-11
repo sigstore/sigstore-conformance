@@ -18,6 +18,7 @@ class Result:
     skipped: int = -1
     rekor2_verify: bool = False
     rekor2_sign: bool = False
+    conformance_action_version: str = "unknown"
 
     def __init__(self, report_path: Path):
         with report_path.open() as f:
@@ -26,8 +27,10 @@ class Result:
         self.name = report_path.name.replace(".json", "")
 
         if data == {}:
-           return # no results found
+            return  # no results found
         self.results_found = True
+
+        self.conformance_action_version = data.get("conformance_action_version", "unknown")
 
         summary = data["summary"]
         self.total = summary["total"]
@@ -74,6 +77,7 @@ def _generate_html(results: list[Result]):
                     <th>Xfailed</th>
                     <th>Rekor v2 verify</th>
                     <th>Rekor v2 sign</th>
+                    <th>Action Version</th>
                 </tr>
             </thead>
             <tbody>
@@ -96,6 +100,7 @@ def _generate_html(results: list[Result]):
                     <td>{res.xfailed if res.results_found else ""}</td>
                     <td>{"✅" if res.rekor2_verify else "❌"}</td>
                     <td>{"✅" if res.rekor2_sign else "❌"}</td>
+                    <td>{res.conformance_action_version}</td>
                 </tr>
         """
     html += """

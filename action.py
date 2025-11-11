@@ -4,6 +4,7 @@
 #
 # all state is passed in as environment variables
 
+import json
 import os
 import sys
 from pathlib import Path
@@ -54,6 +55,16 @@ def _sigstore_conformance(environment: str) -> int:
 # Run against chosen environment
 environment = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENVIRONMENT", "production")
 status = _sigstore_conformance(environment)
+
+# Inject the action version into the report
+with open("conformance-report.json", "r+") as f:
+    report_data = json.load(f)
+    report_data["conformance_action_version"] = os.getenv(
+        "GHA_SIGSTORE_CONFORMANCE_ACTION_VERSION", "unknown"
+    )
+    f.seek(0)
+    json.dump(report_data, f)
+    f.truncate()
 
 if status == 0:
     _summary("🎉 sigstore-conformance exited successfully")
