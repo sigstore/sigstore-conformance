@@ -15,6 +15,10 @@ inputs:
     description: "skip tests that involve signing (default false)"
     required: false
     default: "false"
+  skip-result-upload:
+    description: "skip upload of conformance results (default false), staging environment runs are always skipped."
+    required: false
+    default: "false"
   skip-cpython-release-tests:
     description: "skip all CPython Sigstore bundle tests"
     required: false
@@ -62,6 +66,7 @@ runs:
       shell: bash
 
     - name: Upload conformance result
+      if: ${{ inputs.skip-result-upload != 'false' && inputs.environment == 'production' }}
       uses: actions/upload-artifact@v5
       with:
         name: conformance-results
