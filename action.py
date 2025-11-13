@@ -30,6 +30,9 @@ def _debug(msg):
 def _sigstore_conformance(environment: str) -> int:
     args = ["--json-report", "--json-report-file=conformance-report.json", "--durations=0"]
 
+    version = os.getenv("GHA_SIGSTORE_CONFORMANCE_ACTION_VERSION", "unknown")
+    args.extend(["--metadata", "conformance_action_version", version])
+
     if _DEBUG:
         args.extend(["-s", "-vv", "--showlocals"])
 
@@ -55,16 +58,6 @@ def _sigstore_conformance(environment: str) -> int:
 # Run against chosen environment
 environment = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENVIRONMENT", "production")
 status = _sigstore_conformance(environment)
-
-# Inject the action version into the report
-with open("conformance-report.json", "r+") as f:
-    report_data = json.load(f)
-    report_data["conformance_action_version"] = os.getenv(
-        "GHA_SIGSTORE_CONFORMANCE_ACTION_VERSION", "unknown"
-    )
-    f.seek(0)
-    json.dump(report_data, f)
-    f.truncate()
 
 if status == 0:
     _summary("🎉 sigstore-conformance exited successfully")

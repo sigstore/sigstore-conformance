@@ -30,7 +30,9 @@ class Result:
             return  # no results found
         self.results_found = True
 
-        self.conformance_action_version = data.get("conformance_action_version", "unknown")
+        self.conformance_action_version = data.get("environment", {}).get(
+            "conformance_action_version", "unknown"
+        )
 
         summary = data["summary"]
         self.total = summary["total"]
