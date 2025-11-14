@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -19,12 +20,18 @@ class Result:
     rekor2_verify: bool = False
     rekor2_sign: bool = False
     conformance_action_version: str = "unknown"
+    client_sha: str = ""
+    client_sha_url: str = ""
+    workflow_run: str = ""
 
     def __init__(self, report_path: Path):
         with report_path.open() as f:
             data = json.load(f)
 
         self.name = report_path.name.replace(".json", "")
+        self.client_sha = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA", "")
+        self.client_sha_url = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA_URL", "")
+        self.workflow_run = os.getenv("GHA_SIGSTORE_CONFORMANCE_WORKFLOW_RUN", "")
 
         if data == {}:
             return  # no results found
@@ -92,9 +99,16 @@ def _generate_html(results: list[Result]):
         else:
             status_class = "failed"
         passrate = round(100 * res.passed / res.total) if res.total > 0 else 0
+
+        client_html = f"<strong>{res.name}</strong>"
+        if res.client_sha and res.client_sha_url:
+            client_html += f' @ <a href="{res.client_sha_url}">{res.client_sha[:7]}</a>'
+        if res.workflow_run:
+            client_html += f' (<a href="{res.workflow_run}">run</a>)'
+
         html += f"""
                 <tr class="{status_class}">
-                    <td><strong>{res.name}</strong></td>
+                    <td>{client_html}</td>
                     <td>{f"{passrate}%" if res.results_found else ""}</td>
                     <td>{res.passed if res.results_found else ""}</td>
                     <td>{res.failed if res.results_found else ""}</td>
