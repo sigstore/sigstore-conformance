@@ -70,7 +70,7 @@ runs:
       shell: bash
 
     - name: Upload conformance result
-      if: ${{ inputs.skip-result-upload != 'false' && inputs.environment == 'production' }}
+      if: ${{ inputs.skip-result-upload == 'false' && inputs.environment == 'production' }}
       uses: actions/upload-artifact@v5
       with:
         name: conformance-results
