@@ -32,6 +32,7 @@ inputs:
     required: false
     default: ""
 
+
 runs:
   using: "composite"
   steps:
@@ -62,6 +63,9 @@ runs:
         GHA_SIGSTORE_CONFORMANCE_SKIP_SIGNING: "${{ inputs.skip-signing }}"
         GHA_SIGSTORE_CONFORMANCE_SKIP_CPYTHON_RELEASE_TESTS: "${{ inputs.skip-cpython-release-tests }}"
         GHA_SIGSTORE_CONFORMANCE_XFAIL: "${{ inputs.xfail }}"
+        GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA: "${{ github.sha }}"
+        GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA_URL: "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+        GHA_SIGSTORE_CONFORMANCE_WORKFLOW_RUN: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         GHA_SIGSTORE_CONFORMANCE_SELFTEST_BIN: "${{ github.workspace }}/sigstore-conformance-selftest-env/bin/sigstore"
       shell: bash
 
