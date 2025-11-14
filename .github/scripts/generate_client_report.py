@@ -19,6 +19,7 @@ class Result:
     skipped: int = -1
     rekor2_verify: bool = False
     rekor2_sign: bool = False
+    conformance_action_version: str = "unknown"
     client_sha: str = ""
     client_sha_url: str = ""
     workflow_run: str = ""
@@ -35,6 +36,10 @@ class Result:
         if data == {}:
             return  # no results found
         self.results_found = True
+
+        self.conformance_action_version = data.get("environment", {}).get(
+            "conformance_action_version", "unknown"
+        )
 
         summary = data["summary"]
         self.total = summary["total"]
@@ -81,6 +86,7 @@ def _generate_html(results: list[Result]):
                     <th>Xfailed</th>
                     <th>Rekor v2 verify</th>
                     <th>Rekor v2 sign</th>
+                    <th>Action Version</th>
                 </tr>
             </thead>
             <tbody>
@@ -110,6 +116,7 @@ def _generate_html(results: list[Result]):
                     <td>{res.xfailed if res.results_found else ""}</td>
                     <td>{"✅" if res.rekor2_verify else "❌"}</td>
                     <td>{"✅" if res.rekor2_sign else "❌"}</td>
+                    <td>{res.conformance_action_version}</td>
                 </tr>
         """
     html += """

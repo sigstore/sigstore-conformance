@@ -4,6 +4,7 @@
 #
 # all state is passed in as environment variables
 
+import json
 import os
 import sys
 from pathlib import Path
@@ -28,6 +29,9 @@ def _debug(msg):
 
 def _sigstore_conformance(environment: str) -> int:
     args = ["--json-report", "--json-report-file=conformance-report.json", "--durations=0"]
+
+    version = os.getenv("GHA_SIGSTORE_CONFORMANCE_ACTION_VERSION", "unknown")
+    args.extend(["--metadata", "conformance_action_version", version])
 
     if _DEBUG:
         args.extend(["-s", "-vv", "--showlocals"])
