@@ -33,6 +33,14 @@ def _sigstore_conformance(environment: str) -> int:
     version = os.getenv("GHA_SIGSTORE_CONFORMANCE_ACTION_VERSION", "unknown")
     args.extend(["--metadata", "conformance_action_version", version])
 
+    client_sha = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA")
+    if client_sha:
+        args.extend(["--metadata", "client_sha", client_sha])
+
+    client_sha_url = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA_URL")
+    if client_sha_url:
+        args.extend(["--metadata", "client_sha_url", client_sha_url])
+
     if _DEBUG:
         args.extend(["-s", "-vv", "--showlocals"])
 

@@ -29,17 +29,18 @@ class Result:
             data = json.load(f)
 
         self.name = report_path.name.replace(".json", "")
-        self.client_sha = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA", "")
-        self.client_sha_url = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA_URL", "")
         self.workflow_run = os.getenv("GHA_SIGSTORE_CONFORMANCE_WORKFLOW_RUN", "")
 
         if data == {}:
             return  # no results found
         self.results_found = True
 
-        self.conformance_action_version = data.get("environment", {}).get(
+        environment = data.get("environment", {})
+        self.conformance_action_version = environment.get(
             "conformance_action_version", "unknown"
         )
+        self.client_sha = environment.get("client_sha", "")
+        self.client_sha_url = environment.get("client_sha_url", "")
 
         summary = data["summary"]
         self.total = summary["total"]
