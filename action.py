@@ -41,6 +41,10 @@ def _sigstore_conformance(environment: str) -> int:
     if client_sha_url:
         args.extend(["--metadata", "client_sha_url", client_sha_url])
 
+    workflow_run = os.getenv("GHA_SIGSTORE_CONFORMANCE_WORKFLOW_RUN")
+    if workflow_run:
+        args.extend(["--metadata", "workflow_run", workflow_run])
+
     if _DEBUG:
         args.extend(["-s", "-vv", "--showlocals"])
 
