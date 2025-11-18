@@ -2,7 +2,6 @@
 
 import argparse
 import json
-import os
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -19,7 +18,6 @@ class Result:
     skipped: int = -1
     rekor2_verify: bool = False
     rekor2_sign: bool = False
-    conformance_action_version: str = "unknown"
     client_sha: str = ""
     client_sha_url: str = ""
     workflow_run: str = ""
@@ -35,9 +33,6 @@ class Result:
         self.results_found = True
 
         environment = data.get("environment", {})
-        self.conformance_action_version = environment.get(
-            "conformance_action_version", "unknown"
-        )
         self.client_sha = environment.get("client_sha", "")
         self.client_sha_url = environment.get("client_sha_url", "")
         self.workflow_run = environment.get("workflow_run", "")
@@ -87,7 +82,6 @@ def _generate_html(results: list[Result]):
                     <th>Xfailed</th>
                     <th>Rekor v2 verify</th>
                     <th>Rekor v2 sign</th>
-                    <th>Action Version</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,6 +101,9 @@ def _generate_html(results: list[Result]):
         if res.workflow_run:
             client_html += f' (<a href="{res.workflow_run}">run</a>)'
 
+        rekor2_verify = "✅" if res.rekor2_verify else "❌"
+        rekor2_sign = "✅" if res.rekor2_sign else "❌"
+
         html += f"""
                 <tr class="{status_class}">
                     <td>{client_html}</td>
@@ -115,9 +112,8 @@ def _generate_html(results: list[Result]):
                     <td>{res.failed if res.results_found else ""}</td>
                     <td>{res.skipped if res.results_found else ""}</td>
                     <td>{res.xfailed if res.results_found else ""}</td>
-                    <td>{"✅" if res.rekor2_verify else "❌"}</td>
-                    <td>{"✅" if res.rekor2_sign else "❌"}</td>
-                    <td>{res.conformance_action_version}</td>
+                    <td>{rekor2_verify if res.results_found else ""}</td>
+                    <td>{rekor2_sign if res.results_found else ""}</td>
                 </tr>
         """
     html += """
