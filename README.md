@@ -7,6 +7,8 @@ sigstore-conformance
 <!--- @end-badges@ --->
 
 `sigstore-conformance` is a conformance testing suite for Sigstore clients.
+Test results for known clients are published daily in the
+[Sigstore Client Conformance Report](https://sigstore.github.io/sigstore-conformance).
 
 This suite provides a high-level view of client behaviour as a whole and sets
 out to answer questions such as:
