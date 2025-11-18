@@ -30,8 +30,7 @@ def _debug(msg):
 def _sigstore_conformance(environment: str) -> int:
     args = ["--json-report", "--json-report-file=conformance-report.json", "--durations=0"]
 
-    version = os.getenv("GHA_SIGSTORE_CONFORMANCE_ACTION_VERSION", "unknown")
-    args.extend(["--metadata", "conformance_action_version", version])
+
 
     if _DEBUG:
         args.extend(["-s", "-vv", "--showlocals"])
@@ -52,7 +51,30 @@ def _sigstore_conformance(environment: str) -> int:
     print(f"running sigstore-conformance against Sigstore {environment} infrastructure")
     _debug(f"running: sigstore-conformance {[str(a) for a in args]}")
 
-    return pytest.main([str(_ACTION_PATH / "test"), *args])
+    status = pytest.main([str(_ACTION_PATH / "test"), *args])
+
+    # Inject the action version into the report
+    with open("conformance-report.json", "r+") as f:
+        report_data = json.load(f)
+        if "environment" not in report_data:
+            report_data["environment"] = {}
+        report_data["environment"]["conformance_action_version"] = os.getenv(
+            "GHA_SIGSTORE_CONFORMANCE_ACTION_VERSION", "unknown"
+        )
+        client_sha = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA")
+        if client_sha:
+            report_data["environment"]["client_sha"] = client_sha
+        client_sha_url = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA_URL")
+        if client_sha_url:
+            report_data["environment"]["client_sha_url"] = client_sha_url
+        workflow_run = os.getenv("GHA_SIGSTORE_CONFORMANCE_WORKFLOW_RUN")
+        if workflow_run:
+            report_data["environment"]["workflow_run"] = workflow_run
+        f.seek(0)
+        json.dump(report_data, f, indent=4)
+        f.truncate()
+
+    return status
 
 
 # Run against chosen environment
