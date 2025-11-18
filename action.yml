@@ -52,11 +52,6 @@ runs:
         echo "::endgroup::"
       shell: bash
 
-    - name: Get action version
-      id: get_action_version
-      run: echo "action_version=$(git describe --tags --always)" >> $GITHUB_OUTPUT
-      shell: bash
-
     - name: Run sigstore-conformance
       id: sigstore-conformance
       run: |
@@ -72,7 +67,6 @@ runs:
         GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA_URL: "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
         GHA_SIGSTORE_CONFORMANCE_WORKFLOW_RUN: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         GHA_SIGSTORE_CONFORMANCE_SELFTEST_BIN: "${{ github.workspace }}/sigstore-conformance-selftest-env/bin/sigstore"
-        GHA_SIGSTORE_CONFORMANCE_ACTION_VERSION: "${{ steps.get_action_version.outputs.action_version }}"
       shell: bash
 
     - name: Upload conformance result
