@@ -107,6 +107,9 @@ def _generate_html(results: list[Result]):
         if res.workflow_run:
             client_html += f' (<a href="{res.workflow_run}">run</a>)'
 
+        rekor2_verify = "✅" if res.rekor2_verify else "❌"
+        rekor2_sign = "✅" if res.rekor2_sign else "❌"
+
         html += f"""
                 <tr class="{status_class}">
                     <td>{client_html}</td>
@@ -115,8 +118,8 @@ def _generate_html(results: list[Result]):
                     <td>{res.failed if res.results_found else ""}</td>
                     <td>{res.skipped if res.results_found else ""}</td>
                     <td>{res.xfailed if res.results_found else ""}</td>
-                    <td>{"✅" if res.rekor2_verify else "❌"}</td>
-                    <td>{"✅" if res.rekor2_sign else "❌"}</td>
+                    <td>{rekor2_verify if res.results_found else ""}</td>
+                    <td>{rekor2_sign if res.results_found else ""}</td>
                     <td>{res.conformance_action_version}</td>
                 </tr>
         """
