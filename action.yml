@@ -37,7 +37,7 @@ runs:
   using: "composite"
   steps:
     - name: Check out latest CPython release metadata
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.0
       with:
         repository: woodruffw/cpython-release-tracker
         persist-credentials: false
