@@ -29,6 +29,8 @@ def _debug(msg):
 
 def _sigstore_conformance(environment: str) -> int:
     args = ["--json-report", "--json-report-file=conformance-report.json", "--durations=0"]
+    # Explicitly set rootdir to avoid picking up conftest.py from the user's repository
+    args.extend(["--rootdir", str(_ACTION_PATH), "--import-mode=importlib", "-c", os.devnull])
 
     if _DEBUG:
         args.extend(["-s", "-vv", "--showlocals"])
@@ -47,10 +49,15 @@ def _sigstore_conformance(environment: str) -> int:
         args.extend(["--skip-signing"])
 
     print(f"running sigstore-conformance against Sigstore {environment} infrastructure")
-    _debug(f"running: sigstore-conformance {[str(a) for a in args]}")
+    print(os.environ)
+    print(f"running: sigstore-conformance {[str(a) for a in args]}")
 
+    print("running pytest",flush=True)
     status = pytest.main([str(_ACTION_PATH / "test"), *args])
-
+    if status != 0:
+        print(f"Pytest error {status}", flush=True)
+        return status
+ 
     # Inject some metadata into the report
     with open("conformance-report.json", "r+") as f:
         report_data = json.load(f)

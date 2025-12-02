@@ -55,7 +55,11 @@ runs:
     - name: Run sigstore-conformance
       id: sigstore-conformance
       run: |
-        ./sigstore-conformance-env/bin/python ${{ github.action_path }}/action.py
+        # run in a temp dir to make sure pytest does not find anything in CWD
+        PYTHON=$PWD/sigstore-conformance-env/bin/python
+        cd $(mktemp -d)
+        pwd
+        $PYTHON ${{ github.action_path }}/action.py
       env:
         GHA_SIGSTORE_CONFORMANCE_ENVIRONMENT: "${{ inputs.environment }}"
         GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT: "${{ inputs.entrypoint }}"
