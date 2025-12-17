@@ -35,7 +35,7 @@ def _sigstore_conformance(environment: str) -> int:
 
     entrypoint = os.getenv("GHA_SIGSTORE_CONFORMANCE_ENTRYPOINT")
     if entrypoint:
-        args.extend(["--entrypoint", entrypoint])
+        args.append(f"--entrypoint={entrypoint}")
 
     if environment == "staging":
         args.append("--staging")
