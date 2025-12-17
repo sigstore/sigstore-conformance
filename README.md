@@ -92,6 +92,7 @@ The test suite can be configured with
   [CLI specification](https://github.com/sigstore/sigstore-conformance/blob/main/docs/cli_protocol.md)
 * optional `--staging`: This instructs the test suite to run against Sigstore staging infrastructure
 * optional `--skip-signing`: Runs verification tests only
+* optional `--skip-managed-key`: Skips tests that use managed keys
 * The environment variable `GHA_SIGSTORE_CONFORMANCE_XFAIL` can be used to
   set expected failures
 
@@ -100,6 +101,8 @@ The test suite can be configured with
 (env) $ pytest -v --entrypoint=$SIGSTORE_CLIENT
 (env) $ # run verification tests only
 (env) $ pytest -v --entrypoint=$SIGSTORE_CLIENT --skip-signing
+(env) $ # skip tests using managed keys
+(env) $ pytest -v --entrypoint=$SIGSTORE_CLIENT --skip-managed-key
 ```
 
 Following example runs the test suite with the included sigstore-python-conformance client script:
