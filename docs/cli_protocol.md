@@ -60,6 +60,6 @@ ${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --key PATH_TO_KEY [--trust
 | `--bundle FILE` | The path to the Sigstore bundle to verify |
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension (not used when verifying with `--key`) |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate (not used when verifying with `--key`) |
-| `--key PATH_TO_KEY` | The path to the public key file (not used when verifying with `--certificate-identity`) |
+| `--key PATH_TO_KEY` | The path to the PEM-encoded public key file (not used when verifying with `--certificate-identity`) |
 | `--trusted-root TRUSTROOT` | Optional path to a custom trusted root to use to verify the bundle |
 | `FILE_OR_DIGEST` | The path to the artifact to verify, or its digest. The digest should start with the `sha256:` prefix, should be the right length for a hexadecimal SHA-256 digest, and should not be a path on disk. If any of those conditions are not met, the input should be interpreted as a filepath instead. |
