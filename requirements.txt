@@ -273,9 +273,9 @@ cryptography==46.0.3 \
     --hash=sha256:ef639cb3372f69ec44915fafcd6698b6cc78fbe0c2ea41be867f6ed612811963 \
     --hash=sha256:f260d0d41e9b4da1ed1e0f1ce571f97fe370b152ab18778e9e8f67d6af432018
     # via -r requirements.in
-grpclib==0.4.8 \
-    --hash=sha256:a5047733a7acc1c1cee6abf3c841c7c6fab67d2844a45a853b113fa2e6cd2654 \
-    --hash=sha256:d8823763780ef94fed8b2c562f7485cf0bbee15fc7d065a640673667f7719c9a
+grpclib==0.4.9 \
+    --hash=sha256:7762ec1c8ed94dfad597475152dd35cbd11aecaaca2f243e29702435ca24cf0e \
+    --hash=sha256:cc589c330fa81004c6400a52a566407574498cb5b055fa927013361e21466c46
     # via betterproto
 h2==4.3.0 \
     --hash=sha256:6c59efe4323fa18b47a632221a1888bd7fde6249819beda254aeca909f221bf1 \
@@ -640,7 +640,7 @@ typing-inspection==0.4.2 \
     --hash=sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7 \
     --hash=sha256:ba561c48a67c5958007083d386c3295464928b01faa735ab8547c5692e87f464
     # via pydantic
-urllib3==2.6.0 \
-    --hash=sha256:c90f7a39f716c572c4e3e58509581ebd83f9b59cced005b7db7ad2d22b0db99f \
-    --hash=sha256:cb9bcef5a4b345d5da5d145dc3e30834f58e8018828cbc724d30b4cb7d4d49f1
+urllib3==2.6.2 \
+    --hash=sha256:016f9c98bb7e98085cb2b4b17b87d2c702975664e4f060c6532e64d1c1a5e797 \
+    --hash=sha256:ec21cddfe7724fc7cb4ba4bea7aa8e2ef36f607a4bab81aa6ce42a13dc3f03dd
     # via requests
