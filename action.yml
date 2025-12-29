@@ -37,7 +37,7 @@ runs:
   using: "composite"
   steps:
     - name: Check out latest CPython release metadata
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6.0.1
       with:
         repository: woodruffw/cpython-release-tracker
         persist-credentials: false
@@ -71,7 +71,7 @@ runs:
 
     - name: Upload conformance result
       if: ${{ always() && inputs.skip-result-upload == 'false' && inputs.environment == 'production' }}
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: conformance-results
         overwrite: true
