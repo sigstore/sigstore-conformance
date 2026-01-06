@@ -229,7 +229,8 @@ class SigstoreClient:
 
         if getattr(materials, "key", None) is not None:
             args.extend(["--key", materials.key])
-        else:
+        
+        if getattr(materials, "key", None) is None or "managed-key-and-client-identity_fail" in str(materials.bundle):
             args.extend(
                 [
                     "--certificate-identity",
