@@ -41,11 +41,6 @@ def test_verify(
     if key_path.exists():
         materials.key = key_path
 
-    # force use of --client-identity flag if present
-    force_client_identity_path = path / "force_client_identity"
-    if force_client_identity_path.exists():
-        materials.force_client_identity = True
-
     # use custom artifact path if one is provided
     artifact_path = path / "artifact"
     if not artifact_path.exists():
