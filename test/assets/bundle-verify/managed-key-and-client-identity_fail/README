@@ -1,3 +1,3 @@
 ensure failure when both --key and --client-identity flags are passed
 
-folder naming causes both flags to be passed during build_verify_args()
+forced_client_identity presence will force the use of --client-identity even though --key is present during build_verify_args()

@@ -66,6 +66,7 @@ class BundleMaterials(VerificationMaterials):
     trusted_root: Path
     signing_config: Path
     key: Path
+    force_client_identity: bool = False
 
     @classmethod
     def from_path(cls, bundle: Path) -> BundleMaterials:
@@ -230,7 +231,7 @@ class SigstoreClient:
         if getattr(materials, "key", None) is not None:
             args.extend(["--key", materials.key])
         
-        if getattr(materials, "key", None) is None or "managed-key-and-client-identity_fail" in str(materials.bundle):
+        if getattr(materials, "key", None) is None or materials.force_client_identity:
             args.extend(
                 [
                     "--certificate-identity",
