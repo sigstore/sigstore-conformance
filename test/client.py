@@ -220,7 +220,7 @@ class SigstoreClient:
         args = self.build_verify_args(materials)
         self.run(*args, digest)
 
-    def build_verify_args(self, materials: BundleMaterials) -> list[str]:
+    def build_verify_args(self, materials: BundleMaterials) -> list[str | os.PathLike]:
         args: list[str | os.PathLike] = ["verify-bundle"]
         if self.staging:
             args.append("--staging")
