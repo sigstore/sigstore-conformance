@@ -1,0 +1,2 @@
+The messageDigest in the bundle does not match the artifact hash.
+Verification must fail because the digest is inconsistent with the artifact.
