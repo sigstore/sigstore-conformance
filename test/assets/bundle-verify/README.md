@@ -9,5 +9,6 @@ Each subdirectory is used to parametrize test_verify():
 * Directory may optionally contain
   * `artifact`: The signed artifact (if not provided, "a.txt" from the parent
     directory is used)
+  * `key.pub`: The PEM-encoded public key used for verification. When this file is present, verification will be attempted with the key instead of OIDC
   * `trusted_root.json`: a custom trusted root (if one is not provided,
     the Sigstore public good production instance is used)

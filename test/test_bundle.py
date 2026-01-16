@@ -36,6 +36,11 @@ def test_verify(
     if trusted_root_path.exists():
         materials.trusted_root = trusted_root_path
 
+    # use managed key for verifying if one is provided
+    key_path = path / "key.pub"
+    if key_path.exists():
+        materials.key = key_path
+
     # use custom artifact path if one is provided
     artifact_path = path / "artifact"
     if not artifact_path.exists():

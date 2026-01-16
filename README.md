@@ -105,7 +105,7 @@ The test suite can be configured with
 Following example runs the test suite with the included sigstore-python-conformance client script:
 ```sh
 (env) $ # run all tests
-(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify*-intoto-with-custom-trust-root]" \
+(env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify*-intoto-with-custom-trust-root] test_verify*managed-key-happy-path] test_verify*managed-key-and-trusted-root]" \
     pytest -v --entrypoint=sigstore-python-conformance
 ...
 (env) $ # run single test

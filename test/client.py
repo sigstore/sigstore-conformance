@@ -65,6 +65,7 @@ class BundleMaterials(VerificationMaterials):
     bundle: Path
     trusted_root: Path
     signing_config: Path
+    key: Path
 
     @classmethod
     def from_path(cls, bundle: Path) -> BundleMaterials:
@@ -205,23 +206,7 @@ class SigstoreClient:
         This is an overload of `verify` for the bundle flow and should not be called
         directly.
         """
-        args: list[str | os.PathLike] = ["verify-bundle"]
-        if self.staging:
-            args.append("--staging")
-        args.extend(
-            [
-                "--bundle",
-                materials.bundle,
-                "--certificate-identity",
-                CERTIFICATE_IDENTITY,
-                "--certificate-oidc-issuer",
-                CERTIFICATE_OIDC_ISSUER,
-            ]
-        )
-
-        if getattr(materials, "trusted_root", None) is not None:
-            args.extend(["--trusted-root", materials.trusted_root])
-
+        args = self.build_verify_args(materials)
         self.run(*args, artifact)
 
     @verify.register
@@ -232,21 +217,29 @@ class SigstoreClient:
         This is an overload of `verify` for the bundle flow and should not be called
         directly. The digest string is expected to start with the `sha256:` prefix.
         """
+        args = self.build_verify_args(materials)
+        self.run(*args, digest)
+
+    def build_verify_args(self, materials: BundleMaterials) -> list[str | os.PathLike]:
         args: list[str | os.PathLike] = ["verify-bundle"]
         if self.staging:
             args.append("--staging")
-        args.extend(
-            [
-                "--bundle",
-                materials.bundle,
-                "--certificate-identity",
-                CERTIFICATE_IDENTITY,
-                "--certificate-oidc-issuer",
-                CERTIFICATE_OIDC_ISSUER,
-            ]
-        )
+
+        args.extend(["--bundle", materials.bundle])
+
+        if getattr(materials, "key", None) is not None:
+            args.extend(["--key", materials.key])
+        else:
+            args.extend(
+                [
+                    "--certificate-identity",
+                    CERTIFICATE_IDENTITY,
+                    "--certificate-oidc-issuer",
+                    CERTIFICATE_OIDC_ISSUER,
+                ]
+            )
 
         if getattr(materials, "trusted_root", None) is not None:
             args.extend(["--trusted-root", materials.trusted_root])
 
-        self.run(*args, digest)
+        return args
