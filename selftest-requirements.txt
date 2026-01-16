@@ -1,2 +1,2 @@
 # Use a commit from main until sigstore-python release > 4.1.0
-sigstore @ git+https://github.com/sigstore/sigstore-python.git@0e2f09e74da2a27840a3266d4d68f53559b1eb7a
+sigstore @ git+https://github.com/sigstore/sigstore-python.git@b1ef51c78b34dbd772ec2a2d8d07ad6a6b4d853d
