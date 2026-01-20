@@ -78,6 +78,15 @@ The important action inputs are
 
 See [action.yml](action.yml) for full list of inputs.
 
+### Configuring `xfail` for optional tests
+
+[[example]](https://github.com/sigstore/sigstore-conformance/blob/eae6eb1f59e25c6d3d602c5dad3dc55767c2f1cb/.github/workflows/conformance.yml#L44)
+
+Depending on a client's optional feature support, the following test patterns can be added to the `xfail` config
+- `test_verify*intoto*`: Older, deprecated intoto types that can be ignored for new clients.
+- `test_verify*managed-key-happy-path]`, `test_verify*managed-key-and-trusted-root]`: Tests that require clients to support managed keys
+
+
 ## Development
 
 Easiest way to run the conformance suite locally is with the provided virtual environment:
