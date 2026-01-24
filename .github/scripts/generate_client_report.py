@@ -10,6 +10,7 @@ from pathlib import Path
 @dataclass
 class Result:
     name: str
+    url: str = ""
     results_found: bool = False
     total: int = -1
     passed: int = -1
@@ -28,9 +29,10 @@ class Result:
             data = json.load(f)
 
         if data == {}:
+            self.name = report_path.name.replace(".json", "")
             return  # no results found
-        self.results_found = True
 
+        self.results_found = True
         environment = data.get("environment", {})
         self.name = environment.get("client_name", report_path.name.replace(".json", ""))
         self.url = environment.get("client_url", "")
