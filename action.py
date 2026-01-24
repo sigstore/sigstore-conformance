@@ -51,20 +51,25 @@ def _sigstore_conformance(environment: str) -> int:
 
     status = pytest.main([str(_ACTION_PATH / "test"), *args])
 
-    # Inject some metadata into the report
+    # build environment metadata
+    report_env = {}
+    if client_sha := os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA"):
+        report_env["client_sha"] = client_sha
+    if client_sha_url := os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA_URL"):
+        report_env["client_sha_url"] = client_sha_url
+    if workflow_run := os.getenv("GHA_SIGSTORE_CONFORMANCE_WORKFLOW_RUN"):
+        report_env["workflow_run"] = workflow_run
+    if client_name := os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_NAME"):
+        report_env["client_name"] = client_name
+    if client_url := os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_URL"):
+        report_env["client_url"] = client_url
+
+    # Inject metadata into the report
     with open("conformance-report.json", "r+") as f:
         report_data = json.load(f)
         if "environment" not in report_data:
             report_data["environment"] = {}
-        client_sha = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA")
-        if client_sha:
-            report_data["environment"]["client_sha"] = client_sha
-        client_sha_url = os.getenv("GHA_SIGSTORE_CONFORMANCE_CLIENT_SHA_URL")
-        if client_sha_url:
-            report_data["environment"]["client_sha_url"] = client_sha_url
-        workflow_run = os.getenv("GHA_SIGSTORE_CONFORMANCE_WORKFLOW_RUN")
-        if workflow_run:
-            report_data["environment"]["workflow_run"] = workflow_run
+        report_data["environment"].update(report_env)
         f.seek(0)
         json.dump(report_data, f, indent=4)
         f.truncate()

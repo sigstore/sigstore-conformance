@@ -26,13 +26,13 @@ class Result:
         with report_path.open() as f:
             data = json.load(f)
 
-        self.name = report_path.name.replace(".json", "")
-
         if data == {}:
             return  # no results found
         self.results_found = True
 
         environment = data.get("environment", {})
+        self.name = environment.get("client_name", report_path.name.replace(".json", ""))
+        self.url = environment.get("client_url", "")
         self.client_sha = environment.get("client_sha", "")
         self.client_sha_url = environment.get("client_sha_url", "")
         self.workflow_run = environment.get("workflow_run", "")
@@ -95,7 +95,7 @@ def _generate_html(results: list[Result]):
             status_class = "failed"
         passrate = round(100 * res.passed / res.total) if res.total > 0 else 0
 
-        client_html = f"<strong>{res.name}</strong>"
+        client_html = f'<strong><a href="{res.url}">{res.name}</a></strong>'
         if res.client_sha and res.client_sha_url:
             client_html += f' @ <a href="{res.client_sha_url}">{res.client_sha[:7]}</a>'
         if res.workflow_run:
