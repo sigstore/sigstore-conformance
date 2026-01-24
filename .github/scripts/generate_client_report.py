@@ -18,6 +18,7 @@ class Result:
     skipped: int = -1
     rekor2_verify: bool = False
     rekor2_sign: bool = False
+    managed_keys: bool = False
     client_sha: str = ""
     client_sha_url: str = ""
     workflow_run: str = ""
@@ -51,6 +52,8 @@ class Result:
                 self.rekor2_verify = test["outcome"] == "passed"
             elif nodeid == "test/test_bundle.py::test_sign_verify_rekor2":
                 self.rekor2_sign = test["outcome"] == "passed"
+            elif nodeid == "test/test_bundle.py::test_verify[PATH-managed-key-happy-path]":
+                self.managed_keys = test["outcome"] == "passed"
 
 
 def _generate_html(results: list[Result]):
@@ -82,6 +85,7 @@ def _generate_html(results: list[Result]):
                     <th>Xfailed</th>
                     <th>Rekor v2 verify</th>
                     <th>Rekor v2 sign</th>
+                    <th>User-managed keys</th>
                 </tr>
             </thead>
             <tbody>
@@ -103,6 +107,7 @@ def _generate_html(results: list[Result]):
 
         rekor2_verify = "✅" if res.rekor2_verify else "❌"
         rekor2_sign = "✅" if res.rekor2_sign else "❌"
+        managed_keys = "✅" if res.managed_keys else "❌"
 
         html += f"""
                 <tr class="{status_class}">
@@ -114,6 +119,7 @@ def _generate_html(results: list[Result]):
                     <td>{res.xfailed if res.results_found else ""}</td>
                     <td>{rekor2_verify if res.results_found else ""}</td>
                     <td>{rekor2_sign if res.results_found else ""}</td>
+                    <td>{managed_keys if res.results_found else ""}</td>
                 </tr>
         """
     html += """
