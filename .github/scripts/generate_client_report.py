@@ -10,6 +10,7 @@ from pathlib import Path
 @dataclass
 class Result:
     name: str
+    url: str = ""
     results_found: bool = False
     total: int = -1
     passed: int = -1
@@ -18,6 +19,7 @@ class Result:
     skipped: int = -1
     rekor2_verify: bool = False
     rekor2_sign: bool = False
+    managed_keys: bool = False
     client_sha: str = ""
     client_sha_url: str = ""
     workflow_run: str = ""
@@ -26,13 +28,14 @@ class Result:
         with report_path.open() as f:
             data = json.load(f)
 
-        self.name = report_path.name.replace(".json", "")
-
         if data == {}:
+            self.name = report_path.name.replace(".json", "")
             return  # no results found
-        self.results_found = True
 
+        self.results_found = True
         environment = data.get("environment", {})
+        self.name = environment.get("client_name", report_path.name.replace(".json", ""))
+        self.url = environment.get("client_url", "")
         self.client_sha = environment.get("client_sha", "")
         self.client_sha_url = environment.get("client_sha_url", "")
         self.workflow_run = environment.get("workflow_run", "")
@@ -51,6 +54,8 @@ class Result:
                 self.rekor2_verify = test["outcome"] == "passed"
             elif nodeid == "test/test_bundle.py::test_sign_verify_rekor2":
                 self.rekor2_sign = test["outcome"] == "passed"
+            elif nodeid == "test/test_bundle.py::test_verify[PATH-managed-key-happy-path]":
+                self.managed_keys = test["outcome"] == "passed"
 
 
 def _generate_html(results: list[Result]):
@@ -82,6 +87,7 @@ def _generate_html(results: list[Result]):
                     <th>Xfailed</th>
                     <th>Rekor v2 verify</th>
                     <th>Rekor v2 sign</th>
+                    <th>User-managed keys</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,7 +101,7 @@ def _generate_html(results: list[Result]):
             status_class = "failed"
         passrate = round(100 * res.passed / res.total) if res.total > 0 else 0
 
-        client_html = f"<strong>{res.name}</strong>"
+        client_html = f'<strong><a href="{res.url}">{res.name}</a></strong>'
         if res.client_sha and res.client_sha_url:
             client_html += f' @ <a href="{res.client_sha_url}">{res.client_sha[:7]}</a>'
         if res.workflow_run:
@@ -103,6 +109,7 @@ def _generate_html(results: list[Result]):
 
         rekor2_verify = "✅" if res.rekor2_verify else "❌"
         rekor2_sign = "✅" if res.rekor2_sign else "❌"
+        managed_keys = "✅" if res.managed_keys else "❌"
 
         html += f"""
                 <tr class="{status_class}">
@@ -114,6 +121,7 @@ def _generate_html(results: list[Result]):
                     <td>{res.xfailed if res.results_found else ""}</td>
                     <td>{rekor2_verify if res.results_found else ""}</td>
                     <td>{rekor2_sign if res.results_found else ""}</td>
+                    <td>{managed_keys if res.results_found else ""}</td>
                 </tr>
         """
     html += """
