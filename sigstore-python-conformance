@@ -124,6 +124,10 @@ with NamedTemporaryFile(mode="wt") as temp_file:
     else:
         raise ValueError(f"unsupported subcommand: {subcommand}")
 
+    # Ignore --dsse flag for now (placeholder)
+    if "--dsse" in fixed_args:
+        fixed_args.remove("--dsse")
+
     # Replace incompatible flags.
     command.extend(ARG_REPLACEMENTS[arg] if arg in ARG_REPLACEMENTS else arg for arg in fixed_args)
 
