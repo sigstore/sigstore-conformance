@@ -147,7 +147,7 @@ class SigstoreClient:
             raise ClientUnexpectedSuccess(msg)
 
     @singledispatchmethod
-    def sign(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
+    def sign(self, materials: VerificationMaterials, artifact: os.PathLike, dsse: bool = False) -> None:
         """
         Sign an artifact with the Sigstore client. Dispatches to `_sign_for_bundle` when
         given `BundleMaterials`.
@@ -159,7 +159,7 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot sign with {type(materials)}")
 
     @sign.register
-    def _sign_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+    def _sign_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike, dsse: bool = False) -> None:
         """
         Sign an artifact with the Sigstore client, producing a bundle.
 
@@ -169,6 +169,8 @@ class SigstoreClient:
         args: list[str | os.PathLike] = ["sign-bundle"]
         if self.staging:
             args.append("--staging")
+        if dsse:
+            args.append("--dsse")
         args.extend(
             [
                 "--identity-token",
@@ -185,7 +187,7 @@ class SigstoreClient:
         self.run(*args, artifact)
 
     @singledispatchmethod
-    def verify(self, materials: VerificationMaterials, artifact: os.PathLike | str) -> None:
+    def verify(self, materials: VerificationMaterials, artifact: os.PathLike | str, dsse: bool = False) -> None:
         """
         Verify an artifact with the Sigstore client. Dispatches to
          `_verify_{artifact|digest}_for_bundle` when given `BundleMaterials`.
@@ -198,7 +200,7 @@ class SigstoreClient:
 
     @verify.register
     def _verify_artifact_for_bundle(
-        self, materials: BundleMaterials, artifact: os.PathLike
+        self, materials: BundleMaterials, artifact: os.PathLike, dsse: bool = False
     ) -> None:
         """
         Verify an artifact given a bundle with the Sigstore client.
@@ -206,24 +208,26 @@ class SigstoreClient:
         This is an overload of `verify` for the bundle flow and should not be called
         directly.
         """
-        args = self.build_verify_args(materials)
+        args = self.build_verify_args(materials, dsse=dsse)
         self.run(*args, artifact)
 
     @verify.register
-    def _verify_digest_for_bundle(self, materials: BundleMaterials, digest: str) -> None:
+    def _verify_digest_for_bundle(self, materials: BundleMaterials, digest: str, dsse: bool = False) -> None:
         """
         Verify a digest given a bundle with the Sigstore client.
 
         This is an overload of `verify` for the bundle flow and should not be called
         directly. The digest string is expected to start with the `sha256:` prefix.
         """
-        args = self.build_verify_args(materials)
+        args = self.build_verify_args(materials, dsse=dsse)
         self.run(*args, digest)
 
-    def build_verify_args(self, materials: BundleMaterials) -> list[str | os.PathLike]:
+    def build_verify_args(self, materials: BundleMaterials, dsse: bool = False) -> list[str | os.PathLike]:
         args: list[str | os.PathLike] = ["verify-bundle"]
         if self.staging:
             args.append("--staging")
+        if dsse:
+            args.append("--dsse")
 
         args.extend(["--bundle", materials.bundle])
 
