@@ -32,12 +32,13 @@ conformance suite in the order that they are specified in the templates below.
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} sign-bundle [--staging] --identity-token TOKEN --bundle FILE FILE
+${ENTRYPOINT} sign-bundle [--staging] [--dsse] --identity-token TOKEN --bundle FILE FILE
 ```
 
 | Option | Description |
 | --- | --- |
 | `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
+| `--dsse`           | Presence indicates client should treat input file as an in-toto statement and produce a DSSE envelope |
 | `--identity-token` | The OIDC identity token to use |
 | `--bundle FILE` | The path to write the bundle to |
 | `--trusted-root TRUSTROOT` | Optional path to a custom trusted root to use to verify the bundle |
@@ -49,14 +50,15 @@ ${ENTRYPOINT} sign-bundle [--staging] --identity-token TOKEN --bundle FILE FILE
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE_OR_DIGEST
+${ENTRYPOINT} verify-bundle [--staging] [--dsse] --bundle FILE --certificate-identity IDENTITY --certificate-oidc-issuer URL [--trusted-root FILE] FILE_OR_DIGEST
 
-${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --key PATH_TO_KEY [--trusted-root FILE] FILE_OR_DIGEST
+${ENTRYPOINT} verify-bundle [--staging] [--dsse] --bundle FILE --key PATH_TO_KEY [--trusted-root FILE] FILE_OR_DIGEST
 ```
 
 | Option | Description |
 | --- | --- |
 | `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
+| `--dsse`           | Presence indicates client should treat input file as a DSSE envelope and verify the signature on the statement |
 | `--bundle FILE` | The path to the Sigstore bundle to verify |
 | `--certificate-identity IDENTITY` | The expected identity in the signing certificate's SAN extension (not used when verifying with `--key`) |
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate (not used when verifying with `--key`) |

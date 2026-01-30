@@ -11,6 +11,20 @@ import os
 import sys
 from contextlib import suppress
 from tempfile import NamedTemporaryFile
+from pathlib import Path
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
+selftest_env_python = os.path.join(script_dir, "selftest-env", "bin", "python")
+
+# Ensure we are running inside the selftest virtualenv
+if os.path.abspath(sys.executable) != os.path.abspath(selftest_env_python):
+    if not os.path.exists(selftest_env_python):
+        # Fallback: Proceed with current execution if selftest env is missing
+        pass
+    else:
+        # Re-execute using the virtualenv python
+        target_script = os.path.abspath(__file__)
+        os.execv(selftest_env_python, [selftest_env_python, target_script] + sys.argv[1:])
 
 # The signing config in this trust_config is not used: it's just here
 # so the built trustconfig is complete
@@ -51,7 +65,6 @@ ARG_REPLACEMENTS = {
     "--certificate-oidc-issuer": "--cert-oidc-issuer",
 }
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
 SIGSTORE_BINARY = os.getenv(
     "GHA_SIGSTORE_CONFORMANCE_SELFTEST_BIN",
     os.path.join(script_dir, "selftest-env", "bin", "sigstore"),
@@ -114,8 +127,107 @@ with NamedTemporaryFile(mode="wt") as temp_file:
     # `sigstore` requires `verify identity` for identity based verifications.
     subcommand, *fixed_args = fixed_args
     if subcommand == "sign":
+        if "--dsse" in fixed_args:
+            # Handle DSSE signing via library call
+            from sigstore.sign import SigningContext
+            from sigstore.oidc import IdentityToken
+            from sigstore.models import ClientTrustConfig
+            from sigstore.dsse import Statement
+
+            fixed_args.remove("--dsse")
+
+            identity_token = None
+            bundle_path = None
+            try:
+                i = fixed_args.index("--identity-token")
+                identity_token = fixed_args[i + 1]
+                i = fixed_args.index("--bundle")
+                bundle_path = fixed_args[i + 1]
+            except (ValueError, IndexError):
+                raise ValueError("Missing required arguments for DSSE signing")
+
+            # The statement is always the last argument in the protocol
+            input_file = fixed_args[-1]
+
+            # Direct library call
+            with open(input_file, "rb") as f:
+                statement_bytes = f.read()
+
+            statement = Statement(statement_bytes)
+
+            if trusted_root_path is not None:
+                trust_config_obj = ClientTrustConfig.from_json(Path(temp_file.name).read_text())
+            else:
+                trust_config_obj = ClientTrustConfig.production()
+                if "--staging" in sys.argv:
+                    trust_config_obj = ClientTrustConfig.staging()
+
+            context = SigningContext.from_trust_config(trust_config_obj)
+            token = IdentityToken(identity_token)
+
+            with context.signer(token) as signer:
+                bundle = signer.sign_dsse(statement)
+
+            with open(bundle_path, "w") as f:
+                f.write(bundle.to_json())
+            
+            # Exit successfully after handling DSSE
+            sys.exit(0)
+
         command.append("sign")
     elif subcommand == "verify":
+        if "--dsse" in fixed_args:
+            input_file = fixed_args[-1]
+            # Handle DSSE verification via library call
+            from sigstore.verify import Verifier, policy
+            from sigstore.models import ClientTrustConfig, Bundle
+
+            bundle_path = None
+            cert_identity = None
+            oidc_issuer = None
+
+            try:
+                i = fixed_args.index("--bundle")
+                bundle_path = fixed_args[i + 1]
+                i = fixed_args.index("--certificate-identity")
+                cert_identity = fixed_args[i + 1]
+                i = fixed_args.index("--certificate-oidc-issuer")
+                oidc_issuer = fixed_args[i + 1]
+            except (ValueError, IndexError):
+                raise ValueError("Missing required arguments for DSSE verification")
+
+            if trusted_root_path is not None:
+                trust_config_obj = ClientTrustConfig.from_json(Path(temp_file.name).read_text())
+            else:
+                trust_config_obj = ClientTrustConfig.production()
+                if "--staging" in sys.argv:
+                    trust_config_obj = ClientTrustConfig.staging()
+
+            verifier = Verifier(trusted_root=trust_config_obj.trusted_root)
+            bundle = Bundle.from_json(Path(bundle_path).read_text())
+
+            verification_policy = policy.Identity(
+                identity=cert_identity,
+                issuer=oidc_issuer,
+            )
+
+            # verify_dsse returns (payload_type, payload)
+            payload_type, payload = verifier.verify_dsse(
+                bundle=bundle,
+                policy=verification_policy,
+            )
+
+            # Also check that the input file matches the statement in the bundle
+            with open(input_file, "rb") as f:
+                expected_statement = f.read()
+
+            if payload != expected_statement:
+                print("Error: Bundle payload does not match input statement", file=sys.stderr)
+                sys.exit(1)
+
+            print("Verification successful", file=sys.stderr)
+            sys.exit(0)
+
         command.extend(["verify", "identity"])
     elif subcommand == "update-trust-root":
         # Not part of the client-under-test, added to get easy access to
