@@ -62,7 +62,7 @@ client-under-test [CLI protocol](docs/cli_protocol.md).
               environment: staging
     ```
 
-See [sigstore-python conformance test](https://github.com/sigstore/sigstore-python/blob/main/.github/workflows/conformance.yml)
+See [selftest workflow](https://github.com/sigstore/sigstore-python/blob/main/.github/workflows/conformance.yml)
 for a complete example.
 
 ### `sigstore/sigstore-conformance` action inputs
@@ -111,14 +111,14 @@ The test suite can be configured with
 (env) $ pytest -v --entrypoint=$SIGSTORE_CLIENT --skip-signing
 ```
 
-Following example runs the test suite with the included sigstore-python-conformance client script:
+Following example runs the test suite with the included selftest client script:
 ```sh
 (env) $ # run all tests
 (env) $ GHA_SIGSTORE_CONFORMANCE_XFAIL="test_verify*-intoto-with-custom-trust-root] test_verify*managed-key-happy-path] test_verify*managed-key-and-trusted-root]" \
-    pytest -v --entrypoint=sigstore-python-conformance
+    pytest -v --entrypoint=selftest-client
 ...
 (env) $ # run single test
-(env) $ pytest -v --entrypoint=sigstore-python-conformance -k test_verify[DIGEST-happy-path]
+(env) $ pytest -v --entrypoint=selftest-client -k test_verify[DIGEST-happy-path]
 ...
 ```
 

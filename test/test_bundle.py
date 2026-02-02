@@ -126,7 +126,7 @@ def test_sign_verify_rekor2(
     # Use selftest client verify to assert that the bundle is correctly formed
     # (contains a valid TSA timestamp etc)
     selftest_client = SigstoreClient(
-        str(project_root / "sigstore-python-conformance"), client.identity_token, client.staging
+        str(project_root / "selftest-client"), client.identity_token, client.staging
     )
     selftest_client.verify(materials, input_path)
 

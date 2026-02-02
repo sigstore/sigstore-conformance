@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# This is the selftest-client for sigstore-conformance test suite
+# It is a wrapper to call sigstore-python-conformance in the correct virtualenv
+
+BASEDIR=$(dirname "$0")
+
+if [ ! -f "$BASEDIR/selftest-env/bin/python" ]; then
+    echo "selftest-env virtualenv not found, please run 'make selftest-env'" >&2
+    exit 1
+fi
+
+$BASEDIR/selftest-env/bin/python $BASEDIR/sigstore-python-conformance $@
