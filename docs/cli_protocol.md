@@ -32,12 +32,13 @@ conformance suite in the order that they are specified in the templates below.
 #### Bundle flow
 
 ```console
-${ENTRYPOINT} sign-bundle [--staging] --identity-token TOKEN --bundle FILE FILE
+${ENTRYPOINT} sign-bundle [--staging] [--in-toto] --identity-token TOKEN --bundle FILE FILE
 ```
 
 | Option | Description |
 | --- | --- |
 | `--staging`        | Presence indicates client should use Sigstore staging infrastructure |
+| `--in-toto`        | Presence indicates client should treat input file as an in-toto statement |
 | `--identity-token` | The OIDC identity token to use |
 | `--bundle FILE` | The path to write the bundle to |
 | `--trusted-root TRUSTROOT` | Optional path to a custom trusted root to use to verify the bundle |
@@ -62,4 +63,4 @@ ${ENTRYPOINT} verify-bundle [--staging] --bundle FILE --key PATH_TO_KEY [--trust
 | `--certificate-oidc-issuer URL` | The expected OIDC issuer for the signing certificate (not used when verifying with `--key`) |
 | `--key PATH_TO_KEY` | The path to the PEM-encoded public key file (not used when verifying with `--certificate-identity`) |
 | `--trusted-root TRUSTROOT` | Optional path to a custom trusted root to use to verify the bundle |
-| `FILE_OR_DIGEST` | The path to the artifact to verify, or its digest. The digest should start with the `sha256:` prefix, should be the right length for a hexadecimal SHA-256 digest, and should not be a path on disk. If any of those conditions are not met, the input should be interpreted as a filepath instead. |
+| `FILE_OR_DIGEST` | The path to the artifact to verify, or its digest. The digest should start with the `sha256:` prefix, should be the right length for a hexadecimal SHA-256 digest, and should not be a path on disk. If any of those conditions are not met, the input should be interpreted as a filepath instead. When the bundle contains a DSSE envelope with an in-toto statement, the input is a subject in the in-toto statement. |
