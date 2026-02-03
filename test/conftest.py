@@ -287,10 +287,10 @@ def _client_config(project_root: Path, staging: bool) -> tuple[Path, Path]:
     This uses the internal selftest client feature 'update-trust-root'
     """
     if staging:
-        cmd = [str(project_root / "sigstore-python-conformance"), "--staging", "update-trust-root"]
+        cmd = [str(project_root / "selftest-client"), "--staging", "update-trust-root"]
         repo = parse.quote("https://tuf-repo-cdn.sigstage.dev", safe="")
     else:
-        cmd = [str(project_root / "sigstore-python-conformance"), "update-trust-root"]
+        cmd = [str(project_root / "selftest-client"), "update-trust-root"]
         repo = parse.quote("https://tuf-repo-cdn.sigstore.dev", safe="")
 
     # run the selftest client to update files in sigstore-python cache

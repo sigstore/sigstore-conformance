@@ -38,7 +38,7 @@ jobs:
       - name: conformance test sigstore-python
         uses: ./
         with:
-          entrypoint: ${{ github.workspace }}/sigstore-python-conformance
+          entrypoint: ${{ github.workspace }}/selftest-client
           skip-cpython-release-tests: ${{ matrix.skip-cpython-release-tests }}
           environment: ${{ matrix.sigstore-infra }}
           xfail: "test_verify*-intoto-with-custom-trust-root] test_verify*managed-key-happy-path] test_verify*managed-key-and-trusted-root]"
