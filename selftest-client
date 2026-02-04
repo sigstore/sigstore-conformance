@@ -4,10 +4,11 @@
 # It is a wrapper to call sigstore-python-conformance in the correct virtualenv
 
 BASEDIR=$(dirname "$0")
+VENV_PATH="${GHA_SIGSTORE_CONFORMANCE_SELFTEST_ENV:-$BASEDIR/selftest-env}"
 
-if [ ! -f "$BASEDIR/selftest-env/bin/python" ]; then
-    echo "selftest-env virtualenv not found, please run 'make selftest-env'" >&2
+if [ ! -f "$VENV_PATH/bin/python" ]; then
+    echo "self-test virtualenv not found, please run 'make selftest-env'" >&2
     exit 1
 fi
 
-$BASEDIR/selftest-env/bin/python $BASEDIR/sigstore-python-conformance $@
+"$VENV_PATH/bin/python" "$BASEDIR/sigstore-python-conformance" "$@"
