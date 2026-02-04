@@ -3,7 +3,8 @@
 """
 A wrapper to convert `sigstore-conformance` CLI protocol invocations to match `sigstore-python`.
 
-This wrapper expects to find sigstore-python binary installed in selftest-env/bin/sigstore
+This wrapper expects to find sigstore-python binary in the path, and sigstore modules importable:
+See selftest-client for how this is managed.
 """
 
 import json
@@ -51,17 +52,6 @@ ARG_REPLACEMENTS = {
     "--certificate-oidc-issuer": "--cert-oidc-issuer",
 }
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
-SIGSTORE_BINARY = os.getenv(
-    "GHA_SIGSTORE_CONFORMANCE_SELFTEST_BIN",
-    os.path.join(script_dir, "selftest-env", "bin", "sigstore"),
-)
-if not os.path.exists(SIGSTORE_BINARY):
-    exit(
-        f"Error: sigstore binary not found in {SIGSTORE_BINARY}.\n"
-        "Has the environment been initialized with 'make dev'?"
-    )
-
 # Trim the script name.
 fixed_args = sys.argv[1:]
 
@@ -71,7 +61,7 @@ if subcmd in SUBCMD_REPLACEMENTS:
     fixed_args[0] = SUBCMD_REPLACEMENTS[subcmd]
 
 # Build base command with optional staging argument
-command = ["sigstore"]
+command = [sys.executable, "-m",  "sigstore"]
 if "--staging" in fixed_args:
     command.append("--staging")
     fixed_args.remove("--staging")
@@ -127,4 +117,4 @@ with NamedTemporaryFile(mode="wt") as temp_file:
     # Replace incompatible flags.
     command.extend(ARG_REPLACEMENTS[arg] if arg in ARG_REPLACEMENTS else arg for arg in fixed_args)
 
-    os.execvp(SIGSTORE_BINARY, command)
+    os.execv(sys.executable, command)
