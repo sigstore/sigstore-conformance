@@ -43,7 +43,7 @@ ${ENTRYPOINT} sign-bundle [--staging] [--in-toto] --identity-token TOKEN --bundl
 | `--bundle FILE` | The path to write the bundle to |
 | `--trusted-root TRUSTROOT` | Optional path to a custom trusted root to use to verify the bundle |
 | `--signing-config SIGNINGCONFIG` | Optional path to a custom signing config to use when signing |
-| `FILE` | The artifact to sign |
+| `FILE` | The artifact to sign. When `--in-toto` is used, the in-toto statement to sign |
 
 ### Verify
 
