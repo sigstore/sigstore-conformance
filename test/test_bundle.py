@@ -75,6 +75,10 @@ def test_sign_does_not_produce_root(
     bundle_contents = materials.bundle.read_bytes()
     bundle = Bundle.from_dict(json.loads(bundle_contents))
 
+    # Ensure valid message signature and no DSSE envelope
+    assert bundle.is_set("message_signature")
+    assert not bundle.is_set("dsse_envelope")
+
     # Iterate over our cert chain and check for roots.
     if bundle.verification_material.is_set("x509_certificate_chain"):
         certs = bundle.verification_material.x509_certificate_chain.certificates
@@ -196,3 +200,41 @@ def test_verify_cpython_release_bundles(subtests, client):
 
                 # One verification per release is enough
                 break
+
+
+@pytest.mark.signing
+def test_sign_verify_dsse(
+    client: SigstoreClient,
+    make_materials_by_type: _MakeMaterialsByType,
+    project_root: Path,
+) -> None:
+    """
+    Check that the client can sign a bundle with a DSSE envelope.
+    """
+    materials: BundleMaterials
+    input_path, materials = make_materials_by_type("statement.json", BundleMaterials)
+    assert not materials.exists()
+
+    # Sign for our input with DSSE enabled.
+    client.sign(materials, input_path, dsse=True)
+
+    # Parse the output bundle.
+    bundle_contents = materials.bundle.read_bytes()
+    bundle = Bundle.from_dict(json.loads(bundle_contents))
+
+    # Ensure DSSE envelope is present and message signature is NOT present
+    assert bundle.is_set("dsse_envelope")
+    assert not bundle.is_set("message_signature")
+
+    # Ensure DSSE envelope payload matches the statement
+    assert bundle.dsse_envelope.payload == input_path.read_bytes()
+
+    # Verify the bundle
+    artifact_path = input_path.parent / "a.txt"
+    client.verify(materials, artifact_path)
+
+    # Use selftest client verify to assert that the bundle is correctly formed
+    selftest_client = SigstoreClient(
+        str(project_root / "selftest-client"), client.identity_token, client.staging
+    )
+    selftest_client.verify(materials, artifact_path)

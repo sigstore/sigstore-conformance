@@ -147,7 +147,7 @@ class SigstoreClient:
             raise ClientUnexpectedSuccess(msg)
 
     @singledispatchmethod
-    def sign(self, materials: VerificationMaterials, artifact: os.PathLike) -> None:
+    def sign(self, materials: VerificationMaterials, artifact: os.PathLike, dsse: bool = False) -> None:
         """
         Sign an artifact with the Sigstore client. Dispatches to `_sign_for_bundle` when
         given `BundleMaterials`.
@@ -159,7 +159,7 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot sign with {type(materials)}")
 
     @sign.register
-    def _sign_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike) -> None:
+    def _sign_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike, dsse: bool = False) -> None:
         """
         Sign an artifact with the Sigstore client, producing a bundle.
 
@@ -169,6 +169,8 @@ class SigstoreClient:
         args: list[str | os.PathLike] = ["sign-bundle"]
         if self.staging:
             args.append("--staging")
+        if dsse:
+            args.append("--in-toto")
         args.extend(
             [
                 "--identity-token",
