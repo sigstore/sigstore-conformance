@@ -54,6 +54,7 @@ def test_verify(
 
 
 @pytest.mark.signing
+@pytest.mark.staging
 def test_sign_does_not_produce_root(
     client: SigstoreClient,
     make_materials_by_type: _MakeMaterialsByType,
@@ -203,6 +204,7 @@ def test_verify_cpython_release_bundles(subtests, client):
 
 
 @pytest.mark.signing
+@pytest.mark.staging
 def test_sign_verify_dsse(
     client: SigstoreClient,
     make_materials_by_type: _MakeMaterialsByType,
