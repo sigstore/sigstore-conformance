@@ -1,11 +1,9 @@
 import enum
 import functools
-import json
 import os
 import shutil
 import subprocess
 import tempfile
-from base64 import b64decode
 from collections.abc import Callable
 from datetime import timedelta
 from fnmatch import fnmatch
