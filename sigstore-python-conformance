@@ -62,7 +62,7 @@ if subcmd in SUBCMD_REPLACEMENTS:
     fixed_args[0] = SUBCMD_REPLACEMENTS[subcmd]
 
 # Build base command with optional staging argument
-command = [sys.executable, "-m",  "sigstore"]
+command = [sys.executable, "-m", "sigstore"]
 if "--staging" in fixed_args:
     command.append("--staging")
     fixed_args.remove("--staging")

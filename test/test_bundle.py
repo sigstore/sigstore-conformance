@@ -28,29 +28,13 @@ def test_verify(
     Test all bundles in assets/bundle-verify/*. See assets/bundle-verify/README
     """
     path = Path(bundle_verify_dir)
-
-    materials = BundleMaterials.from_path(path / "bundle.sigstore.json")
-
-    # use custom trust root if one is provided
-    trusted_root_path = path / "trusted_root.json"
-    if trusted_root_path.exists():
-        materials.trusted_root = trusted_root_path
-
-    # use managed key for verifying if one is provided
-    key_path = path / "key.pub"
-    if key_path.exists():
-        materials.key = key_path
-
-    # use custom artifact path if one is provided
-    artifact_path = path / "artifact"
-    if not artifact_path.exists():
-        artifact_path = Path("bundle-verify", "a.txt")
+    materials = BundleMaterials.from_dir(path)
 
     if path.name.endswith("fail"):
         with client.raises():
-            verify_bundle(materials, artifact_path)
+            verify_bundle(materials)
     else:
-        verify_bundle(materials, artifact_path)
+        verify_bundle(materials)
 
 
 @pytest.mark.signing
@@ -66,11 +50,11 @@ def test_sign_does_not_produce_root(
     """
 
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials = make_materials_by_type("a.txt", BundleMaterials)
     assert not materials.exists()
 
     # Sign for our input.
-    client.sign(materials, input_path)
+    client.sign(materials)
 
     # Parse the output bundle.
     bundle_contents = materials.bundle.read_bytes()
@@ -111,14 +95,14 @@ def test_sign_verify_rekor2(
     """
 
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials = make_materials_by_type("a.txt", BundleMaterials)
     assert not materials.exists()
 
     # use current staging signingconfig & trusted root
     materials.trusted_root, materials.signing_config = staging_config
 
     # Sign for our input.
-    client.sign(materials, input_path)
+    client.sign(materials)
 
     # Parse the output bundle, verify it really contains a rekor2 entry
     bundle = Bundle.from_dict(json.loads(materials.bundle.read_bytes()))
@@ -126,14 +110,14 @@ def test_sign_verify_rekor2(
     assert kv == KindVersion("hashedrekord", "0.0.2")
 
     # assert client itself verifies the bundle it produced
-    client.verify(materials, input_path)
+    client.verify(materials)
 
     # Use selftest client verify to assert that the bundle is correctly formed
     # (contains a valid TSA timestamp etc)
     selftest_client = SigstoreClient(
         str(project_root / "selftest-client"), client.identity_token, client.staging
     )
-    selftest_client.verify(materials, input_path)
+    selftest_client.verify(materials)
 
 
 @pytest.mark.skipif(
@@ -214,11 +198,11 @@ def test_sign_verify_dsse(
     Check that the client can sign a bundle with a DSSE envelope.
     """
     materials: BundleMaterials
-    input_path, materials = make_materials_by_type("statement.json", BundleMaterials)
+    materials = make_materials_by_type("statement.json", BundleMaterials)
     assert not materials.exists()
 
     # Sign for our input with DSSE enabled.
-    client.sign(materials, input_path, dsse=True)
+    client.sign(materials, dsse=True)
 
     # Parse the output bundle.
     bundle_contents = materials.bundle.read_bytes()
@@ -229,14 +213,17 @@ def test_sign_verify_dsse(
     assert not bundle.is_set("message_signature")
 
     # Ensure DSSE envelope payload matches the statement
-    assert bundle.dsse_envelope.payload == input_path.read_bytes()
+    assert bundle.dsse_envelope.payload == materials.artifact.read_bytes()
+
+    # TODO: separate subject and statement in dsse case:
+    # "artifact" is a statement when signing, but a subject when verifying
+    materials.artifact = Path("a.txt")
 
     # Verify the bundle
-    artifact_path = input_path.parent / "a.txt"
-    client.verify(materials, artifact_path)
+    client.verify(materials)
 
     # Use selftest client verify to assert that the bundle is correctly formed
     selftest_client = SigstoreClient(
         str(project_root / "selftest-client"), client.identity_token, client.staging
     )
-    selftest_client.verify(materials, artifact_path)
+    selftest_client.verify(materials)

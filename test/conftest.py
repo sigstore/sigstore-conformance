@@ -26,15 +26,9 @@ from .client import (
 )
 
 _M = TypeVar("_M", bound=VerificationMaterials)
-_MakeMaterialsByType = Callable[[str, _M], tuple[Path, _M]]
-_MakeMaterials = Callable[[str], tuple[Path, VerificationMaterials]]
-_VerifyBundle = Callable[[VerificationMaterials, Path], None]
-
-_OIDC_BEACON_API_URL = (
-    "https://api.github.com/repos/sigstore-conformance/extremely-dangerous-public-oidc-beacon/"
-    "actions"
-)
-_OIDC_BEACON_WORKFLOW_ID = 55399612
+_MakeMaterialsByType = Callable[[str, _M], _M]
+_MakeMaterials = Callable[[str], VerificationMaterials]
+_VerifyBundle = Callable[[VerificationMaterials], None]
 
 _XFAIL_LIST = os.getenv("GHA_SIGSTORE_CONFORMANCE_XFAIL", "").split()
 
@@ -191,11 +185,9 @@ def make_materials_by_type() -> _MakeMaterialsByType:
 
     def _make_materials_by_type(
         input_name: str, cls: VerificationMaterials
-    ) -> tuple[Path, VerificationMaterials]:
+    ) -> VerificationMaterials:
         input_path = Path(input_name)
-        output = cls.from_input(input_path)
-
-        return input_path, output
+        return cls.from_artifact_path(input_path)
 
     return _make_materials_by_type
 
@@ -230,18 +222,16 @@ def verify_bundle(request, client) -> _VerifyBundle:
     """
     Returns a function that verifies an artifact using the given verification materials
 
-    The fixture is parametrized to run twice, one verifying the artifact itself (passing
+    The fixture is parameterized to run twice, one verifying the artifact itself (passing
     the file path to the verification function), and another verifying the artifact's
     digest.
     """
 
-    def _verify_bundle(materials: VerificationMaterials, input_path: Path) -> None:
+    def _verify_bundle(materials: VerificationMaterials) -> None:
         if request.param == ArtifactInputType.PATH:
-            client.verify(materials, input_path)
+            client.verify(materials)
         else:
-            with open(input_path, "rb") as f:
-                digest = f"sha256:{hashlib.sha256(f.read()).hexdigest()}"
-                client.verify(materials, digest)
+            client.verify_digest(materials)
 
     return _verify_bundle
 
