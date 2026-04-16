@@ -1,9 +1,11 @@
 import enum
 import functools
+import json
 import os
 import shutil
 import subprocess
 import tempfile
+from base64 import b64decode
 from collections.abc import Callable
 from datetime import timedelta
 from fnmatch import fnmatch
@@ -87,7 +89,7 @@ def pytest_internalerror(excrepr, excinfo):
 
 @pytest.fixture
 @functools.cache
-def identity_token(pytestconfig) -> str:
+def identity_token() -> str:
     resp = request(
         "GET",
         "https://storage.googleapis.com/sigstore-test-identity-token/untrusted-testing-token.txt",

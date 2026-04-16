@@ -100,10 +100,6 @@ def test_sign_verify_rekor2(
 
     # use current staging signingconfig & trusted root
     materials.trusted_root, materials.signing_config = staging_config
-    materials.identity = (
-        "untrusted-sigstore-test-id@sigstore-infra-playground.iam.gserviceaccount.com"
-    )
-    materials.issuer = "https://accounts.google.com"
 
     # Sign for our input.
     client.sign(materials)
@@ -203,10 +199,6 @@ def test_sign_verify_dsse(
     """
     materials: BundleMaterials
     materials = make_materials_by_type("statement.json", BundleMaterials)
-    materials.identity = (
-        "untrusted-sigstore-test-id@sigstore-infra-playground.iam.gserviceaccount.com"
-    )
-    materials.issuer = "https://accounts.google.com"
     assert not materials.exists()
 
     # Sign for our input with DSSE enabled.

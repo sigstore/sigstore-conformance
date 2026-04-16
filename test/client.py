@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import subprocess
+from base64 import b64decode
 from contextlib import contextmanager
 from functools import singledispatchmethod
 from pathlib import Path
@@ -146,6 +148,13 @@ class SigstoreClient:
         self.completed_process: subprocess.CompletedProcess | None = None
         self.staging = staging
 
+        # Dig issuer and identity from the token
+        payload = self.identity_token.split(".")[1]
+        payload += "=" * (4 - len(payload) % 4)
+        payload_json = json.loads(b64decode(payload))
+        self.identity: str = payload_json["email"]
+        self.issuer: str = payload_json["iss"]
+
     def run(self, *args) -> None:
         """
         Execute a command against the Sigstore client.
@@ -191,6 +200,9 @@ class SigstoreClient:
         Sign an artifact with the Sigstore client. Dispatches to `_sign_for_bundle` when
         given `BundleMaterials`.
 
+        Materials will be updated with the used signing identity/issuer to ensure that a
+        verify() call afterwards gets the correct identity/issuer.
+
         `artifact` is a path to the file to sign.
         `materials` contains paths to write the generated materials to.
         """
@@ -224,6 +236,11 @@ class SigstoreClient:
             args.extend(["--signing-config", materials.signing_config])
 
         self.run(*args, str(materials.artifact))
+
+        # Set the used signing identity and issuer on verification materials:
+        # This way a later verify() call will know what to expect
+        materials.identity = self.identity
+        materials.issuer = self.issuer
 
     @singledispatchmethod
     def verify(self, materials: VerificationMaterials) -> None:
