@@ -24,5 +24,11 @@ def test_simple(
     client.sign(materials, input_path)
     assert materials.exists()
 
-    # Verify the artifact signature.
+    # Verify the artifact signature with the client itself
     client.verify(materials, input_path)
+
+    # Use selftest client verify to assert that the bundle is correctly formed
+    selftest_client = SigstoreClient(
+        str(project_root / "selftest-client"), client.identity_token, client.staging
+    )
+    selftest_client.verify(materials, input_path)
