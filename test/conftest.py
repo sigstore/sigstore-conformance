@@ -1,18 +1,13 @@
 import enum
 import functools
-import hashlib
-import json
 import os
 import shutil
 import subprocess
 import tempfile
-import time
-from base64 import b64decode
 from collections.abc import Callable
-from datetime import datetime, timedelta
+from datetime import timedelta
 from fnmatch import fnmatch
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import TypeVar
 from urllib import parse
 
@@ -90,41 +85,8 @@ def pytest_internalerror(excrepr, excinfo):
     return False
 
 
-def _jwt_cache():
-    def _decorator(fn: Callable[[any], str]):
-        @functools.wraps(fn)
-        def _wrapped(pytestconfig):
-            if pytestconfig.getoption("--skip-signing"):
-                return ""
-
-            # Cache the token for the duration of the test run,
-            # as long as the returned token is not yet expired
-            if hasattr(_wrapped, "token"):
-                min_validity = pytestconfig.getoption("--min-id-token-validity")
-                if _is_valid_at(_wrapped.token, datetime.now() + min_validity):
-                    return _wrapped.token
-
-            token = fn(pytestconfig)
-            _wrapped.token = token
-            return token
-
-        return _wrapped
-
-    return _decorator
-
-
-def _is_valid_at(token: str, reference_time: datetime) -> bool:
-    # split token, b64 decode (with padding), parse as json, validate expiry
-    payload = token.split(".")[1]
-    payload += "=" * (4 - len(payload) % 4)
-    payload_json = json.loads(b64decode(payload))
-
-    expiry = datetime.fromtimestamp(payload_json["exp"])
-    return reference_time < expiry
-
-
 @pytest.fixture
-@_jwt_cache()
+@functools.cache
 def identity_token(pytestconfig) -> str:
     resp = request(
         "GET",
