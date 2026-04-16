@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import subprocess
 from base64 import b64decode
 from contextlib import contextmanager
@@ -217,7 +216,7 @@ class SigstoreClient:
         This is an overload of `sign` for the bundle flow and should not be called directly.
         """
 
-        args: list[str | os.PathLike] = ["sign-bundle"]
+        args = ["sign-bundle"]
         if self.staging:
             args.append("--staging")
         if dsse:
@@ -227,13 +226,13 @@ class SigstoreClient:
                 "--identity-token",
                 self.identity_token,
                 "--bundle",
-                materials.bundle,
+                str(materials.bundle),
             ]
         )
         if getattr(materials, "trusted_root", None) is not None:
-            args.extend(["--trusted-root", materials.trusted_root])
+            args.extend(["--trusted-root", str(materials.trusted_root)])
         if getattr(materials, "signing_config", None) is not None:
-            args.extend(["--signing-config", materials.signing_config])
+            args.extend(["--signing-config", str(materials.signing_config)])
 
         self.run(*args, str(materials.artifact))
 
@@ -274,17 +273,15 @@ class SigstoreClient:
         args = self.build_verify_args(materials)
         self.run(*args)
 
-    def build_verify_args(
-        self, materials: BundleMaterials, digest: bool = False
-    ) -> list[str | os.PathLike]:
-        args: list[str | os.PathLike] = ["verify-bundle"]
+    def build_verify_args(self, materials: BundleMaterials, digest: bool = False) -> list[str]:
+        args = ["verify-bundle"]
         if self.staging:
             args.append("--staging")
 
-        args.extend(["--bundle", materials.bundle])
+        args.extend(["--bundle", str(materials.bundle)])
 
         if getattr(materials, "key", None) is not None:
-            args.extend(["--key", materials.key])
+            args.extend(["--key", str(materials.key)])
         else:
             args.extend(
                 [
@@ -296,7 +293,7 @@ class SigstoreClient:
             )
 
         if getattr(materials, "trusted_root", None) is not None:
-            args.extend(["--trusted-root", materials.trusted_root])
+            args.extend(["--trusted-root", str(materials.trusted_root)])
 
         if digest:
             artifact = materials.artifact.read_bytes()
