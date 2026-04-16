@@ -18,6 +18,7 @@ from urllib import parse
 
 import platformdirs
 import pytest
+from urllib3 import request
 
 from .client import (
     BundleMaterials,
@@ -125,33 +126,12 @@ def _is_valid_at(token: str, reference_time: datetime) -> bool:
 @pytest.fixture
 @_jwt_cache()
 def identity_token(pytestconfig) -> str:
-    # following code is modified from extremely-dangerous-public-oidc-beacon download-token.py.
-    # Caching can be made smarter (to return the cached token only if it is valid) if token
-    # starts going invalid during runs
-    MIN_VALIDITY = pytestconfig.getoption("--min-id-token-validity")
-    MAX_RETRY_TIME = timedelta(minutes=5 if os.getenv("CI") else 1)
-    RETRY_SLEEP_SECS = 30 if os.getenv("CI") else 5
-    GIT_URL = "https://github.com/sigstore-conformance/extremely-dangerous-public-oidc-beacon.git"
-
-    def git_clone(url: str, dir: str) -> None:
-        base_cmd = ["git", "clone", "--quiet", "--branch", "current-token", "--depth", "1"]
-        subprocess.run(base_cmd + [url, dir], check=True)
-
-    start_time = datetime.now()
-    while datetime.now() <= start_time + MAX_RETRY_TIME:
-        with TemporaryDirectory() as tempdir:
-            git_clone(GIT_URL, tempdir)
-
-            with Path(tempdir, "oidc-token.txt").open() as f:
-                token = f.read().rstrip()
-
-            if _is_valid_at(token, datetime.now() + MIN_VALIDITY):
-                return token
-
-        print(f"Current token expires too early, retrying in {RETRY_SLEEP_SECS} seconds.")
-        time.sleep(RETRY_SLEEP_SECS)
-
-    raise TimeoutError(f"Failed to find a valid token in {MAX_RETRY_TIME}")
+    resp = request(
+        "GET",
+        "https://storage.googleapis.com/sigstore-test-identity-token/untrusted-testing-token.txt",
+        timeout=30.0,
+    )
+    return resp.data.decode()
 
 
 @pytest.fixture

@@ -21,6 +21,10 @@ def test_simple(
     """
 
     materials = make_materials_by_type("a.txt", BundleMaterials)
+    materials.identity = (
+        "untrusted-sigstore-test-id@sigstore-infra-playground.iam.gserviceaccount.com"
+    )
+    materials.issuer = "https://accounts.google.com"
     assert not materials.exists()
 
     # Sign the artifact.
