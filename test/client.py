@@ -5,6 +5,7 @@ import json
 import subprocess
 from base64 import b64decode
 from contextlib import contextmanager
+from datetime import datetime
 from functools import singledispatchmethod
 from pathlib import Path
 
@@ -153,6 +154,7 @@ class SigstoreClient:
         payload_json = json.loads(b64decode(payload))
         self.identity: str = payload_json["email"]
         self.issuer: str = payload_json["iss"]
+        self.expiry = datetime.fromtimestamp(payload_json["exp"])
 
     def run(self, *args) -> None:
         """
@@ -215,6 +217,12 @@ class SigstoreClient:
 
         This is an overload of `sign` for the bundle flow and should not be called directly.
         """
+        lifetime = int((self.expiry - datetime.now()).total_seconds())
+        if lifetime < 0:
+            raise RuntimeError(
+                "Signing test infrastructure failure: Test OIDC token expired "
+                f"{-lifetime} seconds ago"
+            )
 
         args = ["sign-bundle"]
         if self.staging:
