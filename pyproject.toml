@@ -4,3 +4,9 @@ line-length = 100
 [tool.ruff]
 line-length = 100
 lint.select = ["E", "F", "I", "W", "UP"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # pydantic deprecations are not relevant to users
+    "ignore::pydantic.warnings.PydanticDeprecationWarning",
+]
