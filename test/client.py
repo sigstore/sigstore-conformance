@@ -149,12 +149,15 @@ class SigstoreClient:
         self.staging = staging
 
         # Dig issuer and identity from the token
-        payload = self.identity_token.split(".")[1]
-        payload += "=" * (4 - len(payload) % 4)
-        payload_json = json.loads(b64decode(payload))
-        self.identity: str = payload_json["email"]
-        self.issuer: str = payload_json["iss"]
-        self.expiry = datetime.fromtimestamp(payload_json["exp"])
+        try:
+            payload = self.identity_token.split(".")[1]
+            payload += "=" * (4 - len(payload) % 4)
+            payload_json = json.loads(b64decode(payload))
+            self.identity: str = payload_json["email"]
+            self.issuer: str = payload_json["iss"]
+            self.expiry = datetime.fromtimestamp(payload_json["exp"])
+        except (IndexError, KeyError, ValueError) as e:
+            raise RuntimeError("Test suite failed to parse OIDC token") from e
 
     def run(self, *args) -> None:
         """
