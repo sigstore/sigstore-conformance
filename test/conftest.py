@@ -90,7 +90,7 @@ def pytest_internalerror(excrepr, excinfo):
 def identity_token() -> str:
     resp = request(
         "GET",
-        "https://storage.googleapis.com/sigstore-test-identity-token/untrusted-testing-token.txt",
+        "https://storage.googleapis.com/sigstore-conformance-testing-token/untrusted-testing-token.txt",
         timeout=30.0,
     )
     return resp.data.decode()
