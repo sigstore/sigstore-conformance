@@ -56,13 +56,6 @@ def pytest_addoption(parser) -> None:
         action="store_true",
         help="run tests against staging",
     )
-    parser.addoption(
-        "--min-id-token-validity",
-        action="store",
-        help="Minimum validity of the identity token in seconds",
-        type=lambda x: timedelta(seconds=int(x)),
-        default=timedelta(seconds=20),
-    )
 
 
 def pytest_runtest_setup(item):
