@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-import os
+import hashlib
+import json
 import subprocess
+from base64 import b64decode
 from contextlib import contextmanager
+from datetime import datetime
 from functools import singledispatchmethod
 from pathlib import Path
 
@@ -42,7 +45,7 @@ class VerificationMaterials:
     """
 
     @classmethod
-    def from_input(cls, input: Path) -> VerificationMaterials:
+    def from_artifact_path(cls, input: Path) -> VerificationMaterials:
         """
         Constructs a new set of materials from the given input path.
         """
@@ -65,18 +68,56 @@ class BundleMaterials(VerificationMaterials):
     bundle: Path
     trusted_root: Path
     signing_config: Path
+    artifact: Path
     key: Path
+    identity: str
+    issuer: str
 
     @classmethod
-    def from_path(cls, bundle: Path) -> BundleMaterials:
+    def from_dir(cls, path: Path) -> BundleMaterials:
+        """Load Verification materials from directory
+
+        See test/assets/bundle-verify/README.md for documentation
+        """
         mats = cls()
-        mats.bundle = bundle
+        mats.bundle = path / "bundle.sigstore.json"
+
+        # use custom trust root if one is provided
+        trusted_root_path = path / "trusted_root.json"
+        if trusted_root_path.exists():
+            mats.trusted_root = trusted_root_path
+
+        # use managed key for verifying if one is provided
+        key_path = path / "key.pub"
+        if key_path.exists():
+            mats.key = key_path
+
+        # use identity/issuer if is provided
+        issuer_path = path / "issuer"
+        if issuer_path.exists():
+            mats.issuer = issuer_path.read_text().strip()
+        else:
+            mats.issuer = CERTIFICATE_OIDC_ISSUER
+        identity_path = path / "identity"
+        if identity_path.exists():
+            mats.identity = identity_path.read_text().strip()
+        else:
+            mats.identity = CERTIFICATE_IDENTITY
+
+        # use custom artifact path if one is provided
+        artifact_path = path / "artifact"
+        if artifact_path.exists():
+            mats.artifact = artifact_path
+        else:
+            mats.artifact = Path("bundle-verify", "a.txt")
+
         return mats
 
     @classmethod
-    def from_input(cls, input: Path) -> BundleMaterials:
+    def from_artifact_path(cls, input: Path) -> BundleMaterials:
         mats = cls()
         mats.bundle = input.parent / f"{input.name}.sigstore.json"
+        mats.artifact = input
 
         return mats
 
@@ -106,6 +147,17 @@ class SigstoreClient:
         self.identity_token = identity_token
         self.completed_process: subprocess.CompletedProcess | None = None
         self.staging = staging
+
+        # Dig issuer and identity from the token
+        try:
+            payload = self.identity_token.split(".")[1]
+            payload += "=" * (4 - len(payload) % 4)
+            payload_json = json.loads(b64decode(payload))
+            self.identity: str = payload_json["email"]
+            self.issuer: str = payload_json["iss"]
+            self.expiry = datetime.fromtimestamp(payload_json["exp"])
+        except (IndexError, KeyError, ValueError) as e:
+            raise RuntimeError("Test suite failed to parse OIDC token") from e
 
     def run(self, *args) -> None:
         """
@@ -147,10 +199,13 @@ class SigstoreClient:
             raise ClientUnexpectedSuccess(msg)
 
     @singledispatchmethod
-    def sign(self, materials: VerificationMaterials, artifact: os.PathLike, dsse: bool = False) -> None:
+    def sign(self, materials: VerificationMaterials, dsse: bool = False) -> None:
         """
         Sign an artifact with the Sigstore client. Dispatches to `_sign_for_bundle` when
         given `BundleMaterials`.
+
+        Materials will be updated with the used signing identity/issuer to ensure that a
+        verify() call afterwards gets the correct identity/issuer.
 
         `artifact` is a path to the file to sign.
         `materials` contains paths to write the generated materials to.
@@ -159,14 +214,20 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot sign with {type(materials)}")
 
     @sign.register
-    def _sign_for_bundle(self, materials: BundleMaterials, artifact: os.PathLike, dsse: bool = False) -> None:
+    def _sign_for_bundle(self, materials: BundleMaterials, dsse: bool = False) -> None:
         """
         Sign an artifact with the Sigstore client, producing a bundle.
 
         This is an overload of `sign` for the bundle flow and should not be called directly.
         """
+        lifetime = int((self.expiry - datetime.now()).total_seconds())
+        if lifetime < 0:
+            raise RuntimeError(
+                "Signing test infrastructure failure: Test OIDC token expired "
+                f"{-lifetime} seconds ago"
+            )
 
-        args: list[str | os.PathLike] = ["sign-bundle"]
+        args = ["sign-bundle"]
         if self.staging:
             args.append("--staging")
         if dsse:
@@ -176,18 +237,23 @@ class SigstoreClient:
                 "--identity-token",
                 self.identity_token,
                 "--bundle",
-                materials.bundle,
+                str(materials.bundle),
             ]
         )
         if getattr(materials, "trusted_root", None) is not None:
-            args.extend(["--trusted-root", materials.trusted_root])
+            args.extend(["--trusted-root", str(materials.trusted_root)])
         if getattr(materials, "signing_config", None) is not None:
-            args.extend(["--signing-config", materials.signing_config])
+            args.extend(["--signing-config", str(materials.signing_config)])
 
-        self.run(*args, artifact)
+        self.run(*args, str(materials.artifact))
+
+        # Set the used signing identity and issuer on verification materials:
+        # This way a later verify() call will know what to expect
+        materials.identity = self.identity
+        materials.issuer = self.issuer
 
     @singledispatchmethod
-    def verify(self, materials: VerificationMaterials, artifact: os.PathLike | str) -> None:
+    def verify(self, materials: VerificationMaterials) -> None:
         """
         Verify an artifact with the Sigstore client. Dispatches to
          `_verify_{artifact|digest}_for_bundle` when given `BundleMaterials`.
@@ -198,10 +264,17 @@ class SigstoreClient:
 
         raise NotImplementedError(f"Cannot verify with {type(materials)}")
 
+    @singledispatchmethod
+    def verify_digest(self, materials: VerificationMaterials) -> None:
+        raise NotImplementedError(f"Cannot verify with {type(materials)}")
+
+    @verify_digest.register
+    def _verify_digest_for_bundle(self, materials: BundleMaterials) -> None:
+        args = self.build_verify_args(materials, digest=True)
+        self.run(*args)
+
     @verify.register
-    def _verify_artifact_for_bundle(
-        self, materials: BundleMaterials, artifact: os.PathLike
-    ) -> None:
+    def _verify_artifact_for_bundle(self, materials: BundleMaterials) -> None:
         """
         Verify an artifact given a bundle with the Sigstore client.
 
@@ -209,39 +282,35 @@ class SigstoreClient:
         directly.
         """
         args = self.build_verify_args(materials)
-        self.run(*args, artifact)
+        self.run(*args)
 
-    @verify.register
-    def _verify_digest_for_bundle(self, materials: BundleMaterials, digest: str) -> None:
-        """
-        Verify a digest given a bundle with the Sigstore client.
-
-        This is an overload of `verify` for the bundle flow and should not be called
-        directly. The digest string is expected to start with the `sha256:` prefix.
-        """
-        args = self.build_verify_args(materials)
-        self.run(*args, digest)
-
-    def build_verify_args(self, materials: BundleMaterials) -> list[str | os.PathLike]:
-        args: list[str | os.PathLike] = ["verify-bundle"]
+    def build_verify_args(self, materials: BundleMaterials, digest: bool = False) -> list[str]:
+        args = ["verify-bundle"]
         if self.staging:
             args.append("--staging")
 
-        args.extend(["--bundle", materials.bundle])
+        args.extend(["--bundle", str(materials.bundle)])
 
         if getattr(materials, "key", None) is not None:
-            args.extend(["--key", materials.key])
+            args.extend(["--key", str(materials.key)])
         else:
             args.extend(
                 [
                     "--certificate-identity",
-                    CERTIFICATE_IDENTITY,
+                    materials.identity,
                     "--certificate-oidc-issuer",
-                    CERTIFICATE_OIDC_ISSUER,
+                    materials.issuer,
                 ]
             )
 
         if getattr(materials, "trusted_root", None) is not None:
-            args.extend(["--trusted-root", materials.trusted_root])
+            args.extend(["--trusted-root", str(materials.trusted_root)])
+
+        if digest:
+            artifact = materials.artifact.read_bytes()
+            digest_str = f"sha256:{hashlib.sha256(artifact).hexdigest()}"
+            args.append(digest_str)
+        else:
+            args.append(str(materials.artifact))
 
         return args
