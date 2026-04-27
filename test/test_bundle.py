@@ -201,6 +201,10 @@ def test_sign_verify_dsse(
     materials = make_materials_by_type("statement.json", BundleMaterials)
     assert not materials.exists()
 
+    # Separate statement (for signing) and subject (for verification)
+    materials.statement = materials.artifact
+    materials.subject = Path("a.txt")
+
     # Sign for our input with DSSE enabled.
     client.sign(materials, dsse=True)
 
@@ -213,17 +217,13 @@ def test_sign_verify_dsse(
     assert not bundle.is_set("message_signature")
 
     # Ensure DSSE envelope payload matches the statement
-    assert bundle.dsse_envelope.payload == materials.artifact.read_bytes()
+    assert bundle.dsse_envelope.payload == materials.statement.read_bytes()
 
-    # TODO: separate subject and statement in dsse case:
-    # "artifact" is a statement when signing, but a subject when verifying
-    materials.artifact = Path("a.txt")
-
-    # Verify the bundle
-    client.verify(materials)
+    # Verify the bundle with DSSE enabled
+    client.verify(materials, dsse=True)
 
     # Use selftest client verify to assert that the bundle is correctly formed
     selftest_client = SigstoreClient(
         str(project_root / "selftest-client"), client.identity_token, client.staging
     )
-    selftest_client.verify(materials)
+    selftest_client.verify(materials, dsse=True)

@@ -69,6 +69,8 @@ class BundleMaterials(VerificationMaterials):
     trusted_root: Path
     signing_config: Path
     artifact: Path
+    statement: Path | None
+    subject: Path | None
     key: Path
     identity: str
     issuer: str
@@ -245,7 +247,9 @@ class SigstoreClient:
         if getattr(materials, "signing_config", None) is not None:
             args.extend(["--signing-config", str(materials.signing_config)])
 
-        self.run(*args, str(materials.artifact))
+        artifact_to_sign = materials.statement if dsse else materials.artifact
+        assert artifact_to_sign is not None
+        self.run(*args, str(artifact_to_sign))
 
         # Set the used signing identity and issuer on verification materials:
         # This way a later verify() call will know what to expect
@@ -253,7 +257,7 @@ class SigstoreClient:
         materials.issuer = self.issuer
 
     @singledispatchmethod
-    def verify(self, materials: VerificationMaterials) -> None:
+    def verify(self, materials: VerificationMaterials, dsse: bool = False) -> None:
         """
         Verify an artifact with the Sigstore client. Dispatches to
          `_verify_{artifact|digest}_for_bundle` when given `BundleMaterials`.
@@ -265,26 +269,26 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot verify with {type(materials)}")
 
     @singledispatchmethod
-    def verify_digest(self, materials: VerificationMaterials) -> None:
+    def verify_digest(self, materials: VerificationMaterials, dsse: bool = False) -> None:
         raise NotImplementedError(f"Cannot verify with {type(materials)}")
 
     @verify_digest.register
-    def _verify_digest_for_bundle(self, materials: BundleMaterials) -> None:
-        args = self.build_verify_args(materials, digest=True)
+    def _verify_digest_for_bundle(self, materials: BundleMaterials, dsse: bool = False) -> None:
+        args = self.build_verify_args(materials, digest=True, dsse=dsse)
         self.run(*args)
 
     @verify.register
-    def _verify_artifact_for_bundle(self, materials: BundleMaterials) -> None:
+    def _verify_artifact_for_bundle(self, materials: BundleMaterials, dsse: bool = False) -> None:
         """
         Verify an artifact given a bundle with the Sigstore client.
 
         This is an overload of `verify` for the bundle flow and should not be called
         directly.
         """
-        args = self.build_verify_args(materials)
+        args = self.build_verify_args(materials, dsse=dsse)
         self.run(*args)
 
-    def build_verify_args(self, materials: BundleMaterials, digest: bool = False) -> list[str]:
+    def build_verify_args(self, materials: BundleMaterials, digest: bool = False, dsse: bool = False) -> list[str]:
         args = ["verify-bundle"]
         if self.staging:
             args.append("--staging")
@@ -306,11 +310,14 @@ class SigstoreClient:
         if getattr(materials, "trusted_root", None) is not None:
             args.extend(["--trusted-root", str(materials.trusted_root)])
 
+        artifact_to_verify = materials.subject if dsse else materials.artifact
+        assert artifact_to_verify is not None
+
         if digest:
-            artifact = materials.artifact.read_bytes()
+            artifact = artifact_to_verify.read_bytes()
             digest_str = f"sha256:{hashlib.sha256(artifact).hexdigest()}"
             args.append(digest_str)
         else:
-            args.append(str(materials.artifact))
+            args.append(str(artifact_to_verify))
 
         return args
