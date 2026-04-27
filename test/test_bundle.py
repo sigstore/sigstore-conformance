@@ -205,8 +205,8 @@ def test_sign_verify_dsse(
     materials.statement = materials.artifact
     materials.subject = Path("a.txt")
 
-    # Sign for our input with DSSE enabled.
-    client.sign(materials, dsse=True)
+    # Sign for our input.
+    client.sign(materials)
 
     # Parse the output bundle.
     bundle_contents = materials.bundle.read_bytes()
@@ -219,11 +219,11 @@ def test_sign_verify_dsse(
     # Ensure DSSE envelope payload matches the statement
     assert bundle.dsse_envelope.payload == materials.statement.read_bytes()
 
-    # Verify the bundle with DSSE enabled
-    client.verify(materials, dsse=True)
+    # Verify the bundle.
+    client.verify(materials)
 
     # Use selftest client verify to assert that the bundle is correctly formed
     selftest_client = SigstoreClient(
         str(project_root / "selftest-client"), client.identity_token, client.staging
     )
-    selftest_client.verify(materials, dsse=True)
+    selftest_client.verify(materials)

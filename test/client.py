@@ -201,7 +201,7 @@ class SigstoreClient:
             raise ClientUnexpectedSuccess(msg)
 
     @singledispatchmethod
-    def sign(self, materials: VerificationMaterials, dsse: bool = False) -> None:
+    def sign(self, materials: VerificationMaterials) -> None:
         """
         Sign an artifact with the Sigstore client. Dispatches to `_sign_for_bundle` when
         given `BundleMaterials`.
@@ -216,7 +216,7 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot sign with {type(materials)}")
 
     @sign.register
-    def _sign_for_bundle(self, materials: BundleMaterials, dsse: bool = False) -> None:
+    def _sign_for_bundle(self, materials: BundleMaterials) -> None:
         """
         Sign an artifact with the Sigstore client, producing a bundle.
 
@@ -232,8 +232,14 @@ class SigstoreClient:
         args = ["sign-bundle"]
         if self.staging:
             args.append("--staging")
-        if dsse:
+
+        statement = getattr(materials, "statement", None)
+        if statement is not None:
             args.append("--in-toto")
+            artifact_to_sign = statement
+        else:
+            artifact_to_sign = materials.artifact
+
         args.extend(
             [
                 "--identity-token",
@@ -247,8 +253,6 @@ class SigstoreClient:
         if getattr(materials, "signing_config", None) is not None:
             args.extend(["--signing-config", str(materials.signing_config)])
 
-        artifact_to_sign = materials.statement if dsse else materials.artifact
-        assert artifact_to_sign is not None
         self.run(*args, str(artifact_to_sign))
 
         # Set the used signing identity and issuer on verification materials:
@@ -257,7 +261,7 @@ class SigstoreClient:
         materials.issuer = self.issuer
 
     @singledispatchmethod
-    def verify(self, materials: VerificationMaterials, dsse: bool = False) -> None:
+    def verify(self, materials: VerificationMaterials) -> None:
         """
         Verify an artifact with the Sigstore client. Dispatches to
          `_verify_{artifact|digest}_for_bundle` when given `BundleMaterials`.
@@ -269,26 +273,26 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot verify with {type(materials)}")
 
     @singledispatchmethod
-    def verify_digest(self, materials: VerificationMaterials, dsse: bool = False) -> None:
+    def verify_digest(self, materials: VerificationMaterials) -> None:
         raise NotImplementedError(f"Cannot verify with {type(materials)}")
 
     @verify_digest.register
-    def _verify_digest_for_bundle(self, materials: BundleMaterials, dsse: bool = False) -> None:
-        args = self.build_verify_args(materials, digest=True, dsse=dsse)
+    def _verify_digest_for_bundle(self, materials: BundleMaterials) -> None:
+        args = self.build_verify_args(materials, digest=True)
         self.run(*args)
 
     @verify.register
-    def _verify_artifact_for_bundle(self, materials: BundleMaterials, dsse: bool = False) -> None:
+    def _verify_artifact_for_bundle(self, materials: BundleMaterials) -> None:
         """
         Verify an artifact given a bundle with the Sigstore client.
 
         This is an overload of `verify` for the bundle flow and should not be called
         directly.
         """
-        args = self.build_verify_args(materials, dsse=dsse)
+        args = self.build_verify_args(materials)
         self.run(*args)
 
-    def build_verify_args(self, materials: BundleMaterials, digest: bool = False, dsse: bool = False) -> list[str]:
+    def build_verify_args(self, materials: BundleMaterials, digest: bool = False) -> list[str]:
         args = ["verify-bundle"]
         if self.staging:
             args.append("--staging")
@@ -310,8 +314,11 @@ class SigstoreClient:
         if getattr(materials, "trusted_root", None) is not None:
             args.extend(["--trusted-root", str(materials.trusted_root)])
 
-        artifact_to_verify = materials.subject if dsse else materials.artifact
-        assert artifact_to_verify is not None
+        subject = getattr(materials, "subject", None)
+        if subject is not None:
+            artifact_to_verify = subject
+        else:
+            artifact_to_verify = materials.artifact
 
         if digest:
             artifact = artifact_to_verify.read_bytes()
