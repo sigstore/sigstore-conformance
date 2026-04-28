@@ -69,6 +69,7 @@ class BundleMaterials(VerificationMaterials):
     trusted_root: Path
     signing_config: Path
     artifact: Path
+    statement: Path | None
     key: Path
     identity: str
     issuer: str
@@ -199,7 +200,7 @@ class SigstoreClient:
             raise ClientUnexpectedSuccess(msg)
 
     @singledispatchmethod
-    def sign(self, materials: VerificationMaterials, dsse: bool = False) -> None:
+    def sign(self, materials: VerificationMaterials) -> None:
         """
         Sign an artifact with the Sigstore client. Dispatches to `_sign_for_bundle` when
         given `BundleMaterials`.
@@ -214,7 +215,7 @@ class SigstoreClient:
         raise NotImplementedError(f"Cannot sign with {type(materials)}")
 
     @sign.register
-    def _sign_for_bundle(self, materials: BundleMaterials, dsse: bool = False) -> None:
+    def _sign_for_bundle(self, materials: BundleMaterials) -> None:
         """
         Sign an artifact with the Sigstore client, producing a bundle.
 
@@ -230,8 +231,14 @@ class SigstoreClient:
         args = ["sign-bundle"]
         if self.staging:
             args.append("--staging")
-        if dsse:
+
+        statement = getattr(materials, "statement", None)
+        if statement is not None:
             args.append("--in-toto")
+            artifact_to_sign = statement
+        else:
+            artifact_to_sign = materials.artifact
+
         args.extend(
             [
                 "--identity-token",
@@ -245,7 +252,7 @@ class SigstoreClient:
         if getattr(materials, "signing_config", None) is not None:
             args.extend(["--signing-config", str(materials.signing_config)])
 
-        self.run(*args, str(materials.artifact))
+        self.run(*args, str(artifact_to_sign))
 
         # Set the used signing identity and issuer on verification materials:
         # This way a later verify() call will know what to expect

@@ -201,8 +201,12 @@ def test_sign_verify_dsse(
     materials = make_materials_by_type("statement.json", BundleMaterials)
     assert not materials.exists()
 
-    # Sign for our input with DSSE enabled.
-    client.sign(materials, dsse=True)
+    # Separate statement (for signing) and subject (for verification)
+    materials.statement = materials.artifact
+    materials.artifact = Path("a.txt")
+
+    # Sign for our input.
+    client.sign(materials)
 
     # Parse the output bundle.
     bundle_contents = materials.bundle.read_bytes()
@@ -213,11 +217,7 @@ def test_sign_verify_dsse(
     assert not bundle.is_set("message_signature")
 
     # Ensure DSSE envelope payload matches the statement
-    assert bundle.dsse_envelope.payload == materials.artifact.read_bytes()
-
-    # TODO: separate subject and statement in dsse case:
-    # "artifact" is a statement when signing, but a subject when verifying
-    materials.artifact = Path("a.txt")
+    assert bundle.dsse_envelope.payload == materials.statement.read_bytes()
 
     # Verify the bundle
     client.verify(materials)
