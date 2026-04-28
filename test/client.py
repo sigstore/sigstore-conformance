@@ -70,7 +70,6 @@ class BundleMaterials(VerificationMaterials):
     signing_config: Path
     artifact: Path
     statement: Path | None
-    subject: Path | None
     key: Path
     identity: str
     issuer: str
@@ -314,17 +313,11 @@ class SigstoreClient:
         if getattr(materials, "trusted_root", None) is not None:
             args.extend(["--trusted-root", str(materials.trusted_root)])
 
-        subject = getattr(materials, "subject", None)
-        if subject is not None:
-            artifact_to_verify = subject
-        else:
-            artifact_to_verify = materials.artifact
-
         if digest:
-            artifact = artifact_to_verify.read_bytes()
+            artifact = materials.artifact.read_bytes()
             digest_str = f"sha256:{hashlib.sha256(artifact).hexdigest()}"
             args.append(digest_str)
         else:
-            args.append(str(artifact_to_verify))
+            args.append(str(materials.artifact))
 
         return args

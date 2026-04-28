@@ -203,7 +203,7 @@ def test_sign_verify_dsse(
 
     # Separate statement (for signing) and subject (for verification)
     materials.statement = materials.artifact
-    materials.subject = Path("a.txt")
+    materials.artifact = Path("a.txt")
 
     # Sign for our input.
     client.sign(materials)
@@ -219,7 +219,7 @@ def test_sign_verify_dsse(
     # Ensure DSSE envelope payload matches the statement
     assert bundle.dsse_envelope.payload == materials.statement.read_bytes()
 
-    # Verify the bundle.
+    # Verify the bundle
     client.verify(materials)
 
     # Use selftest client verify to assert that the bundle is correctly formed
