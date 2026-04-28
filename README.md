@@ -51,12 +51,12 @@ client-under-test [CLI protocol](docs/cli_protocol.md).
           # insert your client installation steps here
 
           # Run tests against production Sigstore environment
-          - uses: sigstore/sigstore-conformance@v0.0.25
+          - uses: sigstore/sigstore-conformance@v0.0.27
             with:
               entrypoint: my-conformance-client
 
           # Run tests against staging Sigstore environment
-          - uses: sigstore/sigstore-conformance@v0.0.25
+          - uses: sigstore/sigstore-conformance@v0.0.27
             with:
               entrypoint: my-conformance-client
               environment: staging
@@ -86,6 +86,11 @@ Depending on a client's optional feature support, the following test patterns ca
 - `test_verify*intoto*`: Older, deprecated intoto types that can be ignored for new clients.
 - `test_verify*managed-key-happy-path]`, `test_verify*managed-key-and-trusted-root]`: Tests that require clients to support managed keys
 
+## Identity token for signing tests
+
+The test suite is focuses on verification tests but does contain some signing tests: these tests download a [testing OIDC token](https://storage.googleapis.com/sigstore-conformance-testing-token/untrusted-testing-token.txt) for the test run. The token is
+published every 15 minutes and is valid for 1 hour from publishing. The token can be used for Sigstore commuity testing purposes
+outside of sigstore-conformance as well.
 
 ## Development
 
