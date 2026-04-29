@@ -7,7 +7,7 @@ Each subdirectory is used to parametrize test_verify():
   * `bundle.sigstore.json`: The signature bundle
   * `README`: Explanation of the test: why it should fail/succeed
 * Directory may optionally contain
-  * `artifact`: The signed artifact (if not provided, "a.txt" from the parent directory is used)
+  * `artifact`: The signed artifact. For DSSE (in-toto) envelopes, this file represents the subject of the attestation. (If not provided, "a.txt" from the parent directory is used)
   * `identity`: file contents are the signing identity (if not provided, "https://github.com/sigstore-conformance/extremely-dangerous-public-oidc-beacon/.github/workflows/extremely-dangerous-oidc-beacon.yml@refs/heads/main" is used)
   * `issuer`: file contents are the signing identity issuer (if not provided, "https://token.actions.githubusercontent.com" is used)
   * `key.pub`: The PEM-encoded public key used for verification. When this file is present, verification will be attempted with the key instead of OIDC
