@@ -1,0 +1,15 @@
+Valid bundle for a DSSE-content envelope whose Rekor v1 entry is a
+hashedrekord (kind=hashedrekord, version=0.0.1) instead of dsse/intoto.
+The hashedrekord's `data.hash` commits to SHA256(PAE(payloadType, payload))
+— the same bytes the DSSE signature covers. This combination is allowed
+by the Sigstore client spec
+(https://github.com/sigstore/architecture-docs/blob/main/client-spec.md
+"Bundle content vs. Rekor entry kind") and is useful for Rekor v2
+deployments that only support the hashedrekord type, but here it's
+exercised on Rekor v1.
+
+Signed against production Sigstore Public Good (Fulcio + Rekor v1) with
+sigstore-go's experimental hashedrekord-over-DSSE flag enabled, using the
+sigstore-conformance/extremely-dangerous-public-oidc-beacon workflow
+identity. No custom trusted_root.json is shipped; the test uses the
+default production trust root.

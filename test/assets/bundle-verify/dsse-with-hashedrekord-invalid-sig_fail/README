@@ -1,0 +1,17 @@
+Invalid bundle for a DSSE-content envelope logged to Rekor v1 with the
+experimental hashedrekord-over-DSSE encoding (kind=hashedrekord/0.0.1).
+The envelope signature does not verify under the bundle's certificate (it
+was made with a different key entirely).
+
+Construction:
+  1. Sign in-toto statement A as DSSE with key/cert #1 → bundle1
+     (happy-path source)
+  2. Sign in-toto statement A as DSSE with an unrelated key/cert #2 →
+     bundle2
+  3. In bundle1, replace the envelope signature and the RFC3161 timestamps
+     with those from bundle2.
+
+Signed against production Sigstore Public Good using the
+sigstore-conformance/extremely-dangerous-public-oidc-beacon workflow
+identity. No custom trusted_root.json is shipped; the test uses the
+default production trust root.

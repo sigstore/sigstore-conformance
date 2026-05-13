@@ -1,0 +1,17 @@
+Invalid bundle for a DSSE-content envelope logged to Rekor v1 with the
+experimental hashedrekord-over-DSSE encoding (kind=hashedrekord/0.0.1).
+The DSSE envelope is valid in isolation but it is not the envelope that
+was logged to Rekor: SHA256(PAE(envelope)) does not match the
+hashedrekord entry's recorded `data.hash`.
+
+Construction:
+  1. Sign in-toto statement A as DSSE → bundle1 (happy-path source)
+  2. Sign a different in-toto statement B as DSSE with the same key and
+     same Fulcio-issued certificate → bundle2
+  3. In bundle1, replace the dsseEnvelope and the RFC3161 timestamps with
+     those from bundle2.
+
+Signed against production Sigstore Public Good using the
+sigstore-conformance/extremely-dangerous-public-oidc-beacon workflow
+identity. No custom trusted_root.json is shipped; the test uses the
+default production trust root.
