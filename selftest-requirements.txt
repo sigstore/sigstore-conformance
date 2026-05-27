@@ -1,2 +1,2 @@
-# Use a commit from main until sigstore-python release > 4.1.0
-sigstore @ git+https://github.com/sigstore/sigstore-python.git@b1ef51c78b34dbd772ec2a2d8d07ad6a6b4d853d
+# Use a commit from main with DSSE-as-hashedrekord support (sigstore-python#1776)
+sigstore @ git+https://github.com/sigstore/sigstore-python.git@603eeb3d4f6064917926fdaacc832790cbc9a609
