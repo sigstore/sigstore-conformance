@@ -127,6 +127,13 @@ Following example runs the test suite with the included selftest client script:
 ...
 ```
 
+To run a subset of tests, `-k` does not accept patterns but does accept an `or` separated list of tests: `-k "test1 or test2"`.
+Following example collects tests as an `or` concatenated string to pass to the the test command (`$` is just a custom delimeter here)
+```sh
+(env) $ SELECT_TESTS="$(pytest --collect-only -q --entrypoint=no-op | grep "my-pattern" | cut -d ":" -f 3 | paste -sd '$' - | sed 's/\$/ or /g')"
+(env) $ pytest -v --entrypoint=selftest-client -k "$SELECT_TESTS"
+```
+
 ## Licensing
 
 `sigstore-conformance` is licensed under the Apache 2.0 License.
