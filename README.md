@@ -89,8 +89,10 @@ Depending on a client's optional feature support, the following test patterns ca
 ## Identity token for signing tests
 
 The test suite is focuses on verification tests but does contain some signing tests: these tests download a [testing OIDC token](https://storage.googleapis.com/sigstore-conformance-testing-token/untrusted-testing-token.txt) for the test run. The token is
-published every 15 minutes and is valid for 1 hour from publishing. The token can be used for Sigstore commuity testing purposes
-outside of sigstore-conformance as well.
+published every 15 minutes and is valid for 1 hour from publishing. The token can be used for Sigstore community testing purposes
+outside of sigstore-conformance as well. The token details are:
+* Identity: `untrusted-sa@sigstore-conformance.iam.gserviceaccount.com`
+* Issuer: `https://accounts.google.com`
 
 ## Development
 
