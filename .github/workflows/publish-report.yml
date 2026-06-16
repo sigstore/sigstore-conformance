@@ -35,7 +35,7 @@ jobs:
             repo: sigstore/sigstore-ruby
             workflow: ci.yml
           - name: sigstore-rust
-            repo: prefix-dev/sigstore-rust
+            repo: sigstore/sigstore-rust
             workflow: ci.yml
 
     steps:
