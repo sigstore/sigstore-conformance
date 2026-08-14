@@ -1,0 +1,4 @@
+The bundle contains two valid RFC 3161 timestamps over the same signature. The
+first timestamp is within the signing certificate's validity period, but the
+second was issued after it expired. Verification must validate every supplied
+timestamp rather than selecting only the earliest one.
