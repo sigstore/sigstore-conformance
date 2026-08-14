@@ -1,0 +1,2 @@
+Valid managed-key Rekor v1 intoto/0.0.2 bundle whose canonical log entry
+contains payloadHash instead of the full DSSE payload.
