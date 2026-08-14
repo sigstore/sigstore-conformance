@@ -1,0 +1,3 @@
+The Rekor integrated time is exactly equal to the end of the transparency log
+key's trust-root validity period. TimeRange is a closed interval, so
+verification should succeed.

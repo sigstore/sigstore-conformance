@@ -1,0 +1,3 @@
+The transparency log key's validFor interval is missing its required start.
+Verification must reject the malformed trust root rather than treating the
+missing bound as unbounded.

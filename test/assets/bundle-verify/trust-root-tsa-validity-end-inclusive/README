@@ -1,0 +1,2 @@
+The timestamp is exactly equal to the end of its TSA trust-root validity
+period. TimeRange is a closed interval, so verification should succeed.
