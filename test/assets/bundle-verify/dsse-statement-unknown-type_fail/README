@@ -1,0 +1,3 @@
+The otherwise valid DSSE bundle contains an in-toto statement with an unknown
+_type value. Verification must not interpret unknown statement semantics as
+https://in-toto.io/Statement/v1.

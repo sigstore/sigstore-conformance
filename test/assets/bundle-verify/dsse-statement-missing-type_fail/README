@@ -1,0 +1,3 @@
+The otherwise valid DSSE bundle contains an in-toto statement without the
+required _type field. Verification must fail rather than interpreting it as a
+v1 statement.

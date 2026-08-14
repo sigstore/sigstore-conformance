@@ -1,0 +1,22 @@
+{
+  "mediaType": "application/vnd.dev.sigstore.trustedroot+json;version=0.1",
+  "tlogs": [
+    {
+      "baseUrl": "https://rekor.test",
+      "hashAlgorithm": "SHA2_256",
+      "publicKey": {
+        "rawBytes": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETbBIL3ygagz97qIpH8DrnQGWiE2uMkximjBDhAleVmKfd7a1pUFSj8Hgt4bvTSIh8MuTD8PhmIGbYhzRCtJ4AQ==",
+        "keyDetails": "PKIX_ECDSA_P256_SHA_256",
+        "validFor": {
+          "start": "2020-01-01T00:00:00Z"
+        }
+      },
+      "logId": {
+        "keyId": "G+VZ+s2fAS2dfdMaEhk1dx2iykBX9525iXV2WVegE4s="
+      }
+    }
+  ],
+  "certificateAuthorities": [],
+  "ctlogs": [],
+  "timestampAuthorities": []
+}
