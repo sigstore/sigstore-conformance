@@ -1,0 +1,4 @@
+The timestamp was authenticated by a TSA whose configured validity period ended
+before the timestamp. An unrelated TSA entry has no certificates but has a
+validity period covering the timestamp. Verification must fail: temporal
+authorization must come from the TSA that authenticated the timestamp.
