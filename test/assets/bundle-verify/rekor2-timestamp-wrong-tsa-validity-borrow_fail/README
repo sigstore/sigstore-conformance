@@ -2,3 +2,8 @@ The timestamp was authenticated by a TSA whose configured validity period ended
 before the timestamp. An unrelated TSA entry has no certificates but has a
 validity period covering the timestamp. Verification must fail: temporal
 authorization must come from the TSA that authenticated the timestamp.
+
+Creation: copy the bundle and trusted root from
+`rekor2-timestamp-outside-trust-root-tsa-validity_fail`, then append an unrelated
+TSA with an empty certificate chain and validity from `2025-06-01T00:00:00Z` to
+`2025-07-01T00:00:00Z`, which covers the bundle's timestamp.
