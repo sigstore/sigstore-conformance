@@ -2,3 +2,8 @@ The bundle contains two valid RFC 3161 timestamps over the same signature. The
 first timestamp is within the signing certificate's validity period, but the
 second was issued after it expired. Verification must validate every supplied
 timestamp rather than selecting only the earliest one.
+
+Creation: copy the bundle and trusted root from `rekor2-happy-path`, then append
+the RFC 3161 timestamp from `rekor2-timestamp-with-incorrect-time_fail`. Both
+source bundles contain the same message signature. Remove line wrapping from
+the appended timestamp's base64 encoding.
