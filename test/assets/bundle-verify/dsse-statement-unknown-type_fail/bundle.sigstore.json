@@ -1,0 +1,44 @@
+{
+  "mediaType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+  "verificationMaterial": {
+    "publicKey": {
+      "hint": "kubfDTvN/gGHh/yeL7Ka/5ciqCZ3uPe1ZWVu5rhiA2o="
+    },
+    "tlogEntries": [
+      {
+        "logIndex": "0",
+        "logId": {
+          "keyId": "G+VZ+s2fAS2dfdMaEhk1dx2iykBX9525iXV2WVegE4s="
+        },
+        "kindVersion": {
+          "kind": "hashedrekord",
+          "version": "0.0.2"
+        },
+        "integratedTime": "0",
+        "inclusionProof": {
+          "logIndex": "0",
+          "rootHash": "573bIfh7myT3xwItFApFDsPRYksZZr67EP25x4mPEZg=",
+          "treeSize": "1",
+          "hashes": [],
+          "checkpoint": {
+            "envelope": "rekor.test\n1\n573bIfh7myT3xwItFApFDsPRYksZZr67EP25x4mPEZg=\n\n\u2014 rekor.test G+VZ+jBGAiEA5u05iET31wxufsWgfn9B9Q6tDLRMXm9xaLQVml8cu/kCIQDkK1mR+DoMkM5VZ8Sx3KbSVJb/kTqH6CJXOhyG/ojVOw==\n"
+          }
+        },
+        "canonicalizedBody": "eyJhcGlWZXJzaW9uIjoiMC4wLjIiLCJraW5kIjoiaGFzaGVkcmVrb3JkIiwic3BlYyI6eyJoYXNoZWRSZWtvcmRWMDAyIjp7ImRhdGEiOnsiYWxnb3JpdGhtIjoiU0hBMl8yNTYiLCJkaWdlc3QiOiJHc3JodmVxb0dGOENZL1lUVHY2enBQNS9RdytrZU55aUVxbHlaVVV5SkRRPSJ9LCJzaWduYXR1cmUiOnsiY29udGVudCI6Ik1FWUNJUUM4Q0s3VHllQmNDZXBkQXJ6TGgrNW9laVZwc0RuckJ0M3RjK3BoclFxbG9RSWhBSVFVMEFDMzA2VjBTR09NMGd5cmlYZ0RIWUpPb1UvWXNwOTZzOThsUDFTNiIsInZlcmlmaWVyIjp7InB1YmxpY0tleSI6eyJyYXdCeXRlcyI6Ik1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRUM1RWtFNXE5NHBCc2sydlJkbmU2cUVWVUQvTXFsREw3bjNZb1ZabkRIK1dCT3VKeHZaM0duNVpCYUhsVHBFRUt2WWRkdDBxZU5IbXhFNzNUSXQ2LzBnPT0ifX19fX19"
+      }
+    ],
+    "timestampVerificationData": {
+      "rfc3161Timestamps": []
+    }
+  },
+  "dsseEnvelope": {
+    "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjIiLCJzdWJqZWN0IjpbeyJuYW1lIjoiYS50eHQiLCJkaWdlc3QiOnsic2hhMjU2IjoiYTBjZmM3MTI3MWQ2ZTI3OGU1N2NkMzMyZmY5NTdjM2Y3MDQzZmRkYTM1NGM0Y2JiMTkwYTMwZDU2ZWZhMDFiZiJ9fV0sInByZWRpY2F0ZVR5cGUiOiJodHRwczovL2V4YW1wbGUuY29tL3Rlc3QiLCJwcmVkaWNhdGUiOnt9fQ==",
+    "payloadType": "application/vnd.in-toto+json",
+    "signatures": [
+      {
+        "sig": "MEYCIQC8CK7TyeBcCepdArzLh+5oeiVpsDnrBt3tc+phrQqloQIhAIQU0AC306V0SGOM0gyriXgDHYJOoU/Ysp96s98lP1S6",
+        "keyid": ""
+      }
+    ]
+  }
+}
