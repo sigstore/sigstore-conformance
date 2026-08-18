@@ -1,2 +1,9 @@
 Valid managed-key Rekor v1 intoto/0.0.2 bundle whose canonical log entry
 contains payloadHash instead of the full DSSE payload.
+
+Creation: generate ECDSA P-256 artifact-signing and tlog keys; create a DSSE
+statement whose SHA-256 subject is `../a.txt`; sign its PAE; and create the
+canonical intoto entry with `payloadHash`, `payloadType`, signature, and public
+key but no `payload`. The custom log has one leaf, so its root is
+`SHA256(0x00 || canonicalizedBody)`; sign that checkpoint with the tlog key and
+place its public key in `trusted_root.json`.
