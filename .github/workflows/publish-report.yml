@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: dawidd6/action-download-artifact@27e4ae67c24b67d3b54bc6d6a45475be1e28031b # v26
+        uses: dawidd6/action-download-artifact@eab87c9830c39eff17e5a6eadb20bfb4bc880477 # v27
         with:
           # A token is required to read other repos' artifacts. This token is a fine grained token
           # with read-only "public repositories" access only. It is set to expire in 1 year
