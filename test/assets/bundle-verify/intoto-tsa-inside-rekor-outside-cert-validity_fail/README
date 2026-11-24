@@ -1,0 +1,6 @@
+Synthetic timing control derived from the repository's rekor2-dsse-happy-path seed.
+Both cases share the signed artifact, Fulcio certificate with SCT, RFC 3161 token, and trusted root.
+Fulcio leaf validity: 2026-05-13T19:23:32Z to 2026-05-13T19:33:32Z.
+RFC 3161 timestamp: 2026-05-13T19:26:32Z, three minutes after NotBefore.
+Rekor integratedTime: 2026-05-13T20:33:32Z.
+The Rekor SET and inclusion checkpoint are signed for each integratedTime.
