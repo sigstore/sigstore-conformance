@@ -1,0 +1,44 @@
+{
+  "mediaType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+  "verificationMaterial": {
+    "publicKey": {
+      "hint": "lvQQjDengRsC3hrI1mdkNr/lbf/ojnKX/c0nrt9STDc="
+    },
+    "tlogEntries": [
+      {
+        "logIndex": "0",
+        "logId": {
+          "keyId": "2yaUIiOWKlLImnYcR4/YYJc8aqO6kN9ahGBiWqnW8yk="
+        },
+        "kindVersion": {
+          "kind": "hashedrekord",
+          "version": "0.0.2"
+        },
+        "integratedTime": "0",
+        "inclusionProof": {
+          "logIndex": "0",
+          "rootHash": "bd+felI22FmuuWriSJuvvvgGkRC2TK0TSxwrEMz9bls=",
+          "treeSize": "1",
+          "hashes": [],
+          "checkpoint": {
+            "envelope": "rekor.test\n1\nbd+felI22FmuuWriSJuvvvgGkRC2TK0TSxwrEMz9bls=\n\n\u2014 rekor.test 2yaUIjBGAiEAzMi34iShe+x4DwoXd16iOLmSVnvzCPozpJ9DQk2RshYCIQDqSEaVq85a2sD+lJnZWIlnJ3zfHnENgCf5qCZFw3F6ZQ==\n"
+          }
+        },
+        "canonicalizedBody": "eyJhcGlWZXJzaW9uIjoiMC4wLjIiLCJraW5kIjoiaGFzaGVkcmVrb3JkIiwic3BlYyI6eyJoYXNoZWRSZWtvcmRWMDAyIjp7ImRhdGEiOnsiYWxnb3JpdGhtIjoiU0hBMl8yNTYiLCJkaWdlc3QiOiJBQTRvOFFycjFHRmRCaHRiM2RZU09pT1JrSDlldm5TRlJqbHR6SDdETWdZPSJ9LCJzaWduYXR1cmUiOnsiY29udGVudCI6Ik1FVUNJUURRazIvZVZlK0tuQmYwMEtnZTFWVkFacU5pN1N2emNZUDJhWXhmc1JCc0NnSWdMaDBjNlJHMnU1SXgxbkxrUUNMSXVpblNwUkdpZndXMmEzQnRJaTJ1ZHZNPSIsInZlcmlmaWVyIjp7InB1YmxpY0tleSI6eyJyYXdCeXRlcyI6Ik1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRW9xWXFoMDRmY2laWCtDZWhQR01HYlNQMXRpa1F3SGtwM0JQRTNqL1hleGsvcVhDZ3pmR3dwOElRWTVKb1JxcEFNNkRVbnlZdGE3NkZMRFZtbjRwV0dnPT0ifX19fX19"
+      }
+    ],
+    "timestampVerificationData": {
+      "rfc3161Timestamps": []
+    }
+  },
+  "dsseEnvelope": {
+    "payload": "eyJzdWJqZWN0IjpbeyJuYW1lIjoiYS50eHQiLCJkaWdlc3QiOnsic2hhMjU2IjoiYTBjZmM3MTI3MWQ2ZTI3OGU1N2NkMzMyZmY5NTdjM2Y3MDQzZmRkYTM1NGM0Y2JiMTkwYTMwZDU2ZWZhMDFiZiJ9fV0sInByZWRpY2F0ZVR5cGUiOiJodHRwczovL2V4YW1wbGUuY29tL3Rlc3QiLCJwcmVkaWNhdGUiOnt9fQ==",
+    "payloadType": "application/vnd.in-toto+json",
+    "signatures": [
+      {
+        "sig": "MEUCIQDQk2/eVe+KnBf00Kge1VVAZqNi7SvzcYP2aYxfsRBsCgIgLh0c6RG2u5Ix1nLkQCLIuinSpRGifwW2a3BtIi2udvM=",
+        "keyid": ""
+      }
+    ]
+  }
+}
