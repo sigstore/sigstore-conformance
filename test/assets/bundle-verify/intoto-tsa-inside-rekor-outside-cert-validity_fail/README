@@ -1,8 +1,6 @@
-This fixture has a Fulcio certificate that is valid at the RFC 3161 timestamp and the embedded certificate transparency timestamp, but expired by the time recorded in Rekor.
-
-Certificate validity: [2026-11-21T15:17:15Z, 2026-11-21T15:27:15Z]
-RFC 3161 timestamp: 2026-11-21T15:19:15Z (inside)
-Embedded certificate transparency timestamp: 2026-11-21T15:19:15.2274152Z (inside)
-Rekor integratedTime: 2026-11-21T16:14:15Z (outside)
-
-The bundle includes the DSSE signature, signed timestamp, Rekor entry and inclusion proof, and the matching custom trusted root. Verification is expected to reject it because the Rekor integrated time is outside the certificate validity window.
+Synthetic timing control derived from the repository's rekor2-dsse-happy-path seed.
+Both cases share the signed artifact, Fulcio certificate with SCT, RFC 3161 token, and trusted root.
+Fulcio leaf validity: 2026-05-13T19:23:32Z to 2026-05-13T19:33:32Z.
+RFC 3161 timestamp: 2026-05-13T19:26:32Z, three minutes after NotBefore.
+Rekor integratedTime: 2026-05-13T20:33:32Z.
+The Rekor SET and inclusion checkpoint are signed for each integratedTime.
